@@ -30,3 +30,20 @@
 *.exe
 *.out
 *.app
+
+# Compiled other
+**/Debug
+**/Release
+**/x64
+dist
+
+# Projects and solutions
+*.props
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.sln
+.vs
+
+# sample project
+src/main
