@@ -3,6 +3,7 @@
 #include <graphics/IWindow.h>
 
 #include <boost/bind.hpp>
+
 #include <chrono>
 #include <thread>
 
@@ -13,11 +14,11 @@ namespace core {
 		: m_shouldExit(false)
 		, m_entityManager()
 		, m_physicsManager(&m_entityManager)
-		, m_graphicsManager(&m_entityManager, boost::bind(&physics::PhysicsManager::getPosition, &m_physicsManager, _1))
+		, m_inputManager()
+		, m_graphicsManager(&m_entityManager, m_physicsManager.positionCallback())
 		, m_targetUps(100)
 		, m_splashFilename("splash.png")
 {
-
 }
 
 void Game::run()
@@ -37,6 +38,8 @@ void Game::run()
 	// Create the window
 	graphics::IWindow *mainWindow = createWindow(mainWindowSettings);
 	mainWindow->activate();
+	mainWindow->setKeyCallback(m_inputManager.getKeyCallback());
+	mainWindow->setFocusCallback(boost::bind(&Game::focus, this, _1));
 
 	m_graphicsManager.initialize();
 
@@ -70,6 +73,9 @@ void Game::run()
 		// Render step
 		m_graphicsManager.drawAll(frametime.count());
 		mainWindow->draw();
+
+		// Handle input
+		m_inputManager.update();
 		m_initializer->handleOsStep();
 
 		m_shouldExit = mainWindow->isClosed();
@@ -78,9 +84,14 @@ void Game::run()
 	m_initializer->exit();
 }
 
+void Game::focus(bool hasFocus)
+{
+	m_inputManager.clearState();
+}
+
 void Game::splashScreenUpdate(bool &closeSplash)
 {
-	std::this_thread::sleep_for(std::chrono::seconds(1));
+//	std::this_thread::sleep_for(std::chrono::seconds(1));
 	closeSplash = true;
 }
 

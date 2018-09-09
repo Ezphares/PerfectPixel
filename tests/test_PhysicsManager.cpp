@@ -47,8 +47,8 @@ namespace tests
 			PhysicsManager::CollisionData data;
 			types::Vector2 *overlap = &data.m_data_RectRectOverlap;
 
-			ColliderComponent ca = ColliderComponent(a, types::Rectangle({ 10, 10 }));
-			ColliderComponent cb = ColliderComponent(b, types::Rectangle({ 20, 10 }));
+			ColliderComponent ca = ColliderComponent(a, types::AARectangle({ 10, 10 }));
+			ColliderComponent cb = ColliderComponent(b, types::AARectangle({ 20, 10 }));
 
 			Assert::IsTrue(m_manager->checkCollision(ca, cb, &data), L"Collision missed", LINE_INFO());
 			AssertFloatApprox(overlap->m_x, 15);

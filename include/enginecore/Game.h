@@ -5,6 +5,7 @@
 #include <worldgraph/EntityManager.h>
 #include <graphics/GraphicsManager.h>
 #include <physics/PhysicsManager.h>
+#include <input/InputManager.h>
 
 #include <types/numbers.h>
 
@@ -23,6 +24,7 @@ public:
 	static void setup(IInitializer *initializer);
 
 	void run();
+	void focus(bool hasFocus);
 
 	//virtual bool prepareSplashScreen();
 	
@@ -55,6 +57,7 @@ private:
 protected:
 	world::EntityManager m_entityManager;
 	physics::PhysicsManager m_physicsManager;
+	input::InputManager m_inputManager;
 	graphics::GraphicsManager m_graphicsManager;
 
 private:

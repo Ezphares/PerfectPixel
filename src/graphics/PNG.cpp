@@ -1,5 +1,6 @@
 #include <graphics/PNG.h>
 
+#include <types/PpException.h>
 
 namespace perfectpixel {
 namespace graphics {
@@ -26,7 +27,7 @@ namespace graphics {
 		fopen_s(&result.m_fp, filename.c_str(), "rb");
 		if (result.m_fp == NULL)
 		{
-			throw "Could not open file: " + filename; // FIXME exception
+			throw types::PpException("Could not open file [" + filename + "]");
 		}
 
 		// PNG header check
@@ -34,19 +35,19 @@ namespace graphics {
 		fread(header, 1, 8, result.m_fp);
 		if (png_sig_cmp(header, 0, 8))
 		{
-			throw "Could not parse PNG header";// FIXME exception
+			throw types::PpException("Could not parse PNG header");
 		}
 
 		PngReadStruct readStruct = PngReadStruct();
 
 		if (!readStruct.m_ok)
 		{
-			throw "Could not create PNG metadata structures";// FIXME exception
+			throw types::PpException("Could not create PNG metadata structures");
 		}
 
 		if (setjmp(png_jmpbuf(readStruct.m_png)))
 		{
-			throw "Could not set jump";// FIXME exception
+			throw types::PpException("Could not set jump");// FIXME exception
 		}
 
 		png_init_io(readStruct.m_png, result.m_fp);

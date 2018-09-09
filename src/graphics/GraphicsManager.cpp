@@ -2,17 +2,17 @@
 
 #include <graphics/LocalGL.h>
 
+#include <types/File.h>
+#include <types/PpException.h>
 
 namespace perfectpixel {
 namespace graphics {
 
-	namespace {
-		const types::PpInt SPRITE_VERTEX_ELEMENTS = 5;
-	}
-
-GraphicsManager::GraphicsManager(world::EntityManager *entityManager, boost::function<types::Vector3(world::Entity)> positionCallback)
+GraphicsManager::GraphicsManager(world::EntityManager *entityManager, world::PositionCallback positionCallback)
 	: m_entityManager(entityManager)
 	, m_positionCallback(positionCallback)
+	, m_programSpriteHardAlpha(NULL)
+	, m_programSpriteSoftAlpha(NULL)
 {
 
 }
@@ -29,66 +29,29 @@ void GraphicsManager::initialize()
 	glDepthFunc(GL_LESS);
 
 	glewInit();
+	
+	VAO::BufferLayout spriteLayout;
+	spriteLayout.push_back(VAO::BE_VEC_3); // Xyz
+	spriteLayout.push_back(VAO::BE_VEC_2); // Uv
 
-	glGenBuffers(1, &m_vbo);
+	m_vaoDynamicSprites = new VAO(spriteLayout);
 
-	glGenVertexArrays(1, &m_vao);
-	glBindVertexArray(m_vao);
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+	std::string
+		vertex_shader = types::File("Sprite_vertex.glsl").str(),
+		fragment_shader_hard = types::File("SpriteHard_fragment.glsl").str(),
+		fragment_shader_soft = types::File("SpriteSoft_fragment.glsl").str();
 
-	GLsizei
-		indexXyz{ 0 },
-		indexUv{ 3 };
+	m_programSpriteHardAlpha = new ShaderProgram();
+	m_programSpriteHardAlpha->addShader(GL_VERTEX_SHADER, vertex_shader);
+	m_programSpriteHardAlpha->addShader(GL_FRAGMENT_SHADER, fragment_shader_hard);
+	m_programSpriteHardAlpha->link();
+	glUniform1i(m_programSpriteHardAlpha->getUniformLocation("u_texture"), 1);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, SPRITE_VERTEX_ELEMENTS*sizeof(float), (GLvoid*)0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, SPRITE_VERTEX_ELEMENTS*sizeof(float), (GLvoid*)(sizeof(float)*3));
-
-	const char* vertex_shader =
-		"#version 400\n"
-		"layout(location = 0) in vec3 xyz;"
-		"layout(location = 1) in vec2 uv;"
-		"out vec2 tex_uv;"
-		"void main() {"
-		"  gl_Position = vec4(xyz, 1.0);"
-		"  tex_uv = uv;"
-		"}";
-// 	const char* vertex_shader =
-// 		"#version 400\n"
-// 		"in vec3 xyz;"
-// 		"void main() {"
-// 		"  gl_Position = vec4(xyz, 1.0);"
-// 		"}";
-
-	const char* fragment_shader =
-		"#version 400\n"
-		"in vec2 tex_uv;"
-		"uniform sampler2D u_texture;"
-		"out vec4 frag_colour;"
-		"void main() {"
-		"  vec4 colour = texture2D(u_texture, tex_uv);"
-		"  if (colour.a < 0.5)"
-		"  {"
-		"    discard;"
-		"  }"
-		"  colour.a = 1;"
-		"  frag_colour = colour;"
-		"}";
-
-	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vs, 1, &vertex_shader, NULL);
-	glCompileShader(vs);
-	GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fs, 1, &fragment_shader, NULL);
-	glCompileShader(fs);
-
-	m_programSpriteHardalpha = glCreateProgram();
-	glAttachShader(m_programSpriteHardalpha, fs);
-	glAttachShader(m_programSpriteHardalpha, vs);
-	glLinkProgram(m_programSpriteHardalpha);
-
-	glUniform1i(glGetUniformLocation(m_programSpriteHardalpha, "u_texture"), 1);
+	m_programSpriteSoftAlpha = new ShaderProgram();
+	m_programSpriteSoftAlpha->addShader(GL_VERTEX_SHADER, vertex_shader);
+	m_programSpriteSoftAlpha->addShader(GL_FRAGMENT_SHADER, fragment_shader_soft);
+	m_programSpriteSoftAlpha->link();
+	glUniform1i(m_programSpriteSoftAlpha->getUniformLocation("u_texture"), 1);
 }
 
 void GraphicsManager::drawAll(double deltaT)
@@ -120,6 +83,21 @@ void GraphicsManager::drawAll(double deltaT)
 void GraphicsManager::registerSprite(world::Entity entity, const SpriteComponent &spriteComponent)
 {
 	m_spriteComponents.insert(std::pair<world::Entity, SpriteComponent>(entity, spriteComponent));
+}
+
+bool GraphicsManager::hasSprite(world::Entity entity) const
+{
+	return m_spriteComponents.find(entity) != m_spriteComponents.end();
+}
+
+perfectpixel::graphics::SpriteComponent & GraphicsManager::getSprite(world::Entity entity)
+{
+	auto it = m_spriteComponents.find(entity);
+	if (it == m_spriteComponents.end())
+	{
+		throw types::PpException("Attempted to get SpriteComponent for entity without one attached");
+	}
+	return it->second;
 }
 
 void GraphicsManager::drawSpriteComponent(const SpriteComponent &spriteComponent)
@@ -166,7 +144,7 @@ void GraphicsManager::enqueueSpriteDraw(const SpriteDrawInfo &info)
 	}
 }
 
-void GraphicsManager::addSpriteToBuffer(const SpriteDrawInfo &info, std::vector<types::PpFloat> *buffer)
+void GraphicsManager::addSpriteToBuffer(const SpriteDrawInfo &info, SpriteBuffer *buffer)
 {
 	const Quad 
 		&pos { info.m_worldCoord },
@@ -198,19 +176,23 @@ void GraphicsManager::addSpriteToBuffer(const SpriteDrawInfo &info, std::vector<
 
 }
 
-void GraphicsManager::addSpriteVertexToBuffer(const types::Vector3 &pos, const types::Vector2 &uv, std::vector<types::PpFloat> *buffer)
+void GraphicsManager::addSpriteVertexToBuffer(const types::Vector3 &pos, const types::Vector2 &uv, SpriteBuffer *buffer)
 {
-	buffer->push_back(pos.m_x);
-	buffer->push_back(pos.m_y);
-	buffer->push_back(pos.m_z);
+	SpriteVertex vertex{
+		static_cast<GLfloat>(pos.m_x),
+		static_cast<GLfloat>(pos.m_y),
+		static_cast<GLfloat>(pos.m_z),
 
-  	buffer->push_back(uv.m_x);
-  	buffer->push_back(uv.m_y);
+		static_cast<GLfloat>(uv.m_x),
+		static_cast<GLfloat>(uv.m_y)
+	};
+
+	buffer->push_back(vertex);
 }
 
 void GraphicsManager::drawSpriteList(const SpriteDrawList &list, SpriteRenderState *in_out_state, bool forceCurrentState)
 {
-	std::vector<types::PpFloat> buffer;
+	SpriteBuffer buffer;
 	for (auto &info : list)
 	{
 		if (!forceCurrentState && !isStateCompatible(info, *in_out_state))
@@ -226,17 +208,17 @@ void GraphicsManager::drawSpriteList(const SpriteDrawList &list, SpriteRenderSta
 	flushSpriteBuffer(&buffer);
 }
 
-void GraphicsManager::flushSpriteBuffer(std::vector<types::PpFloat> *buffer)
+void GraphicsManager::flushSpriteBuffer(SpriteBuffer *buffer)
 {
 	if (!buffer->empty())
 	{
-		glBindBuffer(GL_VERTEX_ARRAY, m_vbo);
-		glBufferData(GL_ARRAY_BUFFER, buffer->size() * sizeof(types::PpFloat), buffer->data(), GL_STREAM_DRAW);
+		m_vaoDynamicSprites->bindBuffer();
+		glBufferData(GL_ARRAY_BUFFER, buffer->size() * sizeof(SpriteVertex), buffer->data(), GL_STREAM_DRAW);
 
-		glBindVertexArray(m_vao);
+		m_vaoDynamicSprites->bindVAO();
 
 		//glDrawArrays(GL_TRIANGLES, 0, buffer->size() / SPRITE_VERTEX_ELEMENTS);
-		glDrawArrays(GL_TRIANGLES, 0, buffer->size() / 3);
+		glDrawArrays(GL_TRIANGLES, 0, buffer->size());
 	}
 
 	buffer->clear();
@@ -249,17 +231,17 @@ bool GraphicsManager::isStateCompatible(const SpriteDrawInfo &info, const Sprite
 		return false;
 	}
 
-	GLuint targetProgram = info.m_hints & RH_SOFTALPHA ? m_programSpriteSoftAlpha : m_programSpriteHardalpha;
+	ShaderProgram *targetProgram = info.m_hints & RH_SOFTALPHA ? m_programSpriteSoftAlpha : m_programSpriteHardAlpha;
 	return targetProgram == state.m_program;
 }
 
 void GraphicsManager::setCompatibleState(const SpriteDrawInfo &info, SpriteRenderState *out_state)
 {
 	// Figure out program depending on alpha settings
-	GLuint targetProgram = info.m_hints & RH_SOFTALPHA ? m_programSpriteSoftAlpha : m_programSpriteHardalpha;
+	ShaderProgram *targetProgram = info.m_hints & RH_SOFTALPHA ? m_programSpriteSoftAlpha : m_programSpriteHardAlpha;
 	if (out_state->m_program != targetProgram)
 	{
-		glUseProgram(targetProgram);
+		targetProgram->use();
 		out_state->m_program = targetProgram;
 	}
 

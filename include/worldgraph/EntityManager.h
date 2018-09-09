@@ -1,6 +1,7 @@
 #pragma once
 
 #include <worldgraph/Entity.h>
+
 #include <vector>
 #include <queue>
 

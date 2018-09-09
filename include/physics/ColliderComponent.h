@@ -1,6 +1,7 @@
 #pragma once
 
-#include <types/Rectangle.h>
+#include <types/AARectangle.h>
+#include <types/Circle.h>
 
 #include <worldgraph/Entity.h>
 
@@ -12,20 +13,26 @@ namespace perfectpixel {
 		public:
 			enum MaskType {
 				UNSET,
-				RECTANGLE
+				RECTANGLE,
+				CIRCLE
 			};
 
 		public:
 			ColliderComponent(world::Entity entity);
-			ColliderComponent(world::Entity entity, const types::Rectangle &rectangle);
+			ColliderComponent(world::Entity entity, const types::AARectangle &rectangle);
+			ColliderComponent(world::Entity entity, const types::Circle &circle);
 			~ColliderComponent();
 
 		public:
 			world::Entity getEntity() const;
-
-			void setMaskRectangle(const types::Rectangle &rectangle);
-			types::Rectangle getMaskRectangle() const;
 			MaskType getMaskType() const;
+
+			void setMaskRectangle(const types::AARectangle &rectangle);
+			types::AARectangle getMaskRectangle() const;
+
+			void setMaskCircle(const types::Circle &circle);
+			const types::Circle getMaskCircle() const;
+
 
 		private:
 			world::Entity m_entity;
@@ -33,7 +40,8 @@ namespace perfectpixel {
 			MaskType m_type;
 
 			union {
-				types::Rectangle m_rectangle;
+				types::AARectangle m_rectangle;
+				types::Circle m_circle;
 			};
 		};
 

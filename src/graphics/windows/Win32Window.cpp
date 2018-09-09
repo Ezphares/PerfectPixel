@@ -2,6 +2,7 @@
 
 #include <graphics/windows/Win32Window.h>
 
+#include <types/PpException.h>
 
 namespace perfectpixel {
 namespace graphics {
@@ -20,9 +21,11 @@ Win32Window::Win32Window(
 	, m_dimensions()
 	, m_hInstance(hInstance)
 	, m_wndClassName(wndClassName)
+	, m_keyCallback()
+	, m_focusCallback()
 	, m_closed(false)
 {
-
+	m_focusCallback.clear();
 }
 
 Win32Window::~Win32Window()
@@ -47,7 +50,7 @@ void Win32Window::initialize(const WindowSettings &trySettings)
 
 	if (!RegisterClass(&m_wc))
 	{
-		throw "Could not register window class";
+		throw types::PpException("Could not register window class");
 	}
 
 	if (settings.type == WindowSettings::FULLSCREEN)
@@ -123,7 +126,7 @@ void Win32Window::initialize(const WindowSettings &trySettings)
 
 	if (!m_hwnd)
 	{
-		throw "Could not create window";
+		throw types::PpException("Could not create window");
 	}
 	
 	m_handleLookup[m_hwnd] = this;
@@ -199,12 +202,62 @@ void Win32Window::setSplash(const PNG &png)
 	m_brush = CreatePatternBrush(m_splash);
 }
 
+void Win32Window::setKeyCallback(types::KeyCallback callback)
+{
+	m_keyCallback = callback;
+}
+
+void Win32Window::setFocusCallback(FocusCallback callback)
+{
+	m_focusCallback = callback;
+}
+
 LRESULT CALLBACK Win32Window::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	Win32Window *self = NULL;
+	auto it = m_handleLookup.find(hwnd);
+	if (it != m_handleLookup.end())
+	{
+		self = it->second;
+	}
+
 	switch (message)
 	{
 	case WM_CLOSE:
-		m_handleLookup[hwnd]->m_closed = true;
+		if (self)
+		{
+			self->m_closed = true;
+		}
+		return DefWindowProc(hwnd, message, wParam, lParam);
+
+	case WM_KEYDOWN:
+		if (self && !self->m_keyCallback.empty())
+		{
+			self->m_keyCallback(static_cast<types::KeyCode>(wParam), types::PP_KEYDOWN);
+			break;
+		}
+		return DefWindowProc(hwnd, message, wParam, lParam);
+
+	case WM_KEYUP:
+		if (self && !self->m_keyCallback.empty())
+		{
+			self->m_keyCallback(static_cast<types::KeyCode>(wParam), types::PP_KEYUP);
+			break;
+		}
+		return DefWindowProc(hwnd, message, wParam, lParam);
+
+	case WM_KILLFOCUS:
+		if (self && !self->m_focusCallback.empty())
+		{
+			self->m_focusCallback(false);
+		}
+		return DefWindowProc(hwnd, message, wParam, lParam);
+
+	case WM_SETFOCUS:
+		if (self && !self->m_focusCallback.empty())
+		{
+			self->m_focusCallback(true);
+		}
 		return DefWindowProc(hwnd, message, wParam, lParam);
 
 	default:

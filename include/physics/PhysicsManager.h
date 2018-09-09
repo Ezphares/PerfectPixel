@@ -6,8 +6,9 @@
 #include <physics/Force.h>
 
 #include <worldgraph/EntityManager.h>
+#include <worldgraph/PositionCallback.h>
 #include <types/numbers.h>
-#include <types/Rectangle.h>
+#include <types/AARectangle.h>
 
 #include <map>
 #include <set>
@@ -30,6 +31,7 @@ namespace physics
 			ColliderComponent::MaskType m_maskTypeFirst, m_maskTypeSecond;
 			union {
 				types::Vector2 m_data_RectRectOverlap;
+				types::PpFloat m_data_CircCircOverlap;
 			};
 		};
 
@@ -61,6 +63,7 @@ namespace physics
 
 		// Utility functions
 		types::Vector2 absoluteCenter(const ColliderComponent &collider);
+		world::PositionCallback positionCallback();
 
 		void translate(world::Entity entiy, types::Vector3 vec);
 
@@ -73,9 +76,16 @@ namespace physics
 		bool checkCollision(const ColliderComponent &first, const ColliderComponent &second, CollisionData *out_collision);
 		bool collideRectRect(
 			world::Entity first,
-			const types::Rectangle &firstRect,
+			const types::AARectangle &firstRect,
 			world::Entity second,
-			const types::Rectangle &secondRect,
+			const types::AARectangle &secondRect,
+			CollisionData *out_collision);
+
+		bool collideCircleCircle(
+			world::Entity first,
+			const types::Circle &firstCircle,
+			world::Entity second,
+			const types::Circle &secondCircle,
 			CollisionData *out_collision);
 
 		void resolveCollision(const CollisionData &collision);

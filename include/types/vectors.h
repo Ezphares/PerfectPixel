@@ -5,10 +5,25 @@
 namespace perfectpixel {
 namespace types {
 
+struct Angle;
 struct Vector3;
 struct Vector2;
 struct Point3;
 struct Point2;
+
+
+struct Angle
+{
+	static Angle degrees(PpFloat degrees);
+	static Angle radians(PpFloat radians);
+	static Angle ofVector(Vector2 vec);
+
+	PpFloat radians();
+	PpFloat degrees();
+
+private:
+	PpFloat m_rad;
+};
 
 struct Vector3 {
 	PpFloat m_x, m_y, m_z;
@@ -25,6 +40,7 @@ struct Vector3 {
 	const static Vector3 BACK;
 
 	PpFloat magnitude();
+	Vector3 normal();
 };
 
 
@@ -32,8 +48,12 @@ struct Vector2 {
 	PpFloat m_x, m_y;
 
 	Vector2();
+	Vector2(Angle direction, PpFloat magnitude);
 	Vector2(PpFloat x, PpFloat y);
 	Vector2(const Vector3 &vec3);
+
+	PpFloat magnitude();
+	Vector2 normal();
 };
 
 struct Point3 {
@@ -49,7 +69,7 @@ struct Point2 {
 
 	Point2();
 	Point2(PpInt x, PpInt y);
-	Point2(const Point3 &ppint3);
+	Point2(const Point3 &point3);
 };
 
 bool operator==(const Vector3 &l, const Vector3 &r);

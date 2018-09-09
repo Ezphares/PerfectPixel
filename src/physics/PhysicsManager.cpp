@@ -1,5 +1,9 @@
 #include <physics/PhysicsManager.h>
 
+#include <types/PpException.h>
+
+#include <boost/bind.hpp>
+
 #include <cmath>
 
 namespace perfectpixel
@@ -91,7 +95,7 @@ namespace perfectpixel
 			auto it = m_physics.find(entity);
 			if (it == m_physics.end())
 			{
-				throw "Entity did not have PhysicsComponent"; // TODO Exception
+				throw types::PpException("Tried to get physics component for entity with none assigned");
 			}
 			return it->second;
 		}
@@ -136,11 +140,20 @@ namespace perfectpixel
 				result += collider.getMaskRectangle().m_center;
 				break;
 
+			case ColliderComponent::CIRCLE:
+				result += collider.getMaskCircle().m_center;
+				break;
+
 			default:
 				break;
 			}
 
 			return result;
+		}
+
+		perfectpixel::world::PositionCallback PhysicsManager::positionCallback()
+		{
+			return boost::bind(&physics::PhysicsManager::getPosition, this, _1);
 		}
 
 		void PhysicsManager::translate(world::Entity entiy, types::Vector3 vec)
@@ -162,19 +175,20 @@ namespace perfectpixel
 			return false;
 		}
 
-		bool PhysicsManager::collideRectRect(world::Entity first, const types::Rectangle &firstRect, world::Entity second, const types::Rectangle &secondRect, CollisionData *out_collision)
+		bool PhysicsManager::collideRectRect(world::Entity first, const types::AARectangle &firstRect, world::Entity second, const types::AARectangle &secondRect, CollisionData *out_collision)
 		{
 			TransformComponent
 				firstTransform = getTransform(first),
 				secondTransform = getTransform(second);
 
-			types::PpFloat
-				xOffset = (secondTransform.m_position.m_x + secondRect.m_center.m_x) - (firstTransform.m_position.m_x + firstRect.m_center.m_x),
-				yOffset = (secondTransform.m_position.m_y + secondRect.m_center.m_y) - (firstTransform.m_position.m_y + firstRect.m_center.m_y);
+			types::Vector2 offset{
+				(secondTransform.m_position.m_x + secondRect.m_center.m_x) - (firstTransform.m_position.m_x + firstRect.m_center.m_x),
+				(secondTransform.m_position.m_y + secondRect.m_center.m_y) - (firstTransform.m_position.m_y + firstRect.m_center.m_y)
+			};
 
 			types::Vector2 overlap {
-				(firstRect.m_size.m_x + secondRect.m_size.m_x) / 2 - std::abs(xOffset),
-				(firstRect.m_size.m_y + secondRect.m_size.m_y) / 2 - std::abs(yOffset)
+				(firstRect.m_size.m_x + secondRect.m_size.m_x) / 2 - std::abs(offset.m_x),
+				(firstRect.m_size.m_y + secondRect.m_size.m_y) / 2 - std::abs(offset.m_y)
 			};
 
 			if (overlap.m_x < COLLISON_LEEWAY || overlap.m_y < COLLISON_LEEWAY)
@@ -191,6 +205,31 @@ namespace perfectpixel
 
 		}
 
+		bool PhysicsManager::collideCircleCircle(world::Entity first, const types::Circle &firstCircle, world::Entity second, const types::Circle &secondCircle, CollisionData *out_collision)
+		{
+			TransformComponent
+				firstTransform = getTransform(first),
+				secondTransform = getTransform(second);
+
+			types::Vector2 offset{
+				(secondTransform.m_position.m_x + secondCircle.m_center.m_x) - (firstTransform.m_position.m_x + firstCircle.m_center.m_x),
+				(secondTransform.m_position.m_y + secondCircle.m_center.m_y) - (firstTransform.m_position.m_y + firstCircle.m_center.m_y)
+			};
+
+			types::PpFloat overlap = (firstCircle.m_diameter + secondCircle.m_diameter) / 2 - offset.magnitude();
+
+			if (overlap < COLLISON_LEEWAY)
+			{
+				return false;
+			}
+
+			out_collision->m_data_CircCircOverlap = overlap;
+			out_collision->m_maskTypeFirst = ColliderComponent::MaskType::CIRCLE;
+			out_collision->m_maskTypeSecond = ColliderComponent::MaskType::CIRCLE;
+
+			return true;
+		}
+
 		void PhysicsManager::resolveCollision(const CollisionData &collision)
 		{
 			// FIXME: Generate events
@@ -205,22 +244,17 @@ namespace perfectpixel
 				return;
 			}
 
+			PhysicsComponent
+				&firstPhysics = getPhysics(first),
+				&secondPhysics = getPhysics(second);
+
 			types::Vector2 resolution1, resolution2;
 
 			if (collision.m_maskTypeFirst == ColliderComponent::MaskType::RECTANGLE &&
 				collision.m_maskTypeSecond == ColliderComponent::MaskType::RECTANGLE)
 			{
-				PhysicsComponent
-					&firstPhysics = getPhysics(first),
-					&secondPhysics = getPhysics(second);
-
-				TransformComponent
-					&firstTransform = getTransform(first),
-					&secondTransform = getTransform(second);
-
 				types::Vector2 overlap = collision.m_data_RectRectOverlap;
 				
-				// TODO: This currently works on entity transform coordinates, and can cause some wierd behaviour if the colliders have their center offset more than half their width
 				if (overlap.m_x < overlap.m_y)
 				{
 					singleAxisReposition(firstPhysics.getMass(), secondPhysics.getMass(), overlap.m_x, &resolution1.m_x, &resolution2.m_x);
@@ -245,6 +279,25 @@ namespace perfectpixel
 						resolution1 *= -1;
 					}
 				}
+			}
+			else if (
+				collision.m_maskTypeFirst == ColliderComponent::MaskType::CIRCLE &&
+				collision.m_maskTypeSecond == ColliderComponent::MaskType::CIRCLE)
+			{
+				types::Vector2 resolutionAxis = (absoluteCenter(*collision.m_secondCollider) - absoluteCenter(*collision.m_firstCollider)).normal();
+
+				types::PpFloat
+					magnitude1,
+					magnitude2;
+
+				singleAxisReposition(firstPhysics.getMass(), secondPhysics.getMass(), collision.m_data_CircCircOverlap, &magnitude1, &magnitude2);
+
+				resolution1 = resolutionAxis * -magnitude1;
+				resolution2 = resolutionAxis * magnitude2;
+			}
+			else
+			{
+				// Unsupported collision type
 			}
 
 			translate(first, types::Vector3(resolution1));

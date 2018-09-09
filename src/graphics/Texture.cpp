@@ -1,5 +1,7 @@
 #include <graphics/Texture.h>
 
+#include <types/PpException.h>
+
 #include <zlib.h>
 #include <png.h>
 
@@ -14,7 +16,7 @@ Texture::Texture(const PNG &png)
 	glGenTextures(1, &m_textureId);
 	if (&m_textureId == 0)
 	{
-		throw "Could not generate texture";
+		throw types::PpException("Could not generate texture");
 	}
 
 	bind();

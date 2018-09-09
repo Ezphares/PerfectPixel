@@ -5,11 +5,11 @@
 namespace perfectpixel {
 	namespace types {
 
-	class Rectangle
+	class AARectangle
 	{
 	public:
-		Rectangle(Vector2 size = Vector2(), Vector2 center = Vector2());
-		~Rectangle();
+		AARectangle(Vector2 size = Vector2(), Vector2 center = Vector2());
+		~AARectangle();
 
 	public:
 		Vector2 m_size, m_center;
