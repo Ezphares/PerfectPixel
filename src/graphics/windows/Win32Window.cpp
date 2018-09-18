@@ -8,6 +8,7 @@ namespace perfectpixel {
 namespace graphics {
 
 std::map<HWND, Win32Window*> Win32Window::m_handleLookup = std::map<HWND, Win32Window*>();
+Win32Window *Win32Window::m_currentSetup = NULL;
 
 Win32Window::Win32Window(
 	HINSTANCE hInstance,
@@ -115,6 +116,7 @@ void Win32Window::initialize(const WindowSettings &trySettings)
 		y = (desktopSize.bottom - height) / 2;
 	}
 
+	m_currentSetup = this;
 	m_hwnd = CreateWindowEx(
 		dwExStyle,
 		m_wc.lpszClassName,
@@ -130,6 +132,7 @@ void Win32Window::initialize(const WindowSettings &trySettings)
 	}
 	
 	m_handleLookup[m_hwnd] = this;
+	m_currentSetup = NULL;
 
 	PIXELFORMATDESCRIPTOR pfd =
 	{
@@ -212,9 +215,14 @@ void Win32Window::setFocusCallback(FocusCallback callback)
 	m_focusCallback = callback;
 }
 
+void Win32Window::setResizeCallback(SizeCallback callback)
+{
+	m_sizeCallback = callback;
+}
+
 LRESULT CALLBACK Win32Window::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	Win32Window *self = NULL;
+	Win32Window *self = Win32Window::m_currentSetup;
 	auto it = m_handleLookup.find(hwnd);
 	if (it != m_handleLookup.end())
 	{
@@ -228,43 +236,56 @@ LRESULT CALLBACK Win32Window::WndProc(HWND hwnd, UINT message, WPARAM wParam, LP
 		{
 			self->m_closed = true;
 		}
-		return DefWindowProc(hwnd, message, wParam, lParam);
+		break;
 
 	case WM_KEYDOWN:
 		if (self && !self->m_keyCallback.empty())
 		{
 			self->m_keyCallback(static_cast<types::KeyCode>(wParam), types::PP_KEYDOWN);
-			break;
+			return 0;
 		}
-		return DefWindowProc(hwnd, message, wParam, lParam);
+		break;
 
 	case WM_KEYUP:
 		if (self && !self->m_keyCallback.empty())
 		{
 			self->m_keyCallback(static_cast<types::KeyCode>(wParam), types::PP_KEYUP);
-			break;
+			return 0;
 		}
-		return DefWindowProc(hwnd, message, wParam, lParam);
+		break;
 
 	case WM_KILLFOCUS:
 		if (self && !self->m_focusCallback.empty())
 		{
 			self->m_focusCallback(false);
 		}
-		return DefWindowProc(hwnd, message, wParam, lParam);
+		break;
 
 	case WM_SETFOCUS:
 		if (self && !self->m_focusCallback.empty())
 		{
 			self->m_focusCallback(true);
 		}
-		return DefWindowProc(hwnd, message, wParam, lParam);
+		break;
+
+	case WM_SIZE:
+		if (self && !self->m_sizeCallback.empty())
+		{
+			unsigned
+				width{ static_cast<unsigned>(lParam & ((1 << 16) - 1)) },
+				height{ static_cast<unsigned>(lParam >> 16) };
+
+			self->m_sizeCallback(*self, width, height);
+
+			glViewport(0, 0, width, height);
+		}
+		break;
 
 	default:
-		return DefWindowProc(hwnd, message, wParam, lParam);
+		break;
 	}
 
-	return 0;
+	return DefWindowProc(hwnd, message, wParam, lParam);
 }
 
 }

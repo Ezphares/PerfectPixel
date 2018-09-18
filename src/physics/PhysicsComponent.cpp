@@ -28,9 +28,19 @@ namespace perfectpixel
 			return PhysicsComponent(entity, std::numeric_limits<types::PpFloat>::infinity(), 0, KINEMATIC);
 		}
 
+		world::Entity PhysicsComponent::getEntity() const
+		{
+			return m_entity;
+		}
+
 		types::PpFloat PhysicsComponent::getMass()
 		{
 			return m_mass;
+		}
+
+		perfectpixel::types::PpFloat PhysicsComponent::getBounciness() const
+		{
+			return m_bounciness;
 		}
 
 		void PhysicsComponent::setMass(types::PpFloat mass)

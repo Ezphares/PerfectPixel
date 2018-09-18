@@ -90,7 +90,14 @@ namespace physics
 
 		void resolveCollision(const CollisionData &collision);
 		void singleAxisReposition(types::PpFloat mass1, types::PpFloat mass2, types::PpFloat overlap, types::PpFloat *out_magnitude1, types::PpFloat *out_magnitude2);
-
+		void singleAxisBounce(
+			types::PpFloat bounciness,
+			types::PpFloat mass1,
+			types::PpFloat mass2,
+			types::PpFloat velocity1,
+			types::PpFloat velocity2,
+			types::PpFloat *out_newVelocity1,
+			types::PpFloat *out_newVelocity2);
 
 	private:
 		typedef std::map<world::Entity, TransformComponent> TransformMap;

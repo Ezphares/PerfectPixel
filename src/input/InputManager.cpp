@@ -217,5 +217,16 @@ namespace perfectpixel {
 			return (wasButtonDownPrevious(id) && !isButtonDown(id));
 		}
 
+		perfectpixel::types::PpFloat InputManager::getAxisState(const std::string &name)
+		{
+			auto it = m_axes.right.find(name);
+			if (it == m_axes.right.end())
+			{
+				throw types::PpException("Name [" + name + "] did not match a known button");
+			}
+
+			return m_axisState[it->second];
+		}
+
 	}
 }

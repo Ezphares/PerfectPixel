@@ -46,6 +46,8 @@ namespace perfectpixel {
 			bool wasButtonReleased(const std::string &name);
 			bool wasButtonReleased(types::PpInt id);
 
+			types::PpFloat getAxisState(const std::string &name);
+
 		private:
 			boost::bimap<types::PpInt, std::string> m_buttons;
 			boost::bimap<types::PpInt, std::string> m_axes;

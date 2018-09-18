@@ -5,6 +5,7 @@
 #include <graphics/VAO.h>
 #include <graphics/BufferLayouts.h>
 #include <graphics/ShaderProgram.h>
+#include <graphics/CameraSettings.h>
 
 #include <worldgraph/EntityManager.h>
 #include <worldgraph/PositionCallback.h>
@@ -15,7 +16,6 @@
 
 namespace perfectpixel {
 namespace graphics {
-
 	class GraphicsManager
 	{
 	private:
@@ -53,9 +53,15 @@ namespace graphics {
 		void initialize();
 		void drawAll(double deltaT);
 
+		types::PpFloat calculateRatio(unsigned width, unsigned height);
+		void setWindowRatio(types::PpFloat ratio);
+		void setMainCamera(const CameraSettings &camera);
+
 		void registerSprite(world::Entity entity, const SpriteComponent &spriteComponent);
 		bool hasSprite(world::Entity entity) const;
 		SpriteComponent &getSprite(world::Entity entity);
+
+		void cleanup();
 
 	private:
 		void drawSpriteComponent(const SpriteComponent &spriteComponent);
@@ -70,6 +76,8 @@ namespace graphics {
 
 		bool isStateCompatible(const SpriteDrawInfo &info, const SpriteRenderState &state);
 		void setCompatibleState(const SpriteDrawInfo &info, SpriteRenderState *out_state);
+
+		void updateCamera();
 
 		static bool compSortSoftalpha(const SpriteDrawInfo &first, const SpriteDrawInfo &second);
 
@@ -90,6 +98,11 @@ namespace graphics {
 
 		std::map<GLuint, SpriteDrawList> m_hardAlpha;
 		SpriteDrawList m_softAlpha;
+
+		types::PpFloat m_windowRatio;
+		CameraSettings m_mainCamera;
+
+		std::vector<world::Entity> m_cleanup;
 	};
 
 }

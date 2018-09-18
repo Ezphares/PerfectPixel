@@ -28,6 +28,7 @@ public:
 	virtual void setSplash(const PNG &png);
 	virtual void setKeyCallback(types::KeyCallback callback);
 	virtual void setFocusCallback(FocusCallback callback);
+	virtual void setResizeCallback(SizeCallback callback);
 
 
 private:
@@ -35,6 +36,7 @@ private:
 	
 private:
 	static std::map<HWND, Win32Window*> m_handleLookup;
+	static Win32Window* m_currentSetup;
 
 	HBITMAP m_splash;
 	HBRUSH m_brush;
@@ -50,6 +52,7 @@ private:
 
 	types::KeyCallback m_keyCallback;
 	FocusCallback m_focusCallback;
+	SizeCallback m_sizeCallback;
 
 	bool m_closed;
 };

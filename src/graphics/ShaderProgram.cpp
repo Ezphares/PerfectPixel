@@ -30,6 +30,7 @@ void ShaderProgram::link()
 	if (!m_linked)
 	{
 		glLinkProgram(m_id);
+		m_linked = true;
 	}
 }
 

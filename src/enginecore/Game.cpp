@@ -16,6 +16,7 @@ namespace core {
 		, m_physicsManager(&m_entityManager)
 		, m_inputManager()
 		, m_graphicsManager(&m_entityManager, m_physicsManager.positionCallback())
+		, m_behaviourManager(&m_entityManager)
 		, m_targetUps(100)
 		, m_splashFilename("splash.png")
 {
@@ -40,8 +41,14 @@ void Game::run()
 	mainWindow->activate();
 	mainWindow->setKeyCallback(m_inputManager.getKeyCallback());
 	mainWindow->setFocusCallback(boost::bind(&Game::focus, this, _1));
+	mainWindow->setResizeCallback(boost::bind(&Game::windowResized, this, _1, _2, _3));
 
 	m_graphicsManager.initialize();
+	graphics::CameraSettings camera;
+	camera.m_center = { 0, 0 };
+	camera.m_size = { 160, 120 };
+	camera.m_scaleMode = graphics::CameraSettings::SCALE_STRETCH;
+	m_graphicsManager.setMainCamera(camera);
 
 	gameStart();
 
@@ -67,11 +74,18 @@ void Game::run()
 		{
 			update(deltaT);
 			step();
+			cleanup();
 			accumulator -= deltaT;
+		}
+
+		if (safety <= 0)
+		{
+			accumulator = 0;
 		}
 		
 		// Render step
 		m_graphicsManager.drawAll(frametime.count());
+		m_graphicsManager.cleanup();
 		mainWindow->draw();
 
 		// Handle input
@@ -87,6 +101,11 @@ void Game::run()
 void Game::focus(bool hasFocus)
 {
 	m_inputManager.clearState();
+}
+
+void Game::windowResized(graphics::IWindow &window, unsigned width, unsigned height)
+{
+	//FIXME
 }
 
 void Game::splashScreenUpdate(bool &closeSplash)
@@ -118,7 +137,13 @@ void Game::exit()
 
 void Game::update(double dt)
 {
+	m_physicsManager.update(dt);
+	m_behaviourManager.update(dt);
+}
 
+void Game::cleanup()
+{
+	m_physicsManager.cleanup();
 }
 
 void Game::showSplashScreen()

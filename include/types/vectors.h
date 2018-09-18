@@ -90,6 +90,8 @@ Vector2 &operator+=(Vector2 &l, const Vector2 &r);
 
 Vector2 operator*(const Vector2 &vec, PpFloat scalar);
 Vector2 &operator*=(Vector2 &vec, PpFloat scalar);
+Vector2 operator/(const Vector2 &vec, PpFloat scalar);
+Vector2 &operator/=(Vector2 &vec, PpFloat scalar);
 
 }
 }

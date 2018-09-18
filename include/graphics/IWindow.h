@@ -12,6 +12,7 @@ class IWindow
 {
 public:
 	typedef boost::function<void(bool)> FocusCallback;
+	typedef boost::function<void(IWindow&, unsigned, unsigned)> SizeCallback;
 
 	IWindow() {}
 	virtual ~IWindow() {}
@@ -27,6 +28,7 @@ public:
 
 	virtual void setKeyCallback(types::KeyCallback callback) = 0;
 	virtual void setFocusCallback(FocusCallback callback) = 0;
+	virtual void setResizeCallback(SizeCallback callback) = 0;
 };
 
 }

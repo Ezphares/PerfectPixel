@@ -5,6 +5,8 @@
 
 #include <worldgraph/Entity.h>
 
+#include <string>
+
 namespace perfectpixel {
 	namespace physics {
 
@@ -33,6 +35,8 @@ namespace perfectpixel {
 			void setMaskCircle(const types::Circle &circle);
 			const types::Circle getMaskCircle() const;
 
+			void setEventTag(const std::string &text);
+			std::string getEventTag() const;
 
 		private:
 			world::Entity m_entity;
@@ -43,6 +47,8 @@ namespace perfectpixel {
 				types::AARectangle m_rectangle;
 				types::Circle m_circle;
 			};
+
+			std::string m_eventTag;
 		};
 
 	}

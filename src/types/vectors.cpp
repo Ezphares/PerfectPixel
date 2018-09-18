@@ -161,6 +161,20 @@ namespace types {
 		return vec;
 	}
 
+	perfectpixel::types::Vector2 operator/(const Vector2 &vec, PpFloat scalar)
+	{
+		Vector2 res = vec;
+		res /= scalar;
+		return res;
+	}
+
+	perfectpixel::types::Vector2 & operator/=(Vector2 &vec, PpFloat scalar)
+	{
+		vec.m_x /= scalar;
+		vec.m_y /= scalar;
+		return vec;
+	}
+
 	perfectpixel::types::Vector2 & operator+=(Vector2 &l, const Vector2 &r)
 	{
 		l.m_x += r.m_x;

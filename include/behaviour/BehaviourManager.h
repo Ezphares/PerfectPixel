@@ -1,13 +1,64 @@
 #pragma once
 
+#include <behaviour/Behaviour.h>
+
+#include <worldgraph/Entity.h>
+#include <worldgraph/EntityManager.h>
+
+#include <map>
+#include <vector>
+#include <set>
+
 namespace perfectpixel {
 	namespace behaviour {
 
 		class BehaviourManager
 		{
 		public:
-			BehaviourManager();
+			BehaviourManager(world::EntityManager *entityManager);
 			~BehaviourManager();
+
+		public:
+			void registerBehaviour(world::Entity entity, Behaviour *behaviour);
+
+			void update(types::PpFloat deltaT);
+
+			template<typename T>
+			T *getBehaviour(world::Entity entity)
+			{
+				auto &it = m_behaviours.find(entity);
+				if (it != m_behaviours.end())
+				{
+					for (Behaviour *behaviour : it->second)
+					{
+						T *attempt = dynamic_cast<T*>(behaviour);
+						if (attempt)
+						{
+							return attempt;
+						}
+					}
+				}
+
+				return NULL;
+			}
+
+		private:
+			void destroyBehaviour(Behaviour *behaviour);
+
+		private:
+			typedef std::map< world::Entity, std::vector<Behaviour*>> BehaviourList;
+
+			std::vector<Behaviour*> m_created;
+			std::vector<std::pair<world::Entity, Behaviour*>> m_deferredCreate;
+
+			std::set<world::Entity> m_toDestroyAll;
+			std::set<Behaviour*> m_toDestroySingle;
+
+			world::EntityManager *m_entityManager;
+
+			BehaviourList m_behaviours;
+
+			bool m_updating;
 		};
 
 	}

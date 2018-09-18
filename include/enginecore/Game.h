@@ -6,6 +6,7 @@
 #include <graphics/GraphicsManager.h>
 #include <physics/PhysicsManager.h>
 #include <input/InputManager.h>
+#include <behaviour/BehaviourManager.h>
 
 #include <types/numbers.h>
 
@@ -25,6 +26,7 @@ public:
 
 	void run();
 	void focus(bool hasFocus);
+	void windowResized(graphics::IWindow &window, unsigned width, unsigned height);
 
 	//virtual bool prepareSplashScreen();
 	
@@ -41,6 +43,7 @@ protected:
 
 private:
 	void update(double dt);
+	void cleanUp();
 	void loadResources();
 	void showSplashScreen();
 
@@ -59,6 +62,7 @@ protected:
 	physics::PhysicsManager m_physicsManager;
 	input::InputManager m_inputManager;
 	graphics::GraphicsManager m_graphicsManager;
+	behaviour::BehaviourManager m_behaviourManager;
 
 private:
 	// Use double over PpFloat, precision is required here

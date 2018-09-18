@@ -8,6 +8,7 @@ namespace perfectpixel {
 		ColliderComponent::ColliderComponent(world::Entity entity)
 			: m_entity(entity)
 			, m_type(UNSET)
+			, m_eventTag()
 		{
 		}
 
@@ -61,6 +62,16 @@ namespace perfectpixel {
 				types::PpException("Invalid mask type");
 			}
 			return m_circle;
+		}
+
+		void ColliderComponent::setEventTag(const std::string &text)
+		{
+			m_eventTag = text;
+		}
+
+		std::string ColliderComponent::getEventTag() const
+		{
+			return m_eventTag;
 		}
 
 		ColliderComponent::MaskType ColliderComponent::getMaskType() const

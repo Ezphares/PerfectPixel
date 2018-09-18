@@ -30,7 +30,10 @@ namespace perfectpixel
 		public:
 			static PhysicsComponent staticCollider(world::Entity entity);
 
+			world::Entity getEntity() const;
+
 			types::PpFloat getMass();
+			types::PpFloat getBounciness() const;
 			void setMass(types::PpFloat mass);
 
 		private:

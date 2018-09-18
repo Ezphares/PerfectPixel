@@ -8,11 +8,23 @@
 namespace perfectpixel {
 namespace graphics {
 
+	namespace {
+		const static GLfloat MAT4_IDENTITY[16]{
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1
+		};
+	}
+
+
 GraphicsManager::GraphicsManager(world::EntityManager *entityManager, world::PositionCallback positionCallback)
 	: m_entityManager(entityManager)
 	, m_positionCallback(positionCallback)
 	, m_programSpriteHardAlpha(NULL)
 	, m_programSpriteSoftAlpha(NULL)
+	, m_windowRatio(1.0f)
+	, m_mainCamera()
 {
 
 }
@@ -45,13 +57,21 @@ void GraphicsManager::initialize()
 	m_programSpriteHardAlpha->addShader(GL_VERTEX_SHADER, vertex_shader);
 	m_programSpriteHardAlpha->addShader(GL_FRAGMENT_SHADER, fragment_shader_hard);
 	m_programSpriteHardAlpha->link();
+	m_programSpriteHardAlpha->use();
 	glUniform1i(m_programSpriteHardAlpha->getUniformLocation("u_texture"), 1);
+	glUniformMatrix4fv(m_programSpriteHardAlpha->getUniformLocation("u_transform"), 1, GL_FALSE, MAT4_IDENTITY);
 
 	m_programSpriteSoftAlpha = new ShaderProgram();
 	m_programSpriteSoftAlpha->addShader(GL_VERTEX_SHADER, vertex_shader);
 	m_programSpriteSoftAlpha->addShader(GL_FRAGMENT_SHADER, fragment_shader_soft);
 	m_programSpriteSoftAlpha->link();
+	m_programSpriteSoftAlpha->use();
 	glUniform1i(m_programSpriteSoftAlpha->getUniformLocation("u_texture"), 1);
+	glUniformMatrix4fv(m_programSpriteSoftAlpha->getUniformLocation("u_transform"), 1, GL_FALSE, MAT4_IDENTITY);
+
+
+
+
 }
 
 void GraphicsManager::drawAll(double deltaT)
@@ -80,6 +100,23 @@ void GraphicsManager::drawAll(double deltaT)
 	glEnd();
 }
 
+perfectpixel::types::PpFloat GraphicsManager::calculateRatio(unsigned width, unsigned height)
+{
+	return static_cast<types::PpFloat>(width) / static_cast<types::PpFloat>(height);
+}
+
+void GraphicsManager::setWindowRatio(types::PpFloat ratio)
+{
+	m_windowRatio = ratio;
+	updateCamera();
+}
+
+void GraphicsManager::setMainCamera(const CameraSettings &camera)
+{
+	m_mainCamera = camera;
+	updateCamera();
+}
+
 void GraphicsManager::registerSprite(world::Entity entity, const SpriteComponent &spriteComponent)
 {
 	m_spriteComponents.insert(std::pair<world::Entity, SpriteComponent>(entity, spriteComponent));
@@ -100,9 +137,27 @@ perfectpixel::graphics::SpriteComponent & GraphicsManager::getSprite(world::Enti
 	return it->second;
 }
 
+void GraphicsManager::cleanup()
+{
+	for (auto entity : m_cleanup)
+	{
+		m_spriteComponents.erase(entity);
+	}
+
+	m_cleanup.clear();
+}
+
 void GraphicsManager::drawSpriteComponent(const SpriteComponent &spriteComponent)
 {
-	types::Vector3 actualPosition{ m_positionCallback(spriteComponent.getEntity()) + types::Vector3(spriteComponent.getOffset()) };
+	world::Entity entity{ spriteComponent.getEntity() };
+
+	if (!m_entityManager->isAlive(entity))
+	{
+		m_cleanup.push_back(entity);
+		return;
+	}
+
+	types::Vector3 actualPosition{ m_positionCallback(entity) + types::Vector3(spriteComponent.getOffset()) };
 	types::Vector2 worldSize{ spriteComponent.getSize() };
 
 	SpriteDrawInfo drawInfo;
@@ -253,6 +308,33 @@ void GraphicsManager::setCompatibleState(const SpriteDrawInfo &info, SpriteRende
 		info.m_texture->bind();
 		out_state->m_texture = targetTexture;
 	}
+}
+
+void GraphicsManager::updateCamera()
+{
+	types::PpFloat cameraRatio = m_mainCamera.m_size.m_x / m_mainCamera.m_size.m_y;
+
+	types::Vector2 scale = m_mainCamera.m_size;
+
+	if (std::abs(m_windowRatio - cameraRatio) > 0.001)
+	{
+		// FIXME update for non-stretch modes
+	}
+
+	types::Vector2 translate{ m_mainCamera.m_center.m_x / scale.m_x, m_mainCamera.m_center.m_y / scale.m_y};
+
+	GLfloat cameraTransform[16]{
+		2 / scale.m_x,		0,					0,	0,
+		0,					2 / scale.m_y,		0,	0,
+		0,					0,					1,	0,
+		-translate.m_x * 2,	-translate.m_y * 2,	0,	1
+	};
+
+	m_programSpriteSoftAlpha->use();
+	glUniformMatrix4fv(m_programSpriteSoftAlpha->getUniformLocation("u_transform"), 1, GL_FALSE, cameraTransform);
+	
+	m_programSpriteHardAlpha->use();
+	glUniformMatrix4fv(m_programSpriteHardAlpha->getUniformLocation("u_transform"), 1, GL_FALSE, cameraTransform);
 }
 
 bool GraphicsManager::compSortSoftalpha(const SpriteDrawInfo &first, const SpriteDrawInfo &second)

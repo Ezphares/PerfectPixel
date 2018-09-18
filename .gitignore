@@ -36,6 +36,7 @@
 **/Release
 **/x64
 dist
+build
 
 # Projects and solutions
 *.props

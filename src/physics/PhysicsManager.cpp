@@ -27,15 +27,15 @@ namespace perfectpixel
 
 		void PhysicsManager::update(types::PpFloat deltaTime)
 		{
-			for (auto it : m_transforms)
+			for (auto &it : m_transforms)
 			{
-				/* TODO:
-				if (m_entityManager.isAlive(it.first))
+
+				if (m_entityManager->isAlive(it.first))
 				{
 					m_cleanup.push_back(it.first);
 					continue;
 				}
-				*/
+				
 
 				// Apply constant forces such as gravity
 				auto forceList = m_constantForces.find(it.first);
@@ -52,7 +52,7 @@ namespace perfectpixel
 				transform.m_position += (transform.m_velocity * deltaTime);
 
 				// Run collisions
-				// TODO
+				handleCollisions();
 			}
 		}
 
@@ -85,6 +85,14 @@ namespace perfectpixel
 			return getTransform(entity).m_position;
 		}
 
+		void PhysicsManager::registerPhysics(const PhysicsComponent &physicsComponent)
+		{
+			m_physics.emplace(physicsComponent.getEntity(), physicsComponent);
+			// The physics component does not has its own update cycle so we have to ensure that it has
+			// a transform component, otherwise PhysicsComponents could get leaked (albeit at a small chance)
+			getTransform(physicsComponent.getEntity());
+		}
+
 		bool PhysicsManager::hasPhysics(world::Entity entity) const
 		{
 			return m_physics.find(entity) != m_physics.end();
@@ -98,6 +106,11 @@ namespace perfectpixel
 				throw types::PpException("Tried to get physics component for entity with none assigned");
 			}
 			return it->second;
+		}
+
+		void PhysicsManager::registerCollider(const ColliderComponent &collider)
+		{
+			m_colliders.emplace(collider.getEntity(), collider);
 		}
 
 		void PhysicsManager::pulseForce(world::Entity entity, const Force &force, types::PpFloat deltaTime)
@@ -248,13 +261,21 @@ namespace perfectpixel
 				&firstPhysics = getPhysics(first),
 				&secondPhysics = getPhysics(second);
 
-			types::Vector2 resolution1, resolution2;
+			TransformComponent
+				&firstTransform = getTransform(first),
+				&secondTransform = getTransform(second);
+
+			types::Vector2 resolution1{ 0,0 }, resolution2{ 0,0 };
+			types::Vector2 bounce1{ firstTransform.m_velocity }, bounce2{ secondTransform.m_velocity };
+
+			types::PpFloat bounciness = std::max(firstPhysics.getBounciness(), secondPhysics.getBounciness());
 
 			if (collision.m_maskTypeFirst == ColliderComponent::MaskType::RECTANGLE &&
 				collision.m_maskTypeSecond == ColliderComponent::MaskType::RECTANGLE)
 			{
 				types::Vector2 overlap = collision.m_data_RectRectOverlap;
-				
+				types::PpFloat newVel1, newVel2;
+
 				if (overlap.m_x < overlap.m_y)
 				{
 					singleAxisReposition(firstPhysics.getMass(), secondPhysics.getMass(), overlap.m_x, &resolution1.m_x, &resolution2.m_x);
@@ -266,6 +287,10 @@ namespace perfectpixel
 					{
 						resolution1 *= -1;
 					}
+
+					singleAxisBounce(bounciness, firstPhysics.getMass(), secondPhysics.getMass(), firstTransform.m_velocity.m_x, secondTransform.m_velocity.m_x, &newVel1, &newVel2);
+					bounce1 = { newVel1, firstTransform.m_velocity.m_y };
+					bounce2 = { newVel2, secondTransform.m_velocity.m_y };
 				}
 				else
 				{
@@ -278,6 +303,10 @@ namespace perfectpixel
 					{
 						resolution1 *= -1;
 					}
+
+					singleAxisBounce(bounciness, firstPhysics.getMass(), secondPhysics.getMass(), firstTransform.m_velocity.m_y, secondTransform.m_velocity.m_y, &newVel1, &newVel2);
+					bounce1 = { firstTransform.m_velocity.m_x, newVel1 };
+					bounce2 = { secondTransform.m_velocity.m_x, newVel2 };
 				}
 			}
 			else if (
@@ -291,9 +320,11 @@ namespace perfectpixel
 					magnitude2;
 
 				singleAxisReposition(firstPhysics.getMass(), secondPhysics.getMass(), collision.m_data_CircCircOverlap, &magnitude1, &magnitude2);
-
+				
 				resolution1 = resolutionAxis * -magnitude1;
 				resolution2 = resolutionAxis * magnitude2;
+
+				// FIXME bounce
 			}
 			else
 			{
@@ -302,6 +333,9 @@ namespace perfectpixel
 
 			translate(first, types::Vector3(resolution1));
 			translate(second, types::Vector3(resolution2));
+
+			firstTransform.m_velocity = bounce1;
+			secondTransform.m_velocity = bounce2;
 		}
 
 		void PhysicsManager::singleAxisReposition(types::PpFloat mass1, types::PpFloat mass2, types::PpFloat overlap, types::PpFloat *out_magnitude1, types::PpFloat *out_magnitude2)
@@ -332,6 +366,34 @@ namespace perfectpixel
 			*out_magnitude2 = mass1 / (mass1 + mass2) * overlap;
 		}
 
+		void PhysicsManager::singleAxisBounce(types::PpFloat bounciness, types::PpFloat mass1, types::PpFloat mass2, types::PpFloat velocity1, types::PpFloat velocity2, types::PpFloat *out_newVelocity1, types::PpFloat *out_newVelocity2)
+		{
+			*out_newVelocity1 = velocity1;
+			*out_newVelocity2 = velocity2;
+
+			// Special cases:
+			if ((mass1 == 0 && mass2 == 0) || // Zero mass can never affect others
+				(mass1 == types::Infinity && mass2 == types::Infinity)) // Infinite mass can never be affected
+			{
+				return;
+			}
+
+			// Get rid of infinities for math, we can be sure only one of them is infinity given above sanity check
+			if (mass1 == types::Infinity)
+			{
+				mass1 = 1;
+				mass2 = 0;
+			}
+			else if (mass2 == types::Infinity)
+			{
+				mass1 = 0;
+				mass2 = 1;
+			}
+
+			*out_newVelocity1 = (bounciness * mass2 * (velocity2 - velocity1) + mass1 * velocity1 + mass2 * velocity2) / (mass1 + mass2);
+			*out_newVelocity2 = (bounciness * mass1 * (velocity1 - velocity2) + mass1 * velocity1 + mass2 * velocity2) / (mass1 + mass2);
+		}
+
 		void PhysicsManager::handleCollisions()
 		{
 			for (auto it = m_colliders.begin(); it != m_colliders.end(); ++it)
@@ -343,6 +405,13 @@ namespace perfectpixel
 
 		void PhysicsManager::handleCollisionSingle(const ColliderComponent &collider, std::set<world::Entity> &collisionCache)
 		{
+			// Entity alive check
+			if (!m_entityManager->isAlive(collider.getEntity()))
+			{
+				m_cleanup.push_back(collider.getEntity());
+				return;
+			}
+			
 			std::vector<ColliderComponent> toCheck;
 			possibleCollissions(collider, collisionCache, &toCheck);
 
@@ -369,10 +438,13 @@ namespace perfectpixel
 			// FIXME store colliders in a QuadTree instead, so that we can partition
 			for (auto it : m_colliders)
 			{
-				if (collider.getEntity() != it.second.getEntity() &&
-					collisionCache.insert(it.second.getEntity()).second)
+				world::Entity other = it.second.getEntity();
+
+				if (collider.getEntity() != other
+					&& m_entityManager->isAlive(other)
+					&& collisionCache.insert(other).second)
 				{
-					out_colliders->push_back(collider);
+					out_colliders->push_back(it.second);
 				}
 			}
 		}
