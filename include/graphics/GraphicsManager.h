@@ -6,6 +6,7 @@
 #include <graphics/BufferLayouts.h>
 #include <graphics/ShaderProgram.h>
 #include <graphics/CameraSettings.h>
+#include <graphics/FrameBuffer.h>
 
 #include <worldgraph/EntityManager.h>
 #include <worldgraph/PositionCallback.h>
@@ -51,11 +52,14 @@ namespace graphics {
 
 	public:
 		void initialize();
-		void drawAll(double deltaT);
 
-		types::PpFloat calculateRatio(unsigned width, unsigned height);
+		void drawAll(double deltaT);
+		void postProcess();
+
+		types::PpFloat calculateRatio(types::PpInt width, types::PpInt height);
 		void setWindowRatio(types::PpFloat ratio);
 		void setMainCamera(const CameraSettings &camera);
+		void setWindowSize(types::Point2 size);
 
 		void registerSprite(world::Entity entity, const SpriteComponent &spriteComponent);
 		bool hasSprite(world::Entity entity) const;
@@ -89,16 +93,19 @@ namespace graphics {
 
 		ShaderProgram *m_programSpriteHardAlpha;
 		ShaderProgram *m_programSpriteSoftAlpha;
+		ShaderProgram *m_programPostProcess;
 
-		GLuint m_shaderProgram;
-		GLuint m_vao;
-		GLuint m_vbo;
+		FrameBuffer *m_frameBuffer;
+
+		GLuint m_ppbuffer;
 
 		VAO *m_vaoDynamicSprites;
+		VAO *m_vaoPostProcess;
 
 		std::map<GLuint, SpriteDrawList> m_hardAlpha;
 		SpriteDrawList m_softAlpha;
 
+		types::Point2 m_mainWindowSize;
 		types::PpFloat m_windowRatio;
 		CameraSettings m_mainCamera;
 

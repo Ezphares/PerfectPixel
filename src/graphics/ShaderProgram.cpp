@@ -1,5 +1,9 @@
 #include <graphics/ShaderProgram.h>
 
+#include <types/PpException.h>
+
+#include <vector>
+
 namespace perfectpixel { namespace graphics {
 
 ShaderProgram::ShaderProgram()
@@ -30,6 +34,22 @@ void ShaderProgram::link()
 	if (!m_linked)
 	{
 		glLinkProgram(m_id);
+		GLint isLinked;
+
+		glGetProgramiv(m_id, GL_LINK_STATUS, &isLinked);
+		if (isLinked == GL_FALSE)
+		{
+			GLint length;
+			glGetProgramiv(m_id, GL_INFO_LOG_LENGTH, &length);
+
+			std::vector<GLchar> log(length);
+			glGetProgramInfoLog(m_id, length, &length, &log[0]);
+
+
+			throw types::PpException("Failed to link program");
+		}
+
+
 		m_linked = true;
 	}
 }

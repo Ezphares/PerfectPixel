@@ -30,7 +30,7 @@ namespace perfectpixel
 			for (auto &it : m_transforms)
 			{
 
-				if (m_entityManager->isAlive(it.first))
+				if (!m_entityManager->isAlive(it.first))
 				{
 					m_cleanup.push_back(it.first);
 					continue;

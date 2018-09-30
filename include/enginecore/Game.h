@@ -43,7 +43,7 @@ protected:
 
 private:
 	void update(double dt);
-	void cleanUp();
+	void cleanup();
 	void loadResources();
 	void showSplashScreen();
 

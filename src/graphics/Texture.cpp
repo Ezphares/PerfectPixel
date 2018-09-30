@@ -8,7 +8,7 @@
 namespace perfectpixel {
 	namespace graphics {
 
-
+const Texture::PlaceHolder Texture::PLACEHOLDER = {};
 
 
 Texture::Texture(const PNG &png)
@@ -36,9 +36,44 @@ Texture::Texture(const PNG &png)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
+	glBindTexture(GL_TEXTURE_2D, 0);
+
 	m_size = types::Point2(
 		static_cast<types::PpInt>(png.m_w),
 		static_cast<types::PpInt>(png.m_h));
+}
+
+Texture::Texture(const types::Point2 size)
+	: m_size(size)
+{
+	glGenTextures(1, &m_textureId);
+	if (&m_textureId == 0)
+	{
+		throw types::PpException("Could not generate texture");
+	}
+
+	bind();
+	glTexImage2D(
+		GL_TEXTURE_2D,
+		0,
+		GL_RGBA, 
+		size.m_x, 
+		size.m_y, 
+		0, 
+		GL_RGBA,
+		GL_UNSIGNED_BYTE,
+		0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+Texture::Texture(const PlaceHolder &)
+	: m_textureId(0)
+	, m_size()
+{
 }
 
 Texture::~Texture()
@@ -69,6 +104,14 @@ perfectpixel::types::Point2 Texture::textureToPixel(types::Vector2 pixel) const
 GLuint Texture::getId() const
 {
 	return m_textureId;
+}
+
+void Texture::destroy()
+{
+	if (m_textureId != 0)
+	{
+		glDeleteTextures(1, &m_textureId);
+	}
 }
 
 }

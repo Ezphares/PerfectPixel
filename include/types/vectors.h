@@ -75,6 +75,8 @@ struct Point2 {
 bool operator==(const Vector3 &l, const Vector3 &r);
 bool operator==(const Vector2 &l, const Vector2 &r);
 
+bool operator==(const Point2 &l, const Point2 &r);
+
 Vector3 operator+(const Vector3 &l, const Vector3 &r);
 Vector3 &operator+=(Vector3 &l, const Vector3 &r);
 Vector3 operator-(const Vector3 &l, const Vector3 &r);

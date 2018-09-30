@@ -14,7 +14,7 @@ public:
 	typedef boost::function<void(bool)> FocusCallback;
 	typedef boost::function<void(IWindow&, unsigned, unsigned)> SizeCallback;
 
-	IWindow() {}
+	IWindow() noexcept {}
 	virtual ~IWindow() {}
 
 public:

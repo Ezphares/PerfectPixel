@@ -5,6 +5,8 @@
 #include <types/File.h>
 #include <types/PpException.h>
 
+#include <fstream>
+
 namespace perfectpixel {
 namespace graphics {
 
@@ -15,6 +17,15 @@ namespace graphics {
 			0, 0, 1, 0,
 			0, 0, 0, 1
 		};
+
+		const static GLfloat PP_VERTICES[18]{
+			-1.0f,	-1.0f,	0.0f,
+			 1.0f,	-1.0f,	0.0f,
+			-1.0f,	 1.0f,	0.0f,
+			-1.0f,   1.0f,	0.0f,
+			 1.0f,	-1.0f,	0.0f,
+			 1.0f,	 1.0f,	0.0f
+		};
 	}
 
 
@@ -23,6 +34,7 @@ GraphicsManager::GraphicsManager(world::EntityManager *entityManager, world::Pos
 	, m_positionCallback(positionCallback)
 	, m_programSpriteHardAlpha(NULL)
 	, m_programSpriteSoftAlpha(NULL)
+	, m_programPostProcess(NULL)
 	, m_windowRatio(1.0f)
 	, m_mainCamera()
 {
@@ -48,10 +60,16 @@ void GraphicsManager::initialize()
 
 	m_vaoDynamicSprites = new VAO(spriteLayout);
 
+	VAO::BufferLayout ppLayout;
+	ppLayout.push_back(VAO::BE_VEC_3);
+	m_vaoPostProcess = new VAO(ppLayout);
+
 	std::string
 		vertex_shader = types::File("Sprite_vertex.glsl").str(),
 		fragment_shader_hard = types::File("SpriteHard_fragment.glsl").str(),
-		fragment_shader_soft = types::File("SpriteSoft_fragment.glsl").str();
+		fragment_shader_soft = types::File("SpriteSoft_fragment.glsl").str(),
+		vertex_shader_pp = types::File("PostProc_vertex.glsl").str(),
+		fragment_shader_pp = types::File("PostProc_fragment.glsl").str();
 
 	m_programSpriteHardAlpha = new ShaderProgram();
 	m_programSpriteHardAlpha->addShader(GL_VERTEX_SHADER, vertex_shader);
@@ -69,13 +87,24 @@ void GraphicsManager::initialize()
 	glUniform1i(m_programSpriteSoftAlpha->getUniformLocation("u_texture"), 1);
 	glUniformMatrix4fv(m_programSpriteSoftAlpha->getUniformLocation("u_transform"), 1, GL_FALSE, MAT4_IDENTITY);
 
+	m_programPostProcess = new ShaderProgram();
+	m_programPostProcess->addShader(GL_VERTEX_SHADER, vertex_shader_pp);
+	m_programPostProcess->addShader(GL_FRAGMENT_SHADER, fragment_shader_pp);
+	m_programPostProcess->link();
+	m_programPostProcess->use();
+	glUniform1i(m_programPostProcess->getUniformLocation("u_texture"), 1);
 
+	m_frameBuffer = new FrameBuffer({ 0,0 });
 
-
+	m_vaoPostProcess->bindBuffer();
+	glBufferData(GL_ARRAY_BUFFER, sizeof(PP_VERTICES), PP_VERTICES, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void GraphicsManager::drawAll(double deltaT)
 {
+	m_frameBuffer->bind();
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	m_softAlpha.clear();
@@ -97,10 +126,29 @@ void GraphicsManager::drawAll(double deltaT)
 
 	drawSpriteList(m_softAlpha, &renderState);
 
-	glEnd();
+	postProcess();
 }
 
-perfectpixel::types::PpFloat GraphicsManager::calculateRatio(unsigned width, unsigned height)
+void GraphicsManager::postProcess()
+{
+	// Draw to the screen
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, m_mainWindowSize.m_x, m_mainWindowSize.m_y);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// Use post processing program
+	m_programPostProcess->use();
+
+	// Use the texture drawn from the main processing cycle
+	glActiveTexture(GL_TEXTURE0 + 1);
+	m_frameBuffer->getTexture().bind();
+
+	// Activate the VAO buffer
+	m_vaoPostProcess->bindVAO();
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+perfectpixel::types::PpFloat GraphicsManager::calculateRatio(types::PpInt width, types::PpInt height)
 {
 	return static_cast<types::PpFloat>(width) / static_cast<types::PpFloat>(height);
 }
@@ -115,6 +163,12 @@ void GraphicsManager::setMainCamera(const CameraSettings &camera)
 {
 	m_mainCamera = camera;
 	updateCamera();
+}
+
+void GraphicsManager::setWindowSize(types::Point2 size)
+{
+	m_mainWindowSize = size;
+	setWindowRatio(calculateRatio(size.m_x, size.m_y));
 }
 
 void GraphicsManager::registerSprite(world::Entity entity, const SpriteComponent &spriteComponent)
@@ -149,7 +203,7 @@ void GraphicsManager::cleanup()
 
 void GraphicsManager::drawSpriteComponent(const SpriteComponent &spriteComponent)
 {
-	world::Entity entity{ spriteComponent.getEntity() };
+	const world::Entity entity{ spriteComponent.getEntity() };
 
 	if (!m_entityManager->isAlive(entity))
 	{
@@ -157,8 +211,8 @@ void GraphicsManager::drawSpriteComponent(const SpriteComponent &spriteComponent
 		return;
 	}
 
-	types::Vector3 actualPosition{ m_positionCallback(entity) + types::Vector3(spriteComponent.getOffset()) };
-	types::Vector2 worldSize{ spriteComponent.getSize() };
+	const types::Vector3 actualPosition{ m_positionCallback(entity) + types::Vector3(spriteComponent.getOffset()) };
+	const types::Vector2 worldSize{ spriteComponent.getSize() };
 
 	SpriteDrawInfo drawInfo;
 
@@ -170,8 +224,8 @@ void GraphicsManager::drawSpriteComponent(const SpriteComponent &spriteComponent
 	};
 
 	Sprite *sprite = spriteComponent.getSprite();
-	types::Vector2 texturePosition = sprite->getTexCoord(spriteComponent.getFrame());
-	types::Vector2 textureSize = sprite->getSize();
+	const types::Vector2 texturePosition = sprite->getTexCoord(spriteComponent.getFrame());
+	const types::Vector2 textureSize = sprite->getSize();
 
 	drawInfo.m_texCoord = {
 		texturePosition.m_x,
@@ -213,7 +267,7 @@ void GraphicsManager::addSpriteToBuffer(const SpriteDrawInfo &info, SpriteBuffer
 		posBottomLeft{ pos.m_left, pos.m_bottom, z },
 		posBottomRight{ pos.m_right, pos.m_bottom, z };
 
-	types::Vector2
+	const types::Vector2
 		texTopLeft{ tex.m_left, tex.m_top },
 		texTopRight{ tex.m_right, tex.m_top },
 		texBottomLeft{ tex.m_left, tex.m_bottom },
@@ -269,11 +323,11 @@ void GraphicsManager::flushSpriteBuffer(SpriteBuffer *buffer)
 	{
 		m_vaoDynamicSprites->bindBuffer();
 		glBufferData(GL_ARRAY_BUFFER, buffer->size() * sizeof(SpriteVertex), buffer->data(), GL_STREAM_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		m_vaoDynamicSprites->bindVAO();
-
-		//glDrawArrays(GL_TRIANGLES, 0, buffer->size() / SPRITE_VERTEX_ELEMENTS);
 		glDrawArrays(GL_TRIANGLES, 0, buffer->size());
+		glBindVertexArray(0);
 	}
 
 	buffer->clear();
@@ -335,6 +389,10 @@ void GraphicsManager::updateCamera()
 	
 	m_programSpriteHardAlpha->use();
 	glUniformMatrix4fv(m_programSpriteHardAlpha->getUniformLocation("u_transform"), 1, GL_FALSE, cameraTransform);
+
+	m_frameBuffer->resize({ 
+		static_cast<types::PpInt>(scale.m_x),
+		static_cast<types::PpInt>(scale.m_y)});
 }
 
 bool GraphicsManager::compSortSoftalpha(const SpriteDrawInfo &first, const SpriteDrawInfo &second)

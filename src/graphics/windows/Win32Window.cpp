@@ -276,8 +276,6 @@ LRESULT CALLBACK Win32Window::WndProc(HWND hwnd, UINT message, WPARAM wParam, LP
 				height{ static_cast<unsigned>(lParam >> 16) };
 
 			self->m_sizeCallback(*self, width, height);
-
-			glViewport(0, 0, width, height);
 		}
 		break;
 

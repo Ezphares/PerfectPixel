@@ -11,10 +11,10 @@ namespace perfectpixel {
 
 			m_buffers.resize(m_numBuffers, 0);
 
-			glGenBuffers(m_numBuffers, m_buffers.data());
-			
 			glGenVertexArrays(1, &m_id);
 			glBindVertexArray(m_id);
+
+			glGenBuffers(m_numBuffers, m_buffers.data());
 
 			GLsizei stride = 0;
 			if (interleavedBuffer)
@@ -49,6 +49,9 @@ namespace perfectpixel {
 					offset += bytes;
 				}
 			}
+
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindVertexArray(0);
 		}
 
 		VAO::~VAO()

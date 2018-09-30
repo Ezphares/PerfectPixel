@@ -50,6 +50,9 @@ void Game::run()
 	camera.m_scaleMode = graphics::CameraSettings::SCALE_STRETCH;
 	m_graphicsManager.setMainCamera(camera);
 
+	// Fire a resize event to initialize size dependent variables
+	windowResized(*mainWindow, mainWindowSettings.dimensions.first, mainWindowSettings.dimensions.second);
+
 	gameStart();
 
 	// Set up frame timers
@@ -105,7 +108,7 @@ void Game::focus(bool hasFocus)
 
 void Game::windowResized(graphics::IWindow &window, unsigned width, unsigned height)
 {
-	//FIXME
+	m_graphicsManager.setWindowSize({ static_cast<types::PpInt>(width), static_cast<types::PpInt>(height) });
 }
 
 void Game::splashScreenUpdate(bool &closeSplash)

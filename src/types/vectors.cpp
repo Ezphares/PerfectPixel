@@ -87,6 +87,11 @@ namespace types {
 		return l.m_x == r.m_x && l.m_y == r.m_y;
 	}
 
+	bool operator==(const Point2 &l, const Point2 &r)
+	{
+		return l.m_x == r.m_x && l.m_y == r.m_y;
+	}
+
 	perfectpixel::types::Vector3 operator+(const Vector3 &l, const Vector3 &r)
 	{
 		Vector3 res = l;

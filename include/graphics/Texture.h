@@ -13,7 +13,13 @@ namespace graphics {
 class Texture
 {
 public:
+	struct PlaceHolder {};
+	static const PlaceHolder PLACEHOLDER;
+	
+public:
+	Texture(const PlaceHolder &);
 	Texture(const PNG &png);
+	Texture(const types::Point2 size);
 	~Texture();
 
 public:
@@ -22,6 +28,8 @@ public:
 	types::Point2 textureToPixel(types::Vector2 pixel) const;
 
 	GLuint getId() const;
+
+	void destroy();
 
 private:
 	GLuint m_textureId;
