@@ -2,6 +2,8 @@
 
 #include <graphics/LocalGL.h>
 
+#include <vector>
+
 namespace perfectpixel {
 	namespace graphics {
 
