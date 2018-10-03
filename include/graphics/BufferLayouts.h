@@ -10,7 +10,16 @@ struct SpriteVertex {
 	GLfloat x, y, z; // World coordinates
 	GLfloat u, v;    // Texture coordinates
 };
+
+struct TextVertex {
+	GLfloat x, y, z; // World coordinates
+	GLfloat u, v;    // Texture coordinates
+};
 #pragma pack (pop)
+
+typedef std::vector<SpriteVertex> SpriteBuffer;
+typedef std::vector<TextVertex> TextBuffer;
+
 
 	}
 }

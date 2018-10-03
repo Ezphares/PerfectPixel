@@ -12,7 +12,7 @@ namespace perfectpixel {
 			m_buffers.resize(m_numBuffers, 0);
 
 			glGenVertexArrays(1, &m_id);
-			glBindVertexArray(m_id);
+			bindVAO();
 
 			glGenBuffers(m_numBuffers, m_buffers.data());
 
@@ -32,7 +32,7 @@ namespace perfectpixel {
 
 				if (i == 0 || !interleavedBuffer)
 				{
-					glBindBuffer(GL_ARRAY_BUFFER, m_buffers[i]);
+					bindBuffer(i);
 				}
 
 				glEnableVertexAttribArray(i);
@@ -50,8 +50,8 @@ namespace perfectpixel {
 				}
 			}
 
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glBindVertexArray(0);
+			unbindBuffer();
+			unbindVAO();
 		}
 
 		VAO::~VAO()
@@ -65,9 +65,19 @@ namespace perfectpixel {
 			glBindVertexArray(m_id);
 		}
 
+		void VAO::unbindVAO()
+		{
+			glBindVertexArray(0);
+		}
+
 		void VAO::bindBuffer(GLuint index /*= 0*/)
 		{
 			glBindBuffer(GL_ARRAY_BUFFER, m_buffers[index % m_buffers.size()]);
+		}
+
+		void VAO::unbindBuffer()
+		{
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
 		}
 
 		GLsizei VAO::getTotalSize(BufferedElement element)

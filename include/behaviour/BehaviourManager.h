@@ -19,7 +19,7 @@ namespace perfectpixel {
 			~BehaviourManager();
 
 		public:
-			void registerBehaviour(world::Entity entity, Behaviour *behaviour);
+			void registerBehaviour(world::Entity entity, Behaviour *component);
 
 			void update(types::PpFloat deltaT);
 
@@ -29,9 +29,9 @@ namespace perfectpixel {
 				auto &it = m_behaviours.find(entity);
 				if (it != m_behaviours.end())
 				{
-					for (Behaviour *behaviour : it->second)
+					for (Behaviour *component : it->second)
 					{
-						T *attempt = dynamic_cast<T*>(behaviour);
+						T *attempt = dynamic_cast<T*>(component);
 						if (attempt)
 						{
 							return attempt;
@@ -43,6 +43,7 @@ namespace perfectpixel {
 			}
 
 		private:
+			void registerBehaviourInternal(world::Entity entity, Behaviour *component);
 			void destroyBehaviour(Behaviour *behaviour);
 
 		private:

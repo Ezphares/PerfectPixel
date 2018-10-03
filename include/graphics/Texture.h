@@ -10,6 +10,10 @@
 namespace perfectpixel {
 namespace graphics {
 
+	// Forward declared
+	struct CBFGFontHeader;
+
+
 class Texture
 {
 public:
@@ -20,10 +24,13 @@ public:
 	Texture(const PlaceHolder &);
 	Texture(const PNG &png);
 	Texture(const types::Point2 size);
+	Texture(const CBFGFontHeader& header, const char *raw);
+
 	~Texture();
 
 public:
-	void bind();
+	void bind(GLuint unit = 1);
+	static void unbind(GLuint unit = 1);
 	types::Vector2 pixelToTexture(types::Point2 pixel) const;
 	types::Point2 textureToPixel(types::Vector2 pixel) const;
 

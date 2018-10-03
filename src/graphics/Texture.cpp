@@ -1,5 +1,7 @@
 #include <graphics/Texture.h>
 
+#include <graphics/CBFGFont.h>
+
 #include <types/PpException.h>
 
 #include <zlib.h>
@@ -76,13 +78,53 @@ Texture::Texture(const PlaceHolder &)
 {
 }
 
+Texture::Texture(const CBFGFontHeader& header, const char *raw)
+	: m_size(header.m_cellWidth, header.m_cellHeight)
+{
+	glGenTextures(1, &m_textureId);
+	if (&m_textureId == 0)
+	{
+		throw types::PpException("Could not generate texture");
+	}
+
+	bind();
+
+	GLint color_format = header.m_bpp == 8 ? GL_RED : (header.m_bpp == 24 ? GL_RGB : GL_RGBA);
+
+	glTexImage2D(
+		GL_TEXTURE_2D,
+		0,
+		color_format,
+		m_size.m_x,
+		m_size.m_y,
+		0,
+		color_format,
+		GL_UNSIGNED_BYTE,
+		static_cast<const GLvoid*>(raw));
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	unbind();
+}
+
 Texture::~Texture()
 {
 }
 
-void Texture::bind()
+void Texture::bind(GLuint unit)
 {
+	glActiveTexture(GL_TEXTURE0 + unit);
 	glBindTexture(GL_TEXTURE_2D, m_textureId);
+}
+
+void Texture::unbind(GLuint unit)
+{
+	glActiveTexture(GL_TEXTURE0 + unit);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 perfectpixel::types::Vector2 Texture::pixelToTexture(types::Point2 pixel) const

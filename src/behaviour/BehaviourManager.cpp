@@ -15,44 +15,60 @@ namespace perfectpixel {
 		{
 		}
 
-		void BehaviourManager::registerBehaviour(world::Entity entity, Behaviour *behaviour)
+		void BehaviourManager::registerBehaviour(world::Entity entity, Behaviour *component)
 		{
-			if (!m_updating)
-			{
-				m_behaviours[entity].push_back(behaviour);
-				m_created.push_back(behaviour);
-			}
-			else
-			{
-				m_deferredCreate.emplace_back(entity, behaviour);
-			}
+			m_deferredCreate.emplace_back(entity, component);
 		}
 
 		void BehaviourManager::update(types::PpFloat deltaT)
 		{
+			// The lifecycle has to be update -> create -> destroy
+			// to ensure that the create script has been run before other managers pick up the entity
 			m_updating = true;
 
-			// Run all onCreate
-			for (auto beh : m_created)
-			{
-				beh->onCreate();
-			}
-			m_created.clear();
 
-			// Update loop
+			// UPDATE
 			for (auto &it : m_behaviours)
 			{
 				for (Behaviour *beh : it.second)
 				{
-					beh->onUpdate(deltaT);
 					if (!m_entityManager->isAlive(beh->getEntity()))
 					{
+						beh->m_state = Behaviour::LC_DEAD;
 						m_toDestroyAll.insert(beh->getEntity());
+					}
+
+					if (beh->m_state == Behaviour::LC_ACTIVE)
+					{
+						beh->onUpdate(deltaT);
 					}
 				}
 			}
 
-			// Run all destroy
+			// CREATE
+			// Run this in a loop to ensure that behaviours that create others in their onCreate gets registered
+			while (!m_deferredCreate.empty())
+			{
+				for (auto it : m_deferredCreate)
+				{
+					registerBehaviourInternal(it.first, it.second);
+				}
+				m_deferredCreate.clear();
+
+				for (auto beh : m_created)
+				{
+					beh->onCreate();
+
+					// State check because the behaviour might already be dead. We still want to run onCreate, as onDestroy might depend on it
+					if (beh->m_state == Behaviour::LC_NEW)
+					{
+						beh->m_state = Behaviour::LC_ACTIVE;
+					}
+				}
+				m_created.clear();
+			}
+
+			// DESTROY
 			for (auto entity : m_toDestroyAll)
 			{
 				auto it = m_behaviours.find(entity);
@@ -97,13 +113,12 @@ namespace perfectpixel {
 			m_toDestroySingle.clear();
 
 			m_updating = false;
+		}
 
-			// Run deferred actions
-			for (auto it : m_deferredCreate)
-			{
-				registerBehaviour(it.first, it.second);
-			}
-			m_deferredCreate.clear();
+		void BehaviourManager::registerBehaviourInternal(world::Entity entity, Behaviour *component)
+		{
+			m_behaviours[entity].push_back(component);
+			m_created.push_back(component);
 		}
 
 		void BehaviourManager::destroyBehaviour(Behaviour *behaviour)

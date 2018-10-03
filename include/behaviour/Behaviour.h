@@ -14,8 +14,15 @@ class Behaviour
 public:
 	friend class BehaviourManager;
 
+	enum LifeCycle {
+		LC_NEW,
+		LC_ACTIVE,
+		LC_DEAD
+	};
+
 	Behaviour(world::Entity entity)
 		: m_entity(entity)
+		, m_state(LC_NEW)
 	{}
 
 	virtual ~Behaviour()
@@ -33,6 +40,7 @@ public:
 
 private:
 	world::Entity m_entity;
+	LifeCycle m_state;
 
 private:
 	bool m_createFinished;

@@ -7,6 +7,7 @@
 #include <graphics/ShaderProgram.h>
 #include <graphics/CameraSettings.h>
 #include <graphics/FrameBuffer.h>
+#include <graphics/Quad.h>
 
 #include <worldgraph/EntityManager.h>
 #include <worldgraph/PositionCallback.h>
@@ -20,14 +21,6 @@ namespace graphics {
 	class GraphicsManager
 	{
 	private:
-		struct Quad {
-			types::PpFloat
-				m_left,
-				m_top,
-				m_right,
-				m_bottom;
-		};
-
 		struct SpriteDrawInfo {
 			Quad m_worldCoord, m_texCoord;
 			RenderHints m_hints;
@@ -43,8 +36,6 @@ namespace graphics {
 
 		typedef std::map<world::Entity, SpriteComponent> SpriteComponents;
 		typedef std::vector<SpriteDrawInfo> SpriteDrawList;
-
-		typedef std::vector<SpriteVertex> SpriteBuffer;
 
 	public:
 		GraphicsManager(world::EntityManager *entityManager, world::PositionCallback positionCallback);
@@ -76,7 +67,6 @@ namespace graphics {
 
 		void drawSpriteList(const SpriteDrawList &list, SpriteRenderState *in_out_state, bool forceCurrentRenderstate = false);
 		void flushSpriteBuffer(SpriteBuffer *buffer);
-
 
 		bool isStateCompatible(const SpriteDrawInfo &info, const SpriteRenderState &state);
 		void setCompatibleState(const SpriteDrawInfo &info, SpriteRenderState *out_state);

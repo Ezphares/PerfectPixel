@@ -358,8 +358,7 @@ void GraphicsManager::setCompatibleState(const SpriteDrawInfo &info, SpriteRende
 	GLuint targetTexture = info.m_texture->getId();
 	if (out_state->m_texture != targetTexture)
 	{
-		glActiveTexture(GL_TEXTURE0 + 1);
-		info.m_texture->bind();
+		info.m_texture->bind(1);
 		out_state->m_texture = targetTexture;
 	}
 }

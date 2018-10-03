@@ -25,7 +25,10 @@ namespace perfectpixel {
 
 		public:
 			void bindVAO();
+			static void unbindVAO();
+
 			void bindBuffer(GLuint index = 0);
+			static void unbindBuffer();
 
 		private:
 			GLsizei getTotalSize(BufferedElement element);
