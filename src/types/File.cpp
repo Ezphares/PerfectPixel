@@ -28,6 +28,8 @@ namespace perfectpixel {
 
 				stream.read(m_buffer, length);
 				m_buffer[length] = '\x00';
+
+				m_length = length;
 			}
 		}
 
@@ -42,7 +44,7 @@ namespace perfectpixel {
 			{
 				return std::string("");
 			}
-			return std::string(m_buffer);
+			return std::string(m_buffer, m_length);
 		}
 
 	}
