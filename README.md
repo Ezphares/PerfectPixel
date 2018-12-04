@@ -17,4 +17,4 @@ After cloning:
 * Build with VS
 * Debug the Pong project, or run the Pong executable in the output directory
 
-Currently only Visual Studio 2017 on wWindows will work. Only debug builds are tested.
+Currently only Visual Studio 2017 on Windows will work. Only debug builds are tested.
