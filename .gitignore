@@ -35,7 +35,6 @@
 **/Debug
 **/Release
 **/x64
-dist
 build
 
 # Projects and solutions
@@ -47,4 +46,3 @@ build
 .vs
 
 # sample project
-src/main
