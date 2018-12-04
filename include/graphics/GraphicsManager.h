@@ -8,10 +8,12 @@
 #include <graphics/CameraSettings.h>
 #include <graphics/FrameBuffer.h>
 #include <graphics/Quad.h>
+#include <graphics/IFont.h>
 
 #include <worldgraph/EntityManager.h>
 #include <worldgraph/PositionCallback.h>
 #include <types/vectors.h>
+#include <types/RingBuffer.h>
 
 #include <boost/function.hpp>
 #include <map>
@@ -84,6 +86,7 @@ namespace graphics {
 		ShaderProgram *m_programSpriteHardAlpha;
 		ShaderProgram *m_programSpriteSoftAlpha;
 		ShaderProgram *m_programPostProcess;
+		ShaderProgram *m_programUiText;
 
 		FrameBuffer *m_frameBuffer;
 
@@ -91,6 +94,8 @@ namespace graphics {
 
 		VAO *m_vaoDynamicSprites;
 		VAO *m_vaoPostProcess;
+
+		IFont *m_font;
 
 		std::map<GLuint, SpriteDrawList> m_hardAlpha;
 		SpriteDrawList m_softAlpha;
@@ -100,6 +105,9 @@ namespace graphics {
 		CameraSettings m_mainCamera;
 
 		std::vector<world::Entity> m_cleanup;
+
+		std::vector<double> m_ftBuffer;
+		std::size_t m_ftWrite;
 	};
 
 }

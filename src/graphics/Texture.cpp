@@ -79,7 +79,7 @@ Texture::Texture(const PlaceHolder &)
 }
 
 Texture::Texture(const CBFGFontHeader& header, const char *raw)
-	: m_size(header.m_cellWidth, header.m_cellHeight)
+	: m_size(header.m_imageWidth, header.m_imageHeight)
 {
 	glGenTextures(1, &m_textureId);
 	if (&m_textureId == 0)
@@ -102,8 +102,8 @@ Texture::Texture(const CBFGFontHeader& header, const char *raw)
 		GL_UNSIGNED_BYTE,
 		static_cast<const GLvoid*>(raw));
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);

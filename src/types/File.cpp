@@ -9,6 +9,7 @@ namespace perfectpixel {
 
 		File::File(const std::string &filename, std::ios_base::open_mode mode)
 			: m_buffer(NULL)
+			, m_length()
 		{
 
 			if (mode & std::ios_base::in)
@@ -29,7 +30,7 @@ namespace perfectpixel {
 				stream.read(m_buffer, length);
 				m_buffer[length] = '\x00';
 
-				m_length = length;
+				m_length = static_cast<size_t>(length);
 			}
 		}
 

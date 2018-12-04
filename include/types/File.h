@@ -17,6 +17,7 @@ public:
 
 private:
 	char *m_buffer;
+	size_t m_length;
 };
 
 }
