@@ -79,6 +79,7 @@ add_library(Graphics
 set (Types_SRC_DIR "${CMAKE_SOURCE_DIR}/src/types")
 add_library(Types 
 	"${Types_SRC_DIR}/vectors.cpp" 
+	"${Types_SRC_DIR}/matrices.cpp" 
 	"${Types_SRC_DIR}/AARectangle.cpp" 
 	"${Types_SRC_DIR}/Circle.cpp" 
 	"${Types_SRC_DIR}/File.cpp" 
@@ -91,9 +92,24 @@ add_library(World
 	"${World_SRC_DIR}/EntityManager.cpp" 
 )
 
+set (Interface_SRC_DIR "${CMAKE_SOURCE_DIR}/src/managerinterface")
+add_library(Interface
+	"${Interface_SRC_DIR}/ManagerInterface.cpp"
+)
+
 add_executable(Pong WIN32 "${CMAKE_SOURCE_DIR}/src/main/pong.cpp")
 
-list(APPEND LIBRARIES_INTERNAL Behaviour Core Input Physics Graphics Types World)
+list(APPEND LIBRARIES_INTERNAL 
+	Behaviour 
+	Core
+	Interface
+	Input
+	Physics
+	Graphics
+	Types
+	World
+)
+
 list(APPEND LIBRARIES_EXTERNAL PNG::PNG ZLIB::ZLIB GLEW::GLEW)
 list(APPEND LIBRARIES_SYSTEM opengl32)
 
