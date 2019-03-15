@@ -12,7 +12,7 @@ namespace perfectpixel {
 		struct Force {
 			types::PpInt m_identifier;
 			types::Vector3 m_vector;
-			bool m_relativeDirection; // Relative direction is compared to RIGHT
+			bool m_relativeDirection; // Relative direction is compared to FORWARD
 			bool m_relativeMagnitude;
 
 			/// Create a constant force representing gravity. Magnitude is in Units / Second^2
@@ -29,7 +29,7 @@ namespace perfectpixel {
 			{
 				return Force{
 					FORCE_ID_DRAG,
-					types::Vector3::LEFT * magnitude,
+					types::Vector3::FORWARD * magnitude,
 					true, true };
 			}
 		};

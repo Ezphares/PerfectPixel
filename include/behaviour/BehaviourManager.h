@@ -5,6 +5,8 @@
 #include <worldgraph/Entity.h>
 #include <worldgraph/EntityManager.h>
 
+#include <managerinterface/ManagerInterface.h>
+
 #include <map>
 #include <vector>
 #include <set>
@@ -15,7 +17,9 @@ namespace perfectpixel {
 		class BehaviourManager
 		{
 		public:
-			BehaviourManager(world::EntityManager *entityManager);
+			BehaviourManager(
+				world::EntityManager *entityManager,
+				api::ManagerInterface *managerInterface);
 			~BehaviourManager();
 
 		public:
@@ -56,6 +60,7 @@ namespace perfectpixel {
 			std::set<Behaviour*> m_toDestroySingle;
 
 			world::EntityManager *m_entityManager;
+			api::ManagerInterface *m_managerInterface;
 
 			BehaviourList m_behaviours;
 

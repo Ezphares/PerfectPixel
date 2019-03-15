@@ -4,6 +4,8 @@
 
 #include <worldgraph/Entity.h>
 
+#include <managerinterface/ManagerInterface.h>
+
 namespace perfectpixel {
 	namespace behaviour {
 
@@ -38,9 +40,15 @@ public:
 		return m_entity;
 	}
 
+	inline api::ManagerInterface *pp()
+	{
+		return m_managerInterface;
+	}
+
 private:
 	world::Entity m_entity;
 	LifeCycle m_state;
+	api::ManagerInterface *m_managerInterface;
 
 private:
 	bool m_createFinished;

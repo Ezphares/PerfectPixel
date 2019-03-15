@@ -4,8 +4,11 @@
 namespace perfectpixel {
 	namespace behaviour {
 
-		BehaviourManager::BehaviourManager(world::EntityManager *entityManager)
+		BehaviourManager::BehaviourManager(
+			world::EntityManager *entityManager,
+			api::ManagerInterface *managers)
 			: m_entityManager(entityManager)
+			, m_managerInterface(managers)
 			, m_updating(false)
 		{
 		}
@@ -17,6 +20,7 @@ namespace perfectpixel {
 
 		void BehaviourManager::registerBehaviour(world::Entity entity, Behaviour *component)
 		{
+			component->m_managerInterface = m_managerInterface;
 			m_deferredCreate.emplace_back(entity, component);
 		}
 

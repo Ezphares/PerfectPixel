@@ -113,6 +113,22 @@ namespace perfectpixel
 			m_colliders.emplace(collider.getEntity(), collider);
 		}
 
+		bool PhysicsManager::hasCollider(world::Entity entity)
+		{
+			return m_colliders.find(entity) != m_colliders.end();
+		}
+
+		perfectpixel::physics::ColliderComponent & PhysicsManager::getCollider(world::Entity entity)
+		{
+			auto it = m_colliders.find(entity);
+			if (it == m_colliders.end())
+			{
+				throw types::PpException("Tried to get collider component for entity with none assigned");
+			}
+
+			return it->second;
+		}
+
 		void PhysicsManager::pulseForce(world::Entity entity, const Force &force, types::PpFloat deltaTime)
 		{
 			// TODO Alive Check 
@@ -123,6 +139,9 @@ namespace perfectpixel
 
 			if (force.m_relativeDirection)
 			{
+				
+
+
 				// TODO: Implement this
 			}
 
@@ -229,14 +248,15 @@ namespace perfectpixel
 				(secondTransform.m_position.m_y + secondCircle.m_center.m_y) - (firstTransform.m_position.m_y + firstCircle.m_center.m_y)
 			};
 
-			types::PpFloat overlap = (firstCircle.m_diameter + secondCircle.m_diameter) / 2 - offset.magnitude();
+			types::PpFloat threshold = (firstCircle.m_radius + secondCircle.m_radius);
+			types::PpFloat distance2 = types::Vector2::dot(offset, offset);
 
-			if (overlap < COLLISON_LEEWAY)
+			if (threshold - distance2 > COLLISON_LEEWAY)
 			{
 				return false;
 			}
 
-			out_collision->m_data_CircCircOverlap = overlap;
+			out_collision->m_data_CircCircOverlap = threshold - sqrtf(distance2);
 			out_collision->m_maskTypeFirst = ColliderComponent::MaskType::CIRCLE;
 			out_collision->m_maskTypeSecond = ColliderComponent::MaskType::CIRCLE;
 
@@ -334,8 +354,8 @@ namespace perfectpixel
 			translate(first, types::Vector3(resolution1));
 			translate(second, types::Vector3(resolution2));
 
-			firstTransform.m_velocity = bounce1;
-			secondTransform.m_velocity = bounce2;
+			firstTransform.m_velocity = types::Vector3(bounce1);
+			secondTransform.m_velocity = types::Vector3(bounce2);
 		}
 
 		void PhysicsManager::singleAxisReposition(types::PpFloat mass1, types::PpFloat mass2, types::PpFloat overlap, types::PpFloat *out_magnitude1, types::PpFloat *out_magnitude2)

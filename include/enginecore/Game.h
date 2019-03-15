@@ -58,6 +58,7 @@ private:
 	bool m_shouldExit;
 
 protected:
+	api::ManagerInterface m_managerInterface;
 	world::EntityManager m_entityManager;
 	physics::PhysicsManager m_physicsManager;
 	input::InputManager m_inputManager;

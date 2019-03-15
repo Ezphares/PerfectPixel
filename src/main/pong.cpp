@@ -5,30 +5,34 @@
 #include <types/vectors.h>
 #include <behaviour/Behaviour.h>
 
+#include <chrono>
+#include <thread>
+
 using namespace perfectpixel;
 
 class BatBehaviour : public behaviour::Behaviour
 {
 public:
 	BatBehaviour(
-		world::Entity entity,
-		physics::PhysicsManager *physics,
-		input::InputManager *input)
+		world::Entity entity)
 		: behaviour::Behaviour(entity)
-		, m_physics(physics)
-		, m_input(input)
+		, m_transform(nullptr)
 		, m_speed(35)
 	{}
 	virtual ~BatBehaviour() {}
 
+	virtual void onCreate()
+	{
+		m_transform = pp()->getComponent<physics::TransformComponent>(getEntity());
+	}
+
 	virtual void onUpdate(types::PpFloat deltaT)
 	{
-		m_physics->getTransform(getEntity()).m_velocity.m_y = m_input->getAxisState("Vertical") * m_speed;
+		m_transform->m_velocity.m_y = pp()->Input()->getAxisState("Vertical") * m_speed;
 	}
 
 private:
-	physics::PhysicsManager *m_physics;
-	input::InputManager *m_input;
+	physics::TransformComponent *m_transform;
 	types::PpFloat m_speed;
 };
 
@@ -37,23 +41,30 @@ class AIBatBehaviour : public behaviour::Behaviour
 public:
 	AIBatBehaviour(
 		world::Entity entity,
-		physics::PhysicsManager *physics,
 		world::Entity ball)
 		: Behaviour(entity)
-		, m_physics(physics)
+		, m_transform(nullptr)
+		, m_ballTransform(nullptr)
 		, m_ball(ball)
 		, m_speed(35)
 	{}
 	virtual ~AIBatBehaviour(){}
 
+	virtual void onCreate()
+	{
+		m_transform = pp()->getComponent<physics::TransformComponent>(getEntity());
+		m_ballTransform = pp()->getComponent<physics::TransformComponent>(m_ball);
+	}
+
 	virtual void onUpdate(types::PpFloat deltaT)
 	{
-		bool up = m_physics->getTransform(getEntity()).m_position.m_y < m_physics->getTransform(m_ball).m_position.m_y;
-		m_physics->getTransform(getEntity()).m_velocity.m_y = (up ? 1.0f : -1.0f) * m_speed;
+		bool up = m_transform->m_position.m_y < m_ballTransform->m_position.m_y;
+		m_transform->m_velocity.m_y = (up ? 1.0f : -1.0f) * m_speed;
 	}
 
 private:
-	physics::PhysicsManager *m_physics;
+	physics::TransformComponent *m_transform;
+	physics::TransformComponent *m_ballTransform;
 	world::Entity m_ball;
 	types::PpFloat m_speed;
 };
@@ -61,40 +72,37 @@ private:
 class BallBehaviour : public behaviour::Behaviour
 {
 public:
-	BallBehaviour(world::Entity entity, physics::PhysicsManager *physics)
+	BallBehaviour(world::Entity entity)
 		: behaviour::Behaviour(entity)
-		, m_physics(physics)
 	{}
 
 	virtual ~BallBehaviour() {}
 
 	virtual void onCreate()
 	{
+		m_transform = pp()->getComponent<physics::TransformComponent>(getEntity());
 		reset();
 	}
 
 	void reset()
-	{
-		physics::TransformComponent &transform{ m_physics->getTransform(getEntity()) };
-		
-		transform.m_position = { 0, 0, transform.m_position.m_z };
+	{	
+		m_transform->m_position = { 0, 0, m_transform->m_position.m_z };
 
-		transform.m_velocity.m_x = transform.m_velocity.m_x > 0 ? -40.0f : 40.0f;
-		transform.m_velocity.m_y = transform.m_velocity.m_y > 0 ? 35.0f : -35.0f;
-		m_dxPrev = transform.m_velocity.m_x;
+		m_transform->m_velocity.m_x = m_transform->m_velocity.m_x > 0 ? -40.0f : 40.0f;
+		m_transform->m_velocity.m_y = m_transform->m_velocity.m_y > 0 ? 35.0f : -35.0f;
+		m_dxPrev = m_transform->m_velocity.m_x;
 	}
 
 	virtual void onUpdate(types::PpFloat deltaT)
 	{
-		physics::TransformComponent &transform{ m_physics->getTransform(getEntity()) };
 		bool shouldReset = false;
 
-		if (transform.m_position.m_x < -80)
+		if (m_transform->m_position.m_x < -80)
 		{
 			m_score2++;
 			shouldReset = true;
 		}
-		else if (transform.m_position.m_x > 80)
+		else if (m_transform->m_position.m_x > 80)
 		{
 			m_score1++;
 			shouldReset = true;
@@ -106,17 +114,17 @@ public:
 		}
 
 		// Speed up after batting
-		if (m_dxPrev > 0 != transform.m_velocity.m_x > 0)
+		if (m_dxPrev > 0 != m_transform->m_velocity.m_x > 0)
 		{
-			transform.m_velocity *= 1.05f;
+			m_transform->m_velocity *= 1.05f;
 		}
 
-		m_dxPrev = transform.m_velocity.m_x;
+		m_dxPrev = m_transform->m_velocity.m_x;
 	}
 
 
 private:
-	physics::PhysicsManager *m_physics;
+	physics::TransformComponent *m_transform;
 	int m_score1, m_score2;
 	types::PpFloat m_dxPrev;
 };
@@ -151,11 +159,11 @@ class Pong : public core::Game
 
 		if (!isAi)
 		{
-			m_behaviourManager.registerBehaviour(e, new BatBehaviour(e, &m_physicsManager, &m_inputManager));
+			m_behaviourManager.registerBehaviour(e, new BatBehaviour(e));
 		}
 		else
 		{
-			m_behaviourManager.registerBehaviour(e, new AIBatBehaviour(e, &m_physicsManager, m_ball));
+			m_behaviourManager.registerBehaviour(e, new AIBatBehaviour(e, m_ball));
 		}
 	}
 
@@ -222,7 +230,7 @@ class Pong : public core::Game
 
 		createBat(-78, sprPlayer1, false);
 		createBat(78, sprPlayer2, true);
-		m_behaviourManager.registerBehaviour(m_ball, new BallBehaviour(m_ball, &m_physicsManager));
+		m_behaviourManager.registerBehaviour(m_ball, new BallBehaviour(m_ball));
 
 		m_inputManager.registerButton("Left");
 		m_inputManager.registerButton("Right");
@@ -251,6 +259,12 @@ class Pong : public core::Game
 		{
 			MessageBoxA(0, (char*)glGetString(GL_VERSION), "OPENGL VERSION", 0);
 		}
+	}
+
+	virtual void splashScreenUpdate(bool &closeSplash)
+	{
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+		closeSplash = true;
 	}
 };
 

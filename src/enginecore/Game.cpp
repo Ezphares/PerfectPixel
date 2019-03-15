@@ -16,11 +16,15 @@ namespace core {
 		, m_physicsManager(&m_entityManager)
 		, m_inputManager()
 		, m_graphicsManager(&m_entityManager, m_physicsManager.positionCallback())
-		, m_behaviourManager(&m_entityManager)
+		, m_behaviourManager(&m_entityManager, &m_managerInterface)
 		, m_targetUps(100)
 		, m_splashFilename("splash.png")
-{
-}
+	{
+		m_managerInterface.setBehaviourManager(&m_behaviourManager);
+		m_managerInterface.setPhysicsManager(&m_physicsManager);
+		m_managerInterface.setGraphicsManager(&m_graphicsManager);
+		m_managerInterface.setInputManager(&m_inputManager);
+	}
 
 void Game::run()
 {
@@ -140,8 +144,10 @@ void Game::exit()
 
 void Game::update(double dt)
 {
-	m_physicsManager.update(dt);
-	m_behaviourManager.update(dt);
+	types::PpFloat ppdt = static_cast<types::PpFloat>(dt);
+
+	m_physicsManager.update(ppdt);
+	m_behaviourManager.update(ppdt);
 }
 
 void Game::cleanup()
