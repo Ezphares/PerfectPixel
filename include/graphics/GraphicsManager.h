@@ -13,7 +13,6 @@
 #include <worldgraph/EntityManager.h>
 #include <worldgraph/PositionCallback.h>
 #include <types/vectors.h>
-#include <types/RingBuffer.h>
 
 #include <boost/function.hpp>
 #include <map>
