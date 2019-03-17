@@ -1,10 +1,13 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 
+#include "testutil.h"
+
 #include <types/matrices.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace perfectpixel::types;
+
 
 namespace tests {
 
@@ -43,7 +46,18 @@ namespace tests {
 			Assert::AreEqual(0.0f, m1to16.determinant());
 
 		}
+
+		TEST_METHOD(test_mul3x3_identity)
+		{
+			Matrix3x3 m1to9 = Matrix3x3({ 1,2,3,4,5,6,7,8,9 });
+			Matrix3x3 mid3 = Matrix3x3::IDENTITY;
+
+			Matrix3x3 result = m1to9 * mid3;
+
+			Assert::AreEqual(m1to9, result);
+		}
 	};
+
 	   
 }
 

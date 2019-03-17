@@ -78,7 +78,7 @@ namespace perfectpixel {
 
 				for (unsigned i = 0; i < H; i++)
 				{
-					for (unsigned j = 0; j < H; i++)
+					for (unsigned j = 0; j < H; j++)
 					{
 						result.m(i, j) = Vector<H>::dot(column(i), r.row(j));
 					}
@@ -91,6 +91,11 @@ namespace perfectpixel {
 			EnableIfSquare<T> &operator*=(const Matrix<H, W> &r)
 			{
 				return *this = *this * r;
+			}
+
+			bool operator==(const Matrix<W, H> &r) const 
+			{
+				return m_data == r.m_data;
 			}
 
 			template <typename T = Matrix<H, H>>
@@ -167,6 +172,7 @@ namespace perfectpixel {
 		struct Matrix2x2 : public Matrix<2, 2>
 		{
 			/*implicit*/ Matrix2x2(const Matrix<2, 2> &convert) : Matrix<2, 2>(convert) {}
+			explicit Matrix2x2(const std::array<PpFloat, 4> data) : Matrix<2, 2>(data) {}
 
 			static const Matrix2x2 IDENTITY;
 
@@ -176,6 +182,7 @@ namespace perfectpixel {
 		struct Matrix3x3 : public Matrix<3, 3>
 		{
 			/*implicit*/ Matrix3x3(const Matrix<3, 3> &convert) : Matrix<3, 3>(convert) {}
+			explicit Matrix3x3(const std::array<PpFloat, 9> data) : Matrix<3, 3>(data) {}
 
 			static const Matrix3x3 IDENTITY;
 		};
@@ -183,6 +190,7 @@ namespace perfectpixel {
 		struct Matrix4x4 : public Matrix<4, 4>
 		{
 			/*implicit*/ Matrix4x4(const Matrix<4, 4> &convert) : Matrix<4, 4>(convert) {}
+			explicit Matrix4x4(const std::array<PpFloat, 16> data) : Matrix<4, 4>(data) {}
 
 			static const Matrix4x4 IDENTITY;
 		};

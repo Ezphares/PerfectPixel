@@ -51,9 +51,26 @@ struct Vector
 		PpFloat accumulator{ 0.0f };
 		for (unsigned i = 0; i < D; i++)
 		{
-			accumulator += l.m_data[i] + r.m_data[i];
+			accumulator += l.m_data[i] * r.m_data[i];
 		}
 		return accumulator;
+	}
+
+	template <typename T = typename std::enable_if<D==3, Vector<3>>::type>
+	static T cross(const Vector<D> &l, const Vector<D> &r)
+	{
+		return T(std::array<PpFloat, 3>
+		{
+			l.m_data[1] * r.m_data[2] - l.m_data[2] * r.m_data[1],
+			l.m_data[2] * r.m_data[0] - l.m_data[0] * r.m_data[2],
+			l.m_data[0] * r.m_data[1] - l.m_data[1] * r.m_data[0],
+		});
+	}
+
+	template <typename T = typename std::enable_if<D == 3, PpFloat>::type>
+	static T triple(const Vector<D> &a, const Vector<D> &b, const Vector<D> &c)
+	{
+		return dot(a, cross(b, c));
 	}
 
 	PpFloat magnitude() const
@@ -128,6 +145,18 @@ struct Vector
 			m_data[i] /= scalar;
 		}
 		return *this;
+	}
+
+	bool operator==(const Vector<D> &other) const
+	{
+		for (unsigned i = 0; i < D; i++)
+		{
+			if (m_data[i] != other.m_data[i])
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 };
 
