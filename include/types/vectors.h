@@ -19,7 +19,6 @@ struct Angle
 {
 	static Angle degrees(PpFloat degrees);
 	static Angle radians(PpFloat radians);
-	static Angle ofVector(Vector2 vec);
 
 	PpFloat radians();
 	PpFloat degrees();
@@ -28,28 +27,141 @@ private:
 	PpFloat m_rad;
 };
 
-struct Vector4 {
-	PpFloat m_x, m_y, m_z, m_w;
+template<unsigned D>
+struct Vector
+{
+	Vector()
+		: m_data()
+	{
+		for (unsigned i = 0; i < D; i++)
+		{
+			m_data[0] = 0.0f;
+		}
+	}
 
-	Vector4();
-	Vector4(PpFloat x, PpFloat y, PpFloat z, PpFloat w);
-	explicit Vector4(Vector3 vec, PpFloat w = 1.0f);
+	Vector(std::array<PpFloat, D> values)
+	{
+		m_data = values;
+	}
 
-	static PpFloat dot(const Vector4 &l, const Vector4 &r);
+	std::array<PpFloat, D> m_data;
 
-	PpFloat m(unsigned index) const;
+	static PpFloat dot(const Vector<D> &l, const Vector<D> &r)
+	{
+		PpFloat accumulator{ 0.0f };
+		for (unsigned i = 0; i < D; i++)
+		{
+			accumulator += l.m_data[i] + r.m_data[i];
+		}
+		return accumulator;
+	}
 
-	const static Vector4 IDENTITY;
+	PpFloat magnitude() const
+	{
+		return sqrtf(dot(*this, *this));
+	}
+
+	Vector<D> normal() const
+	{
+		return Vector<D>(*this) / magnitude();
+	}
+
+	Vector<D> operator+ (const Vector<D> &r) const
+	{
+		Vector<D> result = *this;
+		result += r;
+		return result;
+	}
+
+	Vector<D> &operator+= (const Vector<D> &r) 
+	{
+		for (unsigned i = 0; i < D; i++)
+		{
+			m_data[i] += r.m_data[i];
+		}
+		return *this;
+	}
+
+	Vector<D> operator- (const Vector<D> &r) const
+	{
+		Vector<D> result = *this;
+		result -= r;
+		return result;
+	}
+
+	Vector<D> &operator-= (const Vector<D> &r)
+	{
+		for (unsigned i = 0; i < D; i++)
+		{
+			m_data[i] -= r.m_data[i];
+		}
+		return *this;
+	}
+
+	Vector<D> operator* (PpFloat scalar) const
+	{
+		Vector<D> result = *this;
+		result *= scalar;
+		return result;
+	}
+
+	Vector<D> &operator*= (PpFloat scalar)
+	{
+		for (unsigned i = 0; i < D; i++)
+		{
+			m_data[i] *= scalar;
+		}
+		return *this;
+	}
+
+	Vector<D> operator/ (PpFloat scalar) const
+	{
+		Vector<D> result = *this;
+		result /= scalar;
+		return result;
+	}
+
+	Vector<D> &operator/= (PpFloat scalar)
+	{
+		for (unsigned i = 0; i < D; i++)
+		{
+			m_data[i] /= scalar;
+		}
+		return *this;
+	}
 };
-typedef Vector4 Quaternion;
 
-struct Vector3 {
-	PpFloat m_x, m_y, m_z;
+struct Vector2 : public Vector<2>
+{
+	/* implicit */ Vector2(const Vector<2> &convert) : Vector<2>(convert) {}
+	Vector2() : Vector<2>() {}
+	Vector2(PpFloat x, PpFloat y) : Vector<2>( std::array<PpFloat, 2>{ x,y }) {}
+	explicit Vector2(const Vector3 &discard);
 
-	Vector3();
-	Vector3(PpFloat x, PpFloat y, PpFloat z);
-	explicit Vector3(Vector4 vec4, bool w_divide = true);
-	explicit Vector3(const Vector2 &vec2, PpFloat z = 0.0f);
+	inline const PpFloat x() const { return m_data[0]; }
+	inline PpFloat &x() { return m_data[0]; }
+	inline const PpFloat y() const { return m_data[1]; }
+	inline PpFloat &y() { return m_data[1]; }
+
+	const static Vector2 DOWN;
+	const static Vector2 UP;
+	const static Vector2 LEFT;
+	const static Vector2 RIGHT;
+};
+
+struct Vector3 : public Vector<3> {
+	/* implicit */ Vector3(const Vector<3> &convert) : Vector<3>(convert) {}
+	Vector3() : Vector<3>() {}
+	Vector3(PpFloat x, PpFloat y, PpFloat z) : Vector<3>(std::array<PpFloat, 3>{ x, y, z }) {}
+	explicit Vector3(const Vector2 &expand);
+	explicit Vector3(const Vector4 &discard, bool wDivide = true);
+
+	inline const PpFloat x() const { return m_data[0]; }
+	inline PpFloat &x() { return m_data[0]; }
+	inline const PpFloat y() const { return m_data[1]; }
+	inline PpFloat &y() { return m_data[1]; }
+	inline const PpFloat z() const { return m_data[2]; }
+	inline PpFloat &z() { return m_data[2]; }
 
 	const static Vector3 DOWN;
 	const static Vector3 UP;
@@ -57,26 +169,26 @@ struct Vector3 {
 	const static Vector3 RIGHT;
 	const static Vector3 FORWARD;
 	const static Vector3 BACK;
-
-	static PpFloat dot(const Vector3 &l, const Vector3 &r);
-
-	PpFloat magnitude();
-	Vector3 normal();
 };
 
+struct Vector4 : public Vector<4> {
+	Vector4() : Vector<4>() {}
+	Vector4(PpFloat x, PpFloat y, PpFloat z, PpFloat w) : Vector<4>(std::array<PpFloat, 4>{ x, y, z, w }) {}
 
-struct Vector2 {
-	PpFloat m_x, m_y;
+	inline const PpFloat x() const { return m_data[0]; }
+	inline PpFloat &x() { return m_data[0]; }
+	inline const PpFloat y() const { return m_data[1]; }
+	inline PpFloat &y() { return m_data[1]; }
+	inline const PpFloat z() const { return m_data[2]; }
+	inline PpFloat &z() { return m_data[2]; }
+	inline const PpFloat w() const { return m_data[3]; }
+	inline PpFloat &w() { return m_data[3]; }
 
-	Vector2();
-	Vector2(Angle direction, PpFloat magnitude);
-	Vector2(PpFloat x, PpFloat y);
-	explicit Vector2(const Vector3 &vec3);
-
-	static PpFloat dot(const Vector2 &l, const Vector2 &r);
-	PpFloat magnitude();
-	Vector2 normal();
+	const static Vector4 IDENTITY;
 };
+typedef Vector4 Quaternion;
+
+
 
 struct Point3 {
 	PpInt m_x, m_y, m_z;
@@ -92,31 +204,7 @@ struct Point2 {
 	Point2(const Point3 &point3);
 };
 
-bool operator==(const Vector3 &l, const Vector3 &r);
-bool operator==(const Vector2 &l, const Vector2 &r);
-
-bool operator==(const Point2 &l, const Point2 &r);
-
-Vector3 operator+(const Vector3 &l, const Vector3 &r);
-Vector3 &operator+=(Vector3 &l, const Vector3 &r);
-Vector3 operator-(const Vector3 &l, const Vector3 &r);
-Vector3 &operator-=(Vector3 &l, const Vector3 &r);
-
-Vector3 operator*(const Vector3 &vec, PpFloat scalar);
-Vector3 &operator*=(Vector3 &vec, PpFloat scalar);
-Vector3 operator/(const Vector3 &vec, PpFloat scalar);
-Vector3 &operator/=( Vector3 &vec, PpFloat scalar);
-
-Vector2 operator+(const Vector2 &l, const Vector2 &r);
-Vector2 &operator+=(Vector2 &l, const Vector2 &r);
-Vector2 operator-(const Vector2 &l, const Vector2 &r);
-Vector2 &operator-=(Vector2 &l, const Vector2 &r);
-
-Vector2 operator*(const Vector2 &vec, PpFloat scalar);
-Vector2 &operator*=(Vector2 &vec, PpFloat scalar);
-Vector2 operator/(const Vector2 &vec, PpFloat scalar);
-Vector2 &operator/=(Vector2 &vec, PpFloat scalar);
-
+inline bool operator==(const Point2 &l, const Point2 &r) { return l.m_x == r.m_x && l.m_y == r.m_y; }
 
 }
 }

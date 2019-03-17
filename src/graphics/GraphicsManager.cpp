@@ -280,10 +280,10 @@ void GraphicsManager::drawSpriteComponent(const SpriteComponent &spriteComponent
 	SpriteDrawInfo drawInfo;
 
 	drawInfo.m_worldCoord = {
-		actualPosition.m_x,
-		actualPosition.m_y,
-		actualPosition.m_x + worldSize.m_x,
-		actualPosition.m_y + worldSize.m_y
+		actualPosition.x(),
+		actualPosition.y(),
+		actualPosition.x() + worldSize.x(),
+		actualPosition.y() + worldSize.y()
 	};
 
 	Sprite *sprite = spriteComponent.getSprite();
@@ -291,15 +291,15 @@ void GraphicsManager::drawSpriteComponent(const SpriteComponent &spriteComponent
 	const types::Vector2 textureSize = sprite->getSize();
 
 	drawInfo.m_texCoord = {
-		texturePosition.m_x,
-		texturePosition.m_y,
-		texturePosition.m_x + textureSize.m_x,
-		texturePosition.m_y + textureSize.m_y
+		texturePosition.x(),
+		texturePosition.y(),
+		texturePosition.x() + textureSize.x(),
+		texturePosition.y() + textureSize.y()
 	};
 
 	drawInfo.m_hints = spriteComponent.getHints();
 	drawInfo.m_texture = sprite->getTexture();
-	drawInfo.m_depth = actualPosition.m_z;
+	drawInfo.m_depth = actualPosition.z();
 
 	enqueueSpriteDraw(drawInfo);
 }
@@ -351,12 +351,12 @@ void GraphicsManager::addSpriteToBuffer(const SpriteDrawInfo &info, SpriteBuffer
 void GraphicsManager::addSpriteVertexToBuffer(const types::Vector3 &pos, const types::Vector2 &uv, SpriteBuffer *buffer)
 {
 	SpriteVertex vertex{
-		static_cast<GLfloat>(pos.m_x),
-		static_cast<GLfloat>(pos.m_y),
-		static_cast<GLfloat>(pos.m_z),
+		static_cast<GLfloat>(pos.x()),
+		static_cast<GLfloat>(pos.y()),
+		static_cast<GLfloat>(pos.z()),
 
-		static_cast<GLfloat>(uv.m_x),
-		static_cast<GLfloat>(uv.m_y)
+		static_cast<GLfloat>(uv.x()),
+		static_cast<GLfloat>(uv.y())
 	};
 
 	buffer->push_back(vertex);
@@ -428,7 +428,7 @@ void GraphicsManager::setCompatibleState(const SpriteDrawInfo &info, SpriteRende
 
 void GraphicsManager::updateCamera()
 {
-	types::PpFloat cameraRatio = m_mainCamera.m_size.m_x / m_mainCamera.m_size.m_y;
+	types::PpFloat cameraRatio = m_mainCamera.m_size.x() / m_mainCamera.m_size.y();
 
 	types::Vector2 scale = m_mainCamera.m_size;
 
@@ -437,13 +437,13 @@ void GraphicsManager::updateCamera()
 		// FIXME update for non-stretch modes
 	}
 
-	types::Vector2 translate{ m_mainCamera.m_center.m_x / scale.m_x, m_mainCamera.m_center.m_y / scale.m_y};
+	types::Vector2 translate{ m_mainCamera.m_center.x() / scale.x(), m_mainCamera.m_center.y() / scale.y()};
 
 	GLfloat cameraTransform[16]{
-		2 / scale.m_x,		0,					0,	0,
-		0,					2 / scale.m_y,		0,	0,
+		2 / scale.x(),		0,					0,	0,
+		0,					2 / scale.y(),		0,	0,
 		0,					0,					1,	0,
-		-translate.m_x * 2,	-translate.m_y * 2,	0,	1
+		-translate.x() * 2,	-translate.y() * 2,	0,	1
 	};
 
 	m_programSpriteSoftAlpha->use();
@@ -456,8 +456,8 @@ void GraphicsManager::updateCamera()
 	glUniformMatrix4fv(m_programUiText->getUniformLocation("u_transform"), 1, GL_FALSE, cameraTransform);
 
 	m_frameBuffer->resize({ 
-		static_cast<types::PpInt>(scale.m_x),
-		static_cast<types::PpInt>(scale.m_y)});
+		static_cast<types::PpInt>(scale.x()),
+		static_cast<types::PpInt>(scale.y())});
 }
 
 bool GraphicsManager::compSortSoftalpha(const SpriteDrawInfo &first, const SpriteDrawInfo &second)

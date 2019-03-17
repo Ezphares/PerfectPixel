@@ -214,16 +214,16 @@ namespace perfectpixel
 				secondTransform = getTransform(second);
 
 			types::Vector2 offset{
-				(secondTransform.m_position.m_x + secondRect.m_center.m_x) - (firstTransform.m_position.m_x + firstRect.m_center.m_x),
-				(secondTransform.m_position.m_y + secondRect.m_center.m_y) - (firstTransform.m_position.m_y + firstRect.m_center.m_y)
+				(secondTransform.m_position.x() + secondRect.m_center.x()) - (firstTransform.m_position.x() + firstRect.m_center.x()),
+				(secondTransform.m_position.y() + secondRect.m_center.y()) - (firstTransform.m_position.y() + firstRect.m_center.y())
 			};
 
 			types::Vector2 overlap {
-				(firstRect.m_size.m_x + secondRect.m_size.m_x) / 2 - std::abs(offset.m_x),
-				(firstRect.m_size.m_y + secondRect.m_size.m_y) / 2 - std::abs(offset.m_y)
+				firstRect.m_halfSize.x() + secondRect.m_halfSize.x() - std::abs(offset.x()),
+				firstRect.m_halfSize.y() + secondRect.m_halfSize.y() - std::abs(offset.y())
 			};
 
-			if (overlap.m_x < COLLISON_LEEWAY || overlap.m_y < COLLISON_LEEWAY)
+			if (overlap.x() < COLLISON_LEEWAY || overlap.y() < COLLISON_LEEWAY)
 			{
 				// No collision
 				return false;
@@ -244,8 +244,8 @@ namespace perfectpixel
 				secondTransform = getTransform(second);
 
 			types::Vector2 offset{
-				(secondTransform.m_position.m_x + secondCircle.m_center.m_x) - (firstTransform.m_position.m_x + firstCircle.m_center.m_x),
-				(secondTransform.m_position.m_y + secondCircle.m_center.m_y) - (firstTransform.m_position.m_y + firstCircle.m_center.m_y)
+				(secondTransform.m_position.x() + secondCircle.m_center.x()) - (firstTransform.m_position.x() + firstCircle.m_center.x()),
+				(secondTransform.m_position.y() + secondCircle.m_center.y()) - (firstTransform.m_position.y() + firstCircle.m_center.y())
 			};
 
 			types::PpFloat threshold = (firstCircle.m_radius + secondCircle.m_radius);
@@ -296,10 +296,10 @@ namespace perfectpixel
 				types::Vector2 overlap = collision.m_data_RectRectOverlap;
 				types::PpFloat newVel1, newVel2;
 
-				if (overlap.m_x < overlap.m_y)
+				if (overlap.x() < overlap.y())
 				{
-					singleAxisReposition(firstPhysics.getMass(), secondPhysics.getMass(), overlap.m_x, &resolution1.m_x, &resolution2.m_x);
-					if (absoluteCenter(*collision.m_firstCollider).m_x > absoluteCenter(*collision.m_secondCollider).m_x)
+					singleAxisReposition(firstPhysics.getMass(), secondPhysics.getMass(), overlap.x(), &(resolution1.m_data[0]), &(resolution2.m_data[0]));
+					if (absoluteCenter(*collision.m_firstCollider).x() > absoluteCenter(*collision.m_secondCollider).x())
 					{
 						resolution2 *= -1;
 					}
@@ -308,14 +308,14 @@ namespace perfectpixel
 						resolution1 *= -1;
 					}
 
-					singleAxisBounce(bounciness, firstPhysics.getMass(), secondPhysics.getMass(), firstTransform.m_velocity.m_x, secondTransform.m_velocity.m_x, &newVel1, &newVel2);
-					bounce1 = { newVel1, firstTransform.m_velocity.m_y };
-					bounce2 = { newVel2, secondTransform.m_velocity.m_y };
+					singleAxisBounce(bounciness, firstPhysics.getMass(), secondPhysics.getMass(), firstTransform.m_velocity.x(), secondTransform.m_velocity.x(), &newVel1, &newVel2);
+					bounce1 = { newVel1, firstTransform.m_velocity.y() };
+					bounce2 = { newVel2, secondTransform.m_velocity.y() };
 				}
 				else
 				{
-					singleAxisReposition(firstPhysics.getMass(), secondPhysics.getMass(), overlap.m_y, &resolution1.m_y, &resolution2.m_y);
-					if (absoluteCenter(*collision.m_firstCollider).m_y > absoluteCenter(*collision.m_secondCollider).m_y)
+					singleAxisReposition(firstPhysics.getMass(), secondPhysics.getMass(), overlap.y(), &(resolution1.m_data[1]), &(resolution2.m_data[1]));
+					if (absoluteCenter(*collision.m_firstCollider).y() > absoluteCenter(*collision.m_secondCollider).y())
 					{
 						resolution2 *= -1;
 					}
@@ -324,9 +324,9 @@ namespace perfectpixel
 						resolution1 *= -1;
 					}
 
-					singleAxisBounce(bounciness, firstPhysics.getMass(), secondPhysics.getMass(), firstTransform.m_velocity.m_y, secondTransform.m_velocity.m_y, &newVel1, &newVel2);
-					bounce1 = { firstTransform.m_velocity.m_x, newVel1 };
-					bounce2 = { secondTransform.m_velocity.m_x, newVel2 };
+					singleAxisBounce(bounciness, firstPhysics.getMass(), secondPhysics.getMass(), firstTransform.m_velocity.y(), secondTransform.m_velocity.y(), &newVel1, &newVel2);
+					bounce1 = { firstTransform.m_velocity.x(), newVel1 };
+					bounce2 = { secondTransform.m_velocity.x(), newVel2 };
 				}
 			}
 			else if (

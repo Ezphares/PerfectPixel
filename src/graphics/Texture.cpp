@@ -138,8 +138,8 @@ perfectpixel::types::Vector2 Texture::pixelToTexture(types::Point2 pixel) const
 perfectpixel::types::Point2 Texture::textureToPixel(types::Vector2 pixel) const
 {
 	return types::Point2{
-		static_cast<types::PpInt>(pixel.m_x * m_size.m_x + 0.001),
-		static_cast<types::PpInt>(pixel.m_y * m_size.m_y + 0.001),
+		static_cast<types::PpInt>(pixel.x() * m_size.m_x + 0.001),
+		static_cast<types::PpInt>(pixel.y() * m_size.m_y + 0.001),
 	};
 }
 

@@ -28,7 +28,7 @@ public:
 
 	virtual void onUpdate(types::PpFloat deltaT)
 	{
-		m_transform->m_velocity.m_y = pp()->Input()->getAxisState("Vertical") * m_speed;
+		m_transform->m_velocity.y() = pp()->Input()->getAxisState("Vertical") * m_speed;
 	}
 
 private:
@@ -58,8 +58,8 @@ public:
 
 	virtual void onUpdate(types::PpFloat deltaT)
 	{
-		bool up = m_transform->m_position.m_y < m_ballTransform->m_position.m_y;
-		m_transform->m_velocity.m_y = (up ? 1.0f : -1.0f) * m_speed;
+		bool up = m_transform->m_position.y() < m_ballTransform->m_position.y();
+		m_transform->m_velocity.y() = (up ? 1.0f : -1.0f) * m_speed;
 	}
 
 private:
@@ -86,23 +86,23 @@ public:
 
 	void reset()
 	{	
-		m_transform->m_position = { 0, 0, m_transform->m_position.m_z };
+		m_transform->m_position = { 0, 0, m_transform->m_position.z() };
 
-		m_transform->m_velocity.m_x = m_transform->m_velocity.m_x > 0 ? -40.0f : 40.0f;
-		m_transform->m_velocity.m_y = m_transform->m_velocity.m_y > 0 ? 35.0f : -35.0f;
-		m_dxPrev = m_transform->m_velocity.m_x;
+		m_transform->m_velocity.x() = m_transform->m_velocity.x() > 0 ? -40.0f : 40.0f;
+		m_transform->m_velocity.y() = m_transform->m_velocity.y() > 0 ? 35.0f : -35.0f;
+		m_dxPrev = m_transform->m_velocity.x();
 	}
 
 	virtual void onUpdate(types::PpFloat deltaT)
 	{
 		bool shouldReset = false;
 
-		if (m_transform->m_position.m_x < -80)
+		if (m_transform->m_position.x() < -80)
 		{
 			m_score2++;
 			shouldReset = true;
 		}
-		else if (m_transform->m_position.m_x > 80)
+		else if (m_transform->m_position.x() > 80)
 		{
 			m_score1++;
 			shouldReset = true;
@@ -114,12 +114,12 @@ public:
 		}
 
 		// Speed up after batting
-		if (m_dxPrev > 0 != m_transform->m_velocity.m_x > 0)
+		if (m_dxPrev > 0 != m_transform->m_velocity.x() > 0)
 		{
 			m_transform->m_velocity *= 1.05f;
 		}
 
-		m_dxPrev = m_transform->m_velocity.m_x;
+		m_dxPrev = m_transform->m_velocity.x();
 	}
 
 
@@ -146,7 +146,7 @@ class Pong : public core::Game
 	void createBat(types::PpFloat x, graphics::Sprite *spr, bool isAi)
 	{
 		world::Entity e{ m_entityManager.create() };
-		m_physicsManager.getTransform(e).m_position.m_x = x;
+		m_physicsManager.getTransform(e).m_position.x() = x;
 
 		graphics::SpriteComponent sprite{ e, spr,{ 4, 16 },{ -2,  -8 }, 1 };
 		m_graphicsManager.registerSprite(e, sprite);
@@ -177,8 +177,8 @@ class Pong : public core::Game
 
 		m_ball = m_entityManager.create();
 
-		m_physicsManager.getTransform(eTopWall).m_position.m_y = 58;
-		m_physicsManager.getTransform(eBottomWall).m_position.m_y = -58;
+		m_physicsManager.getTransform(eTopWall).m_position.y() = 58;
+		m_physicsManager.getTransform(eBottomWall).m_position.y() = -58;
 
 		graphics::Texture *tex = new  graphics::Texture(graphics::PNG::fromFile("pong-all.png") );
 

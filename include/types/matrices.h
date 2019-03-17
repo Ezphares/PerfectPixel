@@ -2,24 +2,191 @@
 
 #include <types/vectors.h>
 
+#include <type_traits>
+#include <array>
+
 namespace perfectpixel {
 	namespace types {
 
-struct Matrix4x4
-{
-	Matrix4x4(Vector4 c1 = Vector4(), Vector4 c2 = Vector4(), Vector4 c3 = Vector4(), Vector4 c4 = Vector4());
+		template<unsigned W, unsigned H>
+		struct Matrix
+		{
+			static_assert(W > 1, "Matrix should have at least 2 columns, use a vector otherwise");
+			static_assert(H > 1, "Matrix should have at least 2 rows, use a vector otherwise");
 
-	const static Matrix4x4 IDENTITY;
+			template <typename T>
+			using EnableIfSquare = typename std::enable_if<W == H, T>::type;
 
-	PpFloat m(unsigned index) const;
-	Vector4 row(unsigned index) const;
+			Matrix(std::array<PpFloat, W*H> data)
+				: m_data(data)
+			{}
 
-	Vector4 m_c1, m_c2, m_c3, m_c4;
-};
+			Matrix()
+				: m_data()
+			{
+				for (unsigned i = 0; i < W*H; i++)
+				{
+					m_data[i] = 0.0f;
+				}
+			}
 
-Matrix4x4 operator* (const Matrix4x4 &l, const Matrix4x4 &r);
-Matrix4x4 &operator*= (Matrix4x4 &l, const Matrix4x4 &r);
-Vector4 operator* (const Matrix4x4 &mat, const Vector4 &vec);
+			PpFloat &m(unsigned x, unsigned y)
+			{
+				return m_data[x * H + y];
+			}
+
+			const PpFloat m(unsigned x, unsigned y) const
+			{
+				return m_data[x * H + y];
+			}
+
+			std::array<PpFloat, W*H> m_data;
+
+			Vector<H> column(unsigned index) const
+			{
+				std::array<PpFloat, H> result;
+				for (unsigned i = 0; i < W; i++)
+				{
+					result[i] = m_data[index * H + i];
+				}
+				return result;
+			}
+
+			Vector<W> row(unsigned index) const
+			{
+				std::array<PpFloat, W> result;
+				for (unsigned i = 0; i < W; i++)
+				{
+					result[i] = m_data[i * H + index];
+				}
+				return result;
+			}
+
+			Vector<H> operator*(const Vector<W> &r) const
+			{
+				Vector<H> result;
+				for (unsigned i = 0; i < H; i++)
+				{
+					result.m_data[i] = Vector<W>::dot(row(i), r);
+				}
+				return result;
+			}
+
+			Matrix<H, H> operator*(const Matrix<H, W> &r) const
+			{
+				Matrix<H, H> result;
+
+				for (unsigned i = 0; i < H; i++)
+				{
+					for (unsigned j = 0; j < H; i++)
+					{
+						result.m(i, j) = Vector<H>::dot(column(i), r.row(j));
+					}
+				}
+
+				return result;
+			}
+
+			template <typename T = Matrix<H,H>>
+			EnableIfSquare<T> &operator*=(const Matrix<H, W> &r)
+			{
+				return *this = *this * r;
+			}
+
+			template <typename T = Matrix<H, H>>
+			static EnableIfSquare<T> generateIdentity()
+			{
+				T result;
+
+				for (unsigned i = 0; i < H; i++)
+				{
+					result.m(i, i) = 1;
+				}
+
+				return result;
+			}
+
+			template <typename T=Matrix<H-1, H-1>>
+			EnableIfSquare<T> minor(unsigned x, unsigned y) const
+			{
+				T result;
+
+				for (unsigned i = 0; i < H - 1; i++)
+				{
+					for (unsigned j = 0; j < H - 1; j++)
+					{
+						unsigned sourceX = i >= x ? i + 1 : i;
+						unsigned sourceY = j >= y ? j + 1 : j;
+
+						result.m(i, j) = m(sourceX, sourceY);
+					}
+				}
+
+				return result;
+			}
+
+			template <unsigned D>
+			struct ImplDeterminant
+			{
+				static PpFloat get(const Matrix<D, D> &mat)
+				{
+					PpFloat accumulator{ 0.0f };
+					bool add = true;
+
+					for (unsigned i = 0; i < D; i++)
+					{
+						PpFloat recurse = mat.m(i, 0) * ImplDeterminant<D - 1>::get(mat.minor(i, 0));
+
+						accumulator += add ? recurse : -recurse;
+
+						add = !add;
+					}
+
+					return accumulator;
+				}
+			};
+
+			template <>
+			struct ImplDeterminant<2>
+			{
+				static PpFloat get(const Matrix<2, 2> &mat)
+				{
+					return mat.m_data[0] * mat.m_data[3] - mat.m_data[1] * mat.m_data[2];
+				}
+			};
+
+			template<typename T = PpFloat>
+			EnableIfSquare<T> determinant()
+			{
+				return ImplDeterminant<H>::get(*this);
+			}
+
+
+		};
+
+		struct Matrix2x2 : public Matrix<2, 2>
+		{
+			/*implicit*/ Matrix2x2(const Matrix<2, 2> &convert) : Matrix<2, 2>(convert) {}
+
+			static const Matrix2x2 IDENTITY;
+
+			static Matrix2x2 rotate(Angle angle);
+		};
+
+		struct Matrix3x3 : public Matrix<3, 3>
+		{
+			/*implicit*/ Matrix3x3(const Matrix<3, 3> &convert) : Matrix<3, 3>(convert) {}
+
+			static const Matrix3x3 IDENTITY;
+		};
+
+		struct Matrix4x4 : public Matrix<4, 4>
+		{
+			/*implicit*/ Matrix4x4(const Matrix<4, 4> &convert) : Matrix<4, 4>(convert) {}
+
+			static const Matrix4x4 IDENTITY;
+		};
+
 
 	}
 }

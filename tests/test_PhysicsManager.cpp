@@ -51,8 +51,8 @@ namespace tests
 			ColliderComponent cb = ColliderComponent(b, types::AARectangle({ 20, 10 }));
 
 			Assert::IsTrue(m_manager->checkCollision(ca, cb, &data), L"Collision missed", LINE_INFO());
-			AssertFloatApprox(overlap->m_x, 15);
-			AssertFloatApprox(overlap->m_y, 10);
+			AssertFloatApprox(overlap->x(), 15);
+			AssertFloatApprox(overlap->y(), 10);
 
 			m_manager->getTransform(b).m_position = { 0, 10, 0};
 			Assert::IsFalse(m_manager->checkCollision(ca, cb, &data), L"Incorrect collison detected", LINE_INFO());
@@ -60,18 +60,18 @@ namespace tests
 			// Checking partial collision
 			m_manager->getTransform(b).m_position = { 10, 0, 0 };
 			Assert::IsTrue(m_manager->checkCollision(ca, cb, &data), L"Incorrect collison detected", LINE_INFO());
-			AssertFloatApprox(overlap->m_x, 5);
+			AssertFloatApprox(overlap->x(), 5);
 
 			// Checking that both sides create negative offset
 			m_manager->getTransform(b).m_position = { -10, 0, 0 };
 			Assert::IsTrue(m_manager->checkCollision(ca, cb, &data), L"Incorrect collison detected", LINE_INFO());
-			AssertFloatApprox(overlap->m_x, 5);
+			AssertFloatApprox(overlap->x(), 5);
 
 			// Check partial on both axes
 			m_manager->getTransform(b).m_position = { 14, -9, 0 };
 			Assert::IsTrue(m_manager->checkCollision(ca, cb, &data), L"Incorrect collison detected", LINE_INFO());
-			AssertFloatApprox(overlap->m_x, 1);
-			AssertFloatApprox(overlap->m_y, 1);
+			AssertFloatApprox(overlap->x(), 1);
+			AssertFloatApprox(overlap->y(), 1);
 		}
 
 		TEST_METHOD(test_PhysicsManager_singleAxisReposition)

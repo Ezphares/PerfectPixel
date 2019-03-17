@@ -31,8 +31,8 @@ namespace perfectpixel {
 			types::Vector2 step = m_textureSize + m_frameSpacing;
 
 			return types::Vector2{
-				m_textureTopLeft.m_x + (frame % m_framesPerRow) * step.m_x,
-				m_textureTopLeft.m_y + (frame / m_framesPerRow) * step.m_y
+				m_textureTopLeft.x() + (frame % m_framesPerRow) * step.x(),
+				m_textureTopLeft.y() + (frame / m_framesPerRow) * step.y()
 			};
 		}
 

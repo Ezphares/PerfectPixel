@@ -11,90 +11,27 @@ namespace types {
 		const static PpFloat DEG2RAD = PI / 180;
 	}
 
-	Vector4::Vector4(PpFloat x /*= 0.0f*/, PpFloat y /*= 0.0f*/, PpFloat z /*= 0.0f*/, PpFloat w /*= 0.0f*/)
-		: m_x(x)
-		, m_y(y)
-		, m_z(z)
-		, m_w(w)
+	Vector2::Vector2(const Vector3 &discard)
+		: Vector<2>(std::array<PpFloat, 2>{discard.x(), discard.y()})
 	{}
 
-	Vector4::Vector4(Vector3 vec, PpFloat w /*= 1.0f*/)
-		: m_x(vec.m_x)
-		, m_y(vec.m_y)
-		, m_z(vec.m_z)
-		, m_w(w)
+	const Vector2 Vector2::DOWN = Vector2(0, -1);
+	const Vector2 Vector2::UP = Vector2(0, 1);
+	const Vector2 Vector2::LEFT = Vector2(1, 0);
+	const Vector2 Vector2::RIGHT = Vector2(-1, 0);
+
+	Vector3::Vector3(const Vector2 &expand)
+		: Vector<3>(std::array<PpFloat, 3>({expand.x(), expand.y(), 0.0f}))
 	{}
 
-	Vector4::Vector4()
-		: m_x(0.0f)
-		, m_y(0.0f)
-		, m_z(0.0f)
-		, m_w(0.0f)
-	{}
 
-	perfectpixel::types::PpFloat Vector4::dot(const Vector4 &l, const Vector4 &r)
+	Vector3::Vector3(const Vector4 &discard, bool wDivide /*= true*/)
+		: Vector<3>(std::array<PpFloat, 3>({ discard.x(), discard.y(), discard.z() }))
 	{
-		return  l.m_x * r.m_x + l.m_y * r.m_y + l.m_z + r.m_z + l.m_w * r.m_w;
-	}
-
-	perfectpixel::types::PpFloat Vector4::m(unsigned index) const
-	{
-		switch (index)
+		if (wDivide && discard.w() > 0.0f)
 		{
-		case 0:
-			return m_x;
-		case 1:
-			return m_y;
-		case 2:
-			return m_z;
-		case 3:
-			return m_w;
-		default:
-			throw "Vector index out of bounds";
-
-			break;
+			*this /= discard.w();
 		}
-	}
-
-	const Vector4 Vector4::IDENTITY{ 0.0f, 0.0f, 0.0f, 1.0f };
-
-	Vector3::Vector3(PpFloat x, PpFloat y, PpFloat z)
-		: m_x(x)
-		, m_y(y)
-		, m_z(z)
-	{}
-
-	Vector3::Vector3(const Vector2 &vec2, PpFloat z)
-		: m_x(vec2.m_x)
-		, m_y(vec2.m_y)
-		, m_z(z)
-	{}
-
-	Vector3::Vector3(Vector4 vec4, bool w_divide /*= true*/)
-		: m_x(vec4.m_x)
-		, m_y(vec4.m_y)
-		, m_z(vec4.m_z)
-	{
-		if (w_divide && vec4.m_w > 0.0f)
-		{
-			*this /= vec4.m_w;
-		}
-	}
-
-	Vector3::Vector3()
-		: m_x(0.0f)
-		, m_y(0.0f)
-		, m_z(0.0f)
-	{}
-
-	PpFloat Vector3::magnitude()
-	{
-		return sqrtf(m_x * m_x + m_y * m_y + m_z * m_z);
-	}
-
-	Vector3 Vector3::normal()
-	{
-		return Vector3(*this) / magnitude();
 	}
 
 	const Vector3 Vector3::DOWN = Vector3(0, -1, 0);
@@ -104,177 +41,7 @@ namespace types {
 	const Vector3 Vector3::FORWARD = Vector3(0, 0, 1);
 	const Vector3 Vector3::BACK = Vector3(0, 0, -1);
 
-	PpFloat Vector3::dot(const Vector3 &l, const Vector3 &r)
-	{
-		return l.m_x * r.m_x + l.m_y * r.m_y + l.m_z + r.m_z;
-	}
-
-	Vector2::Vector2(PpFloat x, PpFloat y)
-		: m_x(x)
-		, m_y(y)
-	{}
-
-	Vector2::Vector2(const Vector3 &vec3)
-		: m_x(vec3.m_x)
-		, m_y(vec3.m_y)
-	{}
-
-	Vector2::Vector2(Angle direction, PpFloat magnitude)
-		: m_x(std::cos(direction.radians()) * magnitude)
-		, m_y(-std::sin(direction.radians()) * magnitude)
-	{}
-
-	Vector2::Vector2()
-		: m_x(0.0f)
-		, m_y(0.0f)
-	{}
-
-	PpFloat Vector2::dot(const Vector2 &l, const Vector2 &r)
-	{
-		return l.m_x * r.m_x + l.m_y * r.m_y;
-	}
-
-	PpFloat Vector2::magnitude()
-	{
-		return std::sqrtf(m_x * m_x + m_y * m_y);
-	}
-
-	Vector2 Vector2::normal()
-	{
-		return Vector2(*this) / magnitude();
-	}
-
-	bool operator==(const Vector3 &l, const Vector3 &r)
-	{
-		return l.m_x == r.m_x && l.m_y == r.m_y && l.m_z == r.m_z;
-	}
-
-	bool operator==(const Vector2 &l, const Vector2 &r)
-	{
-		return l.m_x == r.m_x && l.m_y == r.m_y;
-	}
-
-	bool operator==(const Point2 &l, const Point2 &r)
-	{
-		return l.m_x == r.m_x && l.m_y == r.m_y;
-	}
-
-	perfectpixel::types::Vector3 operator+(const Vector3 &l, const Vector3 &r)
-	{
-		Vector3 res = l;
-		res += r;
-		return res;
-	}
-
-	perfectpixel::types::Vector3 & operator+=(Vector3 &l, const Vector3 &r)
-	{
-		l.m_x += r.m_x;
-		l.m_y += r.m_y;
-		l.m_z += r.m_z;
-		return l;
-	}
-
-	perfectpixel::types::Vector2 operator+(const Vector2 &l, const Vector2 &r)
-	{
-		Vector2 res = l;
-		res += r;
-		return res;
-	}
-
-	perfectpixel::types::Vector3 operator-(const Vector3 &l, const Vector3 &r)
-	{
-		Vector3 res = l;
-		res -= r;
-		return res;
-	}
-
-	perfectpixel::types::Vector3 & operator-=(Vector3 &l, const Vector3 &r)
-	{
-		l.m_x -= r.m_x;
-		l.m_y -= r.m_y;
-		l.m_z -= r.m_z;
-		return l;
-	}
-
-	perfectpixel::types::Vector2 operator-(const Vector2 &l, const Vector2 &r)
-	{
-		Vector2 res = l;
-		res -= r;
-		return l;
-	}
-
-	perfectpixel::types::Vector2 & operator-=(Vector2 &l, const Vector2 &r)
-	{
-		l.m_x -= r.m_x;
-		l.m_y -= r.m_y;
-		return l;
-	}
-
-	perfectpixel::types::Vector3 operator*(const Vector3 &vec, PpFloat scalar)
-	{
-		Vector3 res = vec;
-		res *= scalar;
-		return res;
-	}
-
-	perfectpixel::types::Vector3 & operator*=(Vector3 &vec, PpFloat scalar)
-	{
-		vec.m_x *= scalar;
-		vec.m_y *= scalar;
-		vec.m_z *= scalar;
-		return vec;
-	}
-
-	perfectpixel::types::Vector2 operator*(const Vector2 &vec, PpFloat scalar)
-	{
-		Vector2 res = vec;
-		res *= scalar;
-		return res;
-	}
-
-	perfectpixel::types::Vector3 operator/(const Vector3 &vec, PpFloat scalar)
-	{
-		Vector3 res = vec;
-		res /= scalar;
-		return res;
-	}
-
-	perfectpixel::types::Vector3 & operator/=(Vector3 &vec, PpFloat scalar)
-	{
-		vec.m_x /= scalar;
-		vec.m_y /= scalar;
-		vec.m_z /= scalar;
-		return vec;
-	}
-
-	perfectpixel::types::Vector2 operator/(const Vector2 &vec, PpFloat scalar)
-	{
-		Vector2 res = vec;
-		res /= scalar;
-		return res;
-	}
-
-	perfectpixel::types::Vector2 & operator/=(Vector2 &vec, PpFloat scalar)
-	{
-		vec.m_x /= scalar;
-		vec.m_y /= scalar;
-		return vec;
-	}
-
-	perfectpixel::types::Vector2 & operator+=(Vector2 &l, const Vector2 &r)
-	{
-		l.m_x += r.m_x;
-		l.m_y += r.m_y;
-
-		return l;
-	}
-
-	perfectpixel::types::Vector2 & operator*=(Vector2 &vec, PpFloat scalar)
-	{
-		vec.m_x *= scalar;
-		vec.m_y *= scalar;
-		return vec;
-	}
+	const Vector4 Vector4::IDENTITY{ 0.0f, 0.0f, 0.0f, 1.0f };
 
 	Point2::Point2(PpInt x, PpInt y)
 		: m_x(x)
@@ -292,13 +59,6 @@ namespace types {
 	PpFloat Angle::radians()
 	{
 		return m_rad;
-	}
-
-	Angle Angle::ofVector(Vector2 vec)
-	{
-		Angle res;
-		res.m_rad = std::atan2(vec.m_x, vec.m_y);
-		return res;
 	}
 
 	Angle Angle::degrees(PpFloat degrees)
