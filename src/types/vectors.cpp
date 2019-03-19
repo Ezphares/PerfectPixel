@@ -17,8 +17,8 @@ namespace types {
 
 	const Vector2 Vector2::DOWN = Vector2(0, -1);
 	const Vector2 Vector2::UP = Vector2(0, 1);
-	const Vector2 Vector2::LEFT = Vector2(1, 0);
-	const Vector2 Vector2::RIGHT = Vector2(-1, 0);
+	const Vector2 Vector2::LEFT = Vector2(-1, 0);
+	const Vector2 Vector2::RIGHT = Vector2(1, 0);
 
 	Vector3::Vector3(const Vector2 &expand)
 		: Vector<3>(std::array<PpFloat, 3>({expand.x(), expand.y(), 0.0f}))
@@ -36,12 +36,12 @@ namespace types {
 
 	const Vector3 Vector3::DOWN = Vector3(0, -1, 0);
 	const Vector3 Vector3::UP = Vector3(0, 1, 0);
-	const Vector3 Vector3::LEFT = Vector3(1, 0, 0);
-	const Vector3 Vector3::RIGHT = Vector3(-1, 0, 0);
+	const Vector3 Vector3::LEFT = Vector3(-1, 0, 0);
+	const Vector3 Vector3::RIGHT = Vector3(1, 0, 0);
 	const Vector3 Vector3::FORWARD = Vector3(0, 0, 1);
 	const Vector3 Vector3::BACK = Vector3(0, 0, -1);
 
-	const Vector4 Vector4::IDENTITY{ 0.0f, 0.0f, 0.0f, 1.0f };
+
 
 	Point2::Point2(PpInt x, PpInt y)
 		: m_x(x)

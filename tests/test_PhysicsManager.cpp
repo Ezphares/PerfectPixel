@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 
+#include "testutil.h"
+
 #include <physics/PhysicsManager.h>
 
 #include <types/vectors.h>
@@ -31,13 +33,6 @@ namespace tests
 		{
 			delete m_manager;
 			delete m_entityManager;
-		}
-
-
-
-		void AssertFloatApprox(types::PpFloat expected, types::PpFloat actual, const wchar_t *message = 0, const Microsoft::VisualStudio::CppUnitTestFramework::__LineInfo *lineinfo = 0)
-		{
-			Assert::IsTrue(std::abs(expected - actual) < 0.01, message, lineinfo);
 		}
 
 		TEST_METHOD(test_PhysicsManager_checkCollision_rect_rect)

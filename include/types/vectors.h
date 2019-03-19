@@ -212,12 +212,7 @@ struct Vector4 : public Vector<4> {
 	inline PpFloat &z() { return m_data[2]; }
 	inline const PpFloat w() const { return m_data[3]; }
 	inline PpFloat &w() { return m_data[3]; }
-
-	const static Vector4 IDENTITY;
 };
-typedef Vector4 Quaternion;
-
-
 
 struct Point3 {
 	PpInt m_x, m_y, m_z;
