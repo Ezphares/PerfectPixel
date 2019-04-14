@@ -46,4 +46,37 @@ void EntityManager::kill(Entity entity)
 	}
 }
 
+perfectpixel::world::Entity EntityManager::at(std::uint32_t index)
+{
+	if (index > m_entities.size())
+	{
+		return -1;
+	}
+	return m_entities[index];
+}
+
+void EntityManager::expandMask(types::BitSet bits, std::vector<Entity> *out_entities, EntityFunc callback)
+{
+	if (out_entities) out_entities->clear();
+
+	for (std::size_t i = 0; i < bits.size(); ++i)
+	{
+		if (i >= m_entities.size())
+		{
+			return;
+		}
+
+		if (bits[i])
+		{
+			if (callback) callback(m_entities[i]);
+			if (out_entities) out_entities->push_back(m_entities[i]);
+		}
+	}
+}
+
+perfectpixel::types::BitSet EntityManager::all() const
+{
+	return types::BitSet(m_entities.size(), true);
+}
+
 }}
