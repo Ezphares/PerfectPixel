@@ -11,8 +11,8 @@ namespace graphics {
 class IWindow
 {
 public:
-	typedef boost::function<void(bool)> FocusCallback;
-	typedef boost::function<void(IWindow&, unsigned, unsigned)> SizeCallback;
+	typedef std::function<void(bool)> FocusCallback;
+	typedef std::function<void(IWindow&, unsigned, unsigned)> SizeCallback;
 
 	IWindow() noexcept {}
 	virtual ~IWindow() {}

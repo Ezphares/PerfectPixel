@@ -2,7 +2,7 @@
 
 #include <graphics/IWindow.h>
 
-#include <boost/bind.hpp>
+#include <functional>
 
 #include <chrono>
 #include <thread>
@@ -13,6 +13,7 @@ namespace core {
 	Game::Game()
 		: m_shouldExit(false)
 		, m_entityManager()
+		, m_componentRegistry(&m_entityManager)
 		, m_physicsManager(&m_entityManager)
 		, m_inputManager()
 		, m_graphicsManager(&m_entityManager, m_physicsManager.positionCallback())
@@ -20,6 +21,7 @@ namespace core {
 		, m_targetUps(100)
 		, m_splashFilename("splash.png")
 	{
+		m_managerInterface.setEntityManager(&m_entityManager);
 		m_managerInterface.setBehaviourManager(&m_behaviourManager);
 		m_managerInterface.setPhysicsManager(&m_physicsManager);
 		m_managerInterface.setGraphicsManager(&m_graphicsManager);
@@ -44,8 +46,8 @@ void Game::run()
 	graphics::IWindow *mainWindow = createWindow(mainWindowSettings);
 	mainWindow->activate();
 	mainWindow->setKeyCallback(m_inputManager.getKeyCallback());
-	mainWindow->setFocusCallback(boost::bind(&Game::focus, this, _1));
-	mainWindow->setResizeCallback(boost::bind(&Game::windowResized, this, _1, _2, _3));
+	mainWindow->setFocusCallback(std::bind(&Game::focus, this, std::placeholders::_1));
+	mainWindow->setResizeCallback(std::bind(&Game::windowResized, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
 
 	m_graphicsManager.initialize();
 	graphics::CameraSettings camera;

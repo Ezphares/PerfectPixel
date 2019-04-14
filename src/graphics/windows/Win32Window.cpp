@@ -26,7 +26,6 @@ Win32Window::Win32Window(
 	, m_focusCallback()
 	, m_closed(false)
 {
-	m_focusCallback.clear();
 }
 
 Win32Window::~Win32Window()
@@ -239,7 +238,7 @@ LRESULT CALLBACK Win32Window::WndProc(HWND hwnd, UINT message, WPARAM wParam, LP
 		break;
 
 	case WM_KEYDOWN:
-		if (self && !self->m_keyCallback.empty())
+		if (self && self->m_keyCallback)
 		{
 			self->m_keyCallback(static_cast<types::KeyCode>(wParam), types::PP_KEYDOWN);
 			return 0;
@@ -247,7 +246,7 @@ LRESULT CALLBACK Win32Window::WndProc(HWND hwnd, UINT message, WPARAM wParam, LP
 		break;
 
 	case WM_KEYUP:
-		if (self && !self->m_keyCallback.empty())
+		if (self && self->m_keyCallback)
 		{
 			self->m_keyCallback(static_cast<types::KeyCode>(wParam), types::PP_KEYUP);
 			return 0;
@@ -255,21 +254,21 @@ LRESULT CALLBACK Win32Window::WndProc(HWND hwnd, UINT message, WPARAM wParam, LP
 		break;
 
 	case WM_KILLFOCUS:
-		if (self && !self->m_focusCallback.empty())
+		if (self && self->m_focusCallback)
 		{
 			self->m_focusCallback(false);
 		}
 		break;
 
 	case WM_SETFOCUS:
-		if (self && !self->m_focusCallback.empty())
+		if (self && self->m_focusCallback)
 		{
 			self->m_focusCallback(true);
 		}
 		break;
 
 	case WM_SIZE:
-		if (self && !self->m_sizeCallback.empty())
+		if (self && self->m_sizeCallback)
 		{
 			unsigned
 				width{ static_cast<unsigned>(lParam & ((1 << 16) - 1)) },

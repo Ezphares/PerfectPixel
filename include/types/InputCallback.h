@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/function.hpp>
+#include <functional>
 
 namespace perfectpixel {
 	namespace types {
@@ -12,7 +12,7 @@ namespace perfectpixel {
 			PP_KEYDOWN
 		};
 
-		typedef boost::function<void(KeyCode, KeyEvent)> KeyCallback;
+		typedef std::function<void(KeyCode, KeyEvent)> KeyCallback;
 
 	}
 }

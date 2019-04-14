@@ -4,12 +4,12 @@
 
 #include <types/vectors.h>
 
-#include <boost/function.hpp>
+#include <functional>
 
 namespace perfectpixel {
 	namespace world {
 
-		typedef boost::function<types::Vector3(world::Entity)> PositionCallback;
+		typedef std::function<types::Vector3(world::Entity)> PositionCallback;
 
 
 	}

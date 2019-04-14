@@ -3,6 +3,7 @@
 #include <enginecore/IInitializer.h>
 
 #include <worldgraph/EntityManager.h>
+#include <worldgraph/ComponentRegistry.h>
 #include <graphics/GraphicsManager.h>
 #include <physics/PhysicsManager.h>
 #include <input/InputManager.h>
@@ -60,6 +61,7 @@ private:
 protected:
 	api::ManagerInterface m_managerInterface;
 	world::EntityManager m_entityManager;
+	world::ComponentRegistry m_componentRegistry;
 	physics::PhysicsManager m_physicsManager;
 	input::InputManager m_inputManager;
 	graphics::GraphicsManager m_graphicsManager;

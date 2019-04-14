@@ -2,7 +2,7 @@
 
 #include <types/PpException.h>
 
-#include <boost/bind.hpp>
+#include <functional>
 
 #include <cmath>
 
@@ -185,7 +185,7 @@ namespace perfectpixel
 
 		perfectpixel::world::PositionCallback PhysicsManager::positionCallback()
 		{
-			return boost::bind(&physics::PhysicsManager::getPosition, this, _1);
+			return std::bind(&physics::PhysicsManager::getPosition, this, std::placeholders::_1);
 		}
 
 		void PhysicsManager::translate(world::Entity entiy, types::Vector3 vec)

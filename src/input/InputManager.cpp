@@ -2,7 +2,7 @@
 
 #include <types/PpException.h>
 
-#include <boost/bind.hpp>
+#include <functional>
 
 namespace perfectpixel {
 	namespace input {
@@ -27,7 +27,7 @@ namespace perfectpixel {
 
 		perfectpixel::types::KeyCallback InputManager::getKeyCallback()
 		{
-			return boost::bind(&InputManager::handleInput, this, _1, _2);
+			return std::bind(&InputManager::handleInput, this, std::placeholders::_1, std::placeholders::_2);
 		}
 
 		void InputManager::handleInput(types::KeyCode keyCode, types::KeyEvent keyEvent)

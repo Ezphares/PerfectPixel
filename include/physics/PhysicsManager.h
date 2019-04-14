@@ -26,7 +26,8 @@ namespace physics
 
 	private:
 		struct CollisionData {
-			inline CollisionData() {};
+			inline CollisionData()
+			{};
 			const ColliderComponent *m_firstCollider, *m_secondCollider;
 			ColliderComponent::MaskType m_maskTypeFirst, m_maskTypeSecond;
 			union {
