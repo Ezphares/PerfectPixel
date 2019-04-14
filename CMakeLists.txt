@@ -84,6 +84,7 @@ add_library(Types
 	"${Types_SRC_DIR}/Circle.cpp" 
 	"${Types_SRC_DIR}/File.cpp" 
 	"${Types_SRC_DIR}/PpException.cpp"
+	"${Types_SRC_DIR}/BitSet.cpp"
 )
 
 set (World_SRC_DIR "${CMAKE_SOURCE_DIR}/src/worldgraph")
