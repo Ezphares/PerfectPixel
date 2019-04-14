@@ -25,6 +25,15 @@ namespace tests {
 			AssertFloatApprox(Quaternion::IDENTITY, res);
 		}
 
+		TEST_METHOD(test_create_is_normal)
+		{
+			Quaternion qid = Quaternion::IDENTITY;
+			AssertFloatApprox(1.0f, qid.magnitude());
+
+			Quaternion qrot = Quaternion::rotate(Vector3(2.0f, -3.0f, 0.5f), Angle::radians(1.5f));
+			AssertFloatApprox(1.0f, qrot.magnitude());
+		}
+
 		TEST_METHOD(test_invert_identity)
 		{
 			Quaternion id = Quaternion::IDENTITY;
@@ -61,6 +70,18 @@ namespace tests {
 
 			Vector3 v_res_diag = qrot * v_diag;
 			AssertFloatApprox(Vector3::RIGHT + Vector3::UP, v_res_diag);
+		}
+
+		/// Rotations of vectors along their own axis should not change them
+		TEST_METHOD(test_rotation_along_self)
+		{
+			Vector3 axis = Vector3::UP * 2.0f + Vector3::BACK;
+
+			Quaternion qrot = Quaternion::rotate(axis.normal(), Angle::degrees(45));
+
+			Vector3 result = qrot * axis;
+
+			AssertFloatApprox(axis, result);
 		}
 	};
 }
