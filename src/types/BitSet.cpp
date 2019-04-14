@@ -20,6 +20,13 @@ namespace perfectpixel {
 
 		}
 
+		void BitSet::resize(size_t size, bool val /*= false*/)
+		{
+			m_data.resize((size + 7) / 8, val ? 0xff : 0x00);
+			m_bitSize = size;
+			trim();
+		}
+
 		bool BitSet::get(uint32_t index) const
 		{
 			return (m_data[index / 8] & (1 << (index % 8))) != 0;

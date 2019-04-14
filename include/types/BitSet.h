@@ -29,7 +29,7 @@ namespace perfectpixel {
 		public:
 			inline std::size_t size() const { return m_bitSize; } 
 			inline std::size_t capacity() const { return m_data.capacity() * 8u; }
-			inline void resize(size_t size, bool val = false) { m_data.resize((size + 7) / 8, val ? 0xff : 0x00); }
+			void resize(size_t size, bool val = false);
 
 			void append(bool val);
 			bool get(uint32_t index) const;
