@@ -99,7 +99,6 @@ add_library(EntityComponentSystem
 set (Interface_SRC_DIR "${CMAKE_SOURCE_DIR}/src/managerinterface")
 add_library(Interface
 	"${Interface_SRC_DIR}/ManagerInterface.cpp"
-	"${Interface_SRC_DIR}/Query.cpp"
 )
 
 add_executable(Pong WIN32 "${CMAKE_SOURCE_DIR}/src/main/pong.cpp")

@@ -5,7 +5,6 @@
 #include <types/vectors.h>
 #include <behaviour/Behaviour.h>
 
-#include <managerinterface/Query.h>
 #include "EntityComponentSystem/ComponentRegistry.h"
 
 #include <chrono>
@@ -172,37 +171,11 @@ class Pong : public core::Game
 
 	virtual void gameStart()
 	{
-		Component(TestComponent)
-		{
-
-		};
-		FinalizeComponent(TestComponent);
-
-		Component(TestComponent2)
-		{
-
-		};
-		FinalizeComponent(TestComponent2);
-
-		m_componentRegistry.registerGenericStorage<TestComponent>();
-		m_componentRegistry.registerGenericStorage<TestComponent2>();
-
-
-
-
 		world::Entity
 			ePlayer1{ m_entityManager.create() },
 			ePlayer2{ m_entityManager.create() },
 			eTopWall{ m_entityManager.create() },
 			eBottomWall{ m_entityManager.create() };
-
-
-		TestComponent2 tc2(ePlayer1);
-		m_componentRegistry.registerComponent(tc2);
-
-		api::Query q = api::Query().with<TestComponent2>();
-		q.execute();
-
 
 		m_ball = m_entityManager.create();
 

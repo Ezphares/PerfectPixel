@@ -1,4 +1,4 @@
-#include <managerinterface/Processor.h>
+#include <EntityComponentSystem/Processor.h>
 #include <EntityComponentSystem/EntityManager.h>
 #include <EntityComponentSystem/LifecycleComponents.h>
 

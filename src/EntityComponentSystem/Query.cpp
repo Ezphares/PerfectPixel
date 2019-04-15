@@ -1,6 +1,6 @@
-#include "managerinterface/Query.h"
+#include <EntityComponentSystem/Query.h>
 
-#include "EntityComponentSystem/ComponentRegistry.h"
+#include <EntityComponentSystem/ComponentRegistry.h>
 
 namespace perfectpixel
 {

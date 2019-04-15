@@ -1,6 +1,6 @@
 #pragma once
 
-#include <managerinterface/QueryHelper.h>
+#include <EntityComponentSystem/QueryHelper.h>
 
 namespace perfectpixel {
 	namespace api {

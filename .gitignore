@@ -37,6 +37,9 @@
 **/x64
 build
 
+# External libraries
+dist/*.dll
+
 # Projects and solutions
 *.props
 *.vcxproj
