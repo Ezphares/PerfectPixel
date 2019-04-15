@@ -51,7 +51,17 @@ namespace perfectpixel {
 				throw "Index out of bounds";
 			}
 
-			return BitReference(m_data[index / 8], index % 8);
+			return BitReference(&m_data[index / 8], index % 8);
+		}
+
+		const BitSet::BitReference BitSet::operator[](uint32_t index) const
+		{
+			if (index >= m_bitSize)
+			{
+				throw "Index out of bounds";
+			}
+
+			return BitReference((m_data[index / 8] & (1 << (index % 8))) > 0);
 		}
 
 		BitSet & BitSet::operator&=(const BitSet &other)
@@ -105,25 +115,32 @@ namespace perfectpixel {
 			}
 		}
 
-		BitSet::BitReference::BitReference(uint8_t &byteRef, uint8_t bitIndex)
+		BitSet::BitReference::BitReference(uint8_t *byteRef, uint8_t bitIndex)
 			: m_byteRef(byteRef)
 			, m_bitIndex(bitIndex)
+			, m_cval(false)
+		{}
+
+		BitSet::BitReference::BitReference(bool cval)
+			: m_byteRef(nullptr)
+			, m_bitIndex(9)
+			, m_cval(cval)
 		{}
 
 		BitSet::BitReference::operator bool() const
 		{
-			return (m_byteRef & (1 << m_bitIndex)) > 0;
+			return m_byteRef ? ((*m_byteRef) & (1 << m_bitIndex)) > 0 : m_cval;
 		}
 
 		BitSet::BitReference & BitSet::BitReference::operator=(bool val)
 		{
 			if (val)
 			{
-				m_byteRef |= 1 << m_bitIndex;
+				(*m_byteRef) |= 1 << m_bitIndex;
 			}
 			else
 			{
-				m_byteRef &= ~(1 << m_bitIndex);
+				(*m_byteRef) &= ~(1 << m_bitIndex);
 			}
 
 			return *this;
@@ -131,3 +148,4 @@ namespace perfectpixel {
 
 	}
 }
+

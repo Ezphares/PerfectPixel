@@ -1,7 +1,7 @@
 #pragma once
 
-#include "worldgraph/IComponentStorage.h"
-#include "worldgraph/EntityManager.h"
+#include "EntityComponentSystem/IComponentStorage.h"
+#include "EntityComponentSystem/EntityManager.h"
 
 #include <map>
 
@@ -36,6 +36,12 @@ namespace perfectpixel {
 				return it != m_components.end() ? &(it->second) : nullptr;
 			}
 
+			virtual bool hasComponent(Entity entity) const
+			{
+				uint32_t index{ entityIndex(entity) };
+				return m_bitSet.size() > index && m_bitSet[entityIndex(entity)];
+			}
+
 			virtual types::BitSet getMask(ComponentTypeId selector, const types::BitSet &hint) const
 			{
 				if (selector == T::getTypeId())
@@ -57,14 +63,14 @@ namespace perfectpixel {
 				m_components.insert_or_assign(component.m_entity, component);
 			}
 
-			virtual void removeComponent(const T &component)
+			virtual void removeComponent(Entity entity)
 			{
-				auto it = m_components.find(component.m_entity);
+				auto it = m_components.find(entity);
 				if (it != m_components.end())
 				{
 					m_components.erase(it);
 
-					uint32_t index = entityIndex(component.m_entity);
+					uint32_t index = entityIndex(entity);
 					if (index < m_components.size())
 					{
 						m_bitSet.set(index, false);
@@ -74,19 +80,19 @@ namespace perfectpixel {
 
 			virtual void clean()
 			{
-				std::vector<T*> toRemove;
+				std::vector<Entity> toRemove;
 
 				for (auto it : m_components)
 				{
 					if (!m_entityManager->isAlive(it.first))
 					{
-						toRemove.push_back(&(it.second));
+						toRemove.push_back(it.first);
 					}
 				}
 
 				for (auto it : toRemove)
 				{
-					removeComponent(*it);
+					removeComponent(it);
 				}
 			}
 

@@ -3,7 +3,7 @@
 #include <graphics/Sprite.h>
 #include <graphics/RenderHint.h>
 
-#include <worldgraph/Entity.h>
+#include <EntityComponentSystem/Entity.h>
 
 #include <types/vectors.h>
 

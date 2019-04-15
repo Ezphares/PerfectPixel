@@ -2,8 +2,8 @@
 
 #include <behaviour/Behaviour.h>
 
-#include <worldgraph/Entity.h>
-#include <worldgraph/EntityManager.h>
+#include <EntityComponentSystem/Entity.h>
+#include <EntityComponentSystem/EntityManager.h>
 
 #include <managerinterface/ManagerInterface.h>
 
@@ -43,7 +43,27 @@ namespace perfectpixel {
 					}
 				}
 
-				return NULL;
+				return nullptr;
+			}
+
+			template <typename T>
+			types::BitSet getMask(const types::BitSet &reference) const
+			{
+				// FIXME optimize
+				std::vector<world::Entity> entities;
+				m_entityManager->expandMask(reference, entities);
+
+				types::BitSet result{ reference.size() };
+
+				for (auto it : entities)
+				{
+					if (getBehaviour<T>(it) != nullptr)
+					{
+						result.set(world::entityIndex(it), true);
+					}
+				}
+
+				return result;
 			}
 
 		private:

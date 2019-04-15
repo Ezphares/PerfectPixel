@@ -2,7 +2,7 @@
 
 #include <types/numbers.h>
 
-#include <worldgraph/Entity.h>
+#include <EntityComponentSystem/Entity.h>
 
 #include <managerinterface/ManagerInterface.h>
 
@@ -25,6 +25,9 @@ public:
 	Behaviour(world::Entity entity)
 		: m_entity(entity)
 		, m_state(LC_NEW)
+		, m_managerInterface(nullptr)
+		, m_createFinished(false)
+		, m_destroyRequested(false)
 	{}
 
 	virtual ~Behaviour()

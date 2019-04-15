@@ -87,15 +87,19 @@ add_library(Types
 	"${Types_SRC_DIR}/BitSet.cpp"
 )
 
-set (World_SRC_DIR "${CMAKE_SOURCE_DIR}/src/worldgraph")
-add_library(World 
-	"${World_SRC_DIR}/Entity.cpp" 
-	"${World_SRC_DIR}/EntityManager.cpp" 
+set (EntityComponentSystem_SRC_DIR "${CMAKE_SOURCE_DIR}/src/EntityComponentSystem")
+add_library(EntityComponentSystem 
+	"${EntityComponentSystem_SRC_DIR}/Entity.cpp" 
+	"${EntityComponentSystem_SRC_DIR}/EntityManager.cpp" 
+	"${EntityComponentSystem_SRC_DIR}/ComponentRegistry.cpp" 
+	"${EntityComponentSystem_SRC_DIR}/Query.cpp" 
+	"${EntityComponentSystem_SRC_DIR}/Processor.cpp" 
 )
 
 set (Interface_SRC_DIR "${CMAKE_SOURCE_DIR}/src/managerinterface")
 add_library(Interface
 	"${Interface_SRC_DIR}/ManagerInterface.cpp"
+	"${Interface_SRC_DIR}/Query.cpp"
 )
 
 add_executable(Pong WIN32 "${CMAKE_SOURCE_DIR}/src/main/pong.cpp")
@@ -108,7 +112,7 @@ list(APPEND LIBRARIES_INTERNAL
 	Physics
 	Graphics
 	Types
-	World
+	EntityComponentSystem
 )
 
 list(APPEND LIBRARIES_EXTERNAL PNG::PNG ZLIB::ZLIB GLEW::GLEW)

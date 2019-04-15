@@ -1,6 +1,6 @@
 #pragma once
 
-#include <worldgraph/Entity.h>
+#include <EntityComponentSystem/Entity.h>
 
 #include <type_traits>
 #include <string>

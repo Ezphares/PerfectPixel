@@ -2,7 +2,7 @@
 
 #include <types/numbers.h>
 
-#include <worldgraph/Entity.h>
+#include <EntityComponentSystem/Entity.h>
 
 namespace perfectpixel
 {

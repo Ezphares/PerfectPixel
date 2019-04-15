@@ -1,4 +1,4 @@
-#include <worldgraph/EntityManager.h>
+#include <EntityComponentSystem/EntityManager.h>
 
 namespace perfectpixel {
 	namespace world {

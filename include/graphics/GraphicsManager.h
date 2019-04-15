@@ -10,8 +10,8 @@
 #include <graphics/Quad.h>
 #include <graphics/IFont.h>
 
-#include <worldgraph/EntityManager.h>
-#include <worldgraph/PositionCallback.h>
+#include <EntityComponentSystem/EntityManager.h>
+#include <EntityComponentSystem/PositionCallback.h>
 #include <types/vectors.h>
 
 #include <boost/function.hpp>

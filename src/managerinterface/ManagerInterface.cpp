@@ -10,12 +10,23 @@ namespace perfectpixel {
 
 
 		ManagerInterface::ManagerInterface()
+			:  m_entityManager(nullptr)
 		{
 		}
 
 
 		ManagerInterface::~ManagerInterface()
 		{
+		}
+
+		void ManagerInterface::setEntityManager(world::EntityManager *manager)
+		{
+			m_entityManager = manager;
+		}
+
+		perfectpixel::world::EntityManager * ManagerInterface::Entities() const
+		{
+			return m_entityManager;
 		}
 
 		void ManagerInterface::setPhysicsManager(physics::PhysicsManager *manager)

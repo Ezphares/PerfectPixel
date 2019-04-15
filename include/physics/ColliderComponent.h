@@ -3,7 +3,7 @@
 #include <types/AARectangle.h>
 #include <types/Circle.h>
 
-#include <worldgraph/Entity.h>
+#include <EntityComponentSystem/Entity.h>
 
 #include <string>
 

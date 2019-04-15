@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 
-#include <worldgraph/EntityManager.h>
+#include <EntityComponentSystem/EntityManager.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace perfectpixel::world;

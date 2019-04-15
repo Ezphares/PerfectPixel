@@ -2,8 +2,8 @@
 
 #include <enginecore/IInitializer.h>
 
-#include <worldgraph/EntityManager.h>
-#include <worldgraph/ComponentRegistry.h>
+#include <EntityComponentSystem/EntityManager.h>
+#include <EntityComponentSystem/ComponentRegistry.h>
 #include <graphics/GraphicsManager.h>
 #include <physics/PhysicsManager.h>
 #include <input/InputManager.h>

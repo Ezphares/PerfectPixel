@@ -1,8 +1,8 @@
 #pragma once
 
-#include "worldgraph/Component.h"
-#include "worldgraph/IComponentStorage.h"
-#include "worldgraph/GenericComponentStorage.h"
+#include "EntityComponentSystem/Component.h"
+#include "EntityComponentSystem/IComponentStorage.h"
+#include "EntityComponentSystem/GenericComponentStorage.h"
 
 #include <map>
 #include <vector>
@@ -29,7 +29,7 @@ namespace perfectpixel {
 				}
 
 				IComponentStorage<T> *storage = new GenericComponentStorage<T>(m_entityManager);
-				registerStorage(id, storage);
+				registerStorage(id, storage, true);
 				return storage;
 			}
 
@@ -61,7 +61,7 @@ namespace perfectpixel {
 				getStorage<T>()->registerComponent(component);
 			}
 
-			void registerStorage(ComponentTypeId id, IComponentStorageBase *storage);
+			void registerStorage(ComponentTypeId id, IComponentStorageBase *storage, bool managed = false);
 
 			EntityManager *getEntityManager();
 

@@ -5,8 +5,8 @@
 #include <physics/ColliderComponent.h>
 #include <physics/Force.h>
 
-#include <worldgraph/EntityManager.h>
-#include <worldgraph/PositionCallback.h>
+#include <EntityComponentSystem/EntityManager.h>
+#include <EntityComponentSystem/PositionCallback.h>
 #include <types/numbers.h>
 #include <types/AARectangle.h>
 

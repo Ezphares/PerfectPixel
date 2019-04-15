@@ -1,6 +1,7 @@
 #pragma once
 
-#include <worldgraph/EntityManager.h>
+#include <EntityComponentSystem/EntityManager.h>
+#include <types/BitSet.h>
 
 #include <memory>
 
@@ -45,6 +46,9 @@ namespace perfectpixel {
 			/*
 			Manager Block
 			*/
+			void setEntityManager(world::EntityManager *manager);
+			world::EntityManager *Entities() const;
+
 			void setPhysicsManager(physics::PhysicsManager *manager);
 			physics::PhysicsManager *Physics() const;
 
@@ -67,6 +71,12 @@ namespace perfectpixel {
 				return m_behaviourManager->getBehaviour<T>(world::Entity entity);
 			}
 
+			template<typename T>
+			types::BitSet componentMask(const types::BitSet &reference) const
+			{
+				return m_behaviourManager->getMask<T>(const types::BitSet &reference);
+			}
+
 			physics::TransformComponent *getTransformComponent(world::Entity entity);
 			template<> physics::TransformComponent *getComponent<physics::TransformComponent>(world::Entity entity) { return getTransformComponent(entity); }
 
@@ -80,6 +90,7 @@ namespace perfectpixel {
 			template<> graphics::SpriteComponent *getComponent<graphics::SpriteComponent>(world::Entity entity) { return getSpriteComponent(entity); }
 
 		private:
+			world::EntityManager *m_entityManager;
 			physics::PhysicsManager *m_physicsManager;
 			behaviour::BehaviourManager *m_behaviourManager;
 			graphics::GraphicsManager *m_graphicsManager;
