@@ -38,7 +38,7 @@ namespace graphics {
 	}
 
 
-GraphicsManager::GraphicsManager(world::EntityManager *entityManager, world::PositionCallback positionCallback)
+GraphicsManager::GraphicsManager(ecs::EntityManager *entityManager, ecs::PositionCallback positionCallback)
 	: m_entityManager(entityManager)
 	, m_positionCallback(positionCallback)
 	, m_programSpriteHardAlpha(NULL)
@@ -234,17 +234,17 @@ void GraphicsManager::setWindowSize(types::Point2 size)
 	setWindowRatio(calculateRatio(size.m_x, size.m_y));
 }
 
-void GraphicsManager::registerSprite(world::Entity entity, const SpriteComponent &spriteComponent)
+void GraphicsManager::registerSprite(ecs::Entity entity, const SpriteComponent &spriteComponent)
 {
-	m_spriteComponents.insert(std::pair<world::Entity, SpriteComponent>(entity, spriteComponent));
+	m_spriteComponents.insert(std::pair<ecs::Entity, SpriteComponent>(entity, spriteComponent));
 }
 
-bool GraphicsManager::hasSprite(world::Entity entity) const
+bool GraphicsManager::hasSprite(ecs::Entity entity) const
 {
 	return m_spriteComponents.find(entity) != m_spriteComponents.end();
 }
 
-perfectpixel::graphics::SpriteComponent & GraphicsManager::getSprite(world::Entity entity)
+perfectpixel::graphics::SpriteComponent & GraphicsManager::getSprite(ecs::Entity entity)
 {
 	auto it = m_spriteComponents.find(entity);
 	if (it == m_spriteComponents.end())
@@ -266,7 +266,7 @@ void GraphicsManager::cleanup()
 
 void GraphicsManager::drawSpriteComponent(const SpriteComponent &spriteComponent)
 {
-	const world::Entity entity{ spriteComponent.getEntity() };
+	const ecs::Entity entity{ spriteComponent.getEntity() };
 
 	if (!m_entityManager->isAlive(entity))
 	{

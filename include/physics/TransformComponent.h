@@ -25,20 +25,20 @@ namespace perfectpixel
 		{
 		public:
 			TransformComponent(
-				world::Entity entity,
+				ecs::Entity entity,
 				types::Vector3 position = types::Vector3(),
 				types::Vector3 velocity = types::Vector3());
 			~TransformComponent();
 
 		public:
-			inline world::Entity getEntity() { return m_entity; }
+			inline ecs::Entity getEntity() { return m_entity; }
 
 		public:
 			types::Vector3 m_position; // Z is depth
 			types::Vector3 m_velocity;
 
 		private:
-			const world::Entity m_entity;
+			const ecs::Entity m_entity;
 		};
 	}
 }

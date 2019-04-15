@@ -4,7 +4,7 @@
 #include <EntityComponentSystem/EntityManager.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-using namespace perfectpixel::world;
+using namespace perfectpixel::ecs;
 
 namespace tests
 {

@@ -2,7 +2,7 @@
 
 #include <EntityComponentSystem/Query.h>
 
-namespace perfectpixel { namespace api {
+namespace perfectpixel { namespace ecs {
 
 	template <typename... Ts>
 	struct QueryResult;
@@ -10,22 +10,22 @@ namespace perfectpixel { namespace api {
 	template <typename T, typename... Ts>
 	struct QueryResult<T, Ts...> : public QueryResult<Ts...>
 	{
-		QueryResult(world::Entity entity)
+		QueryResult(Entity entity)
 			: QueryResult<Ts...>(entity)
 		{}
 
 		template<typename S = typename std::enable_if<T == S, T>::type>
-		S *get() { return world::ComponentRegistry::Instance()->getComponent<S>(m_entity); }
+		S *get() { return ComponentRegistry::Instance()->getComponent<S>(m_entity); }
 	};
 
 	template <>
 	struct QueryResult<>
 	{
-		QueryResult(world::Entity entity)
+		QueryResult(Entity entity)
 			: m_entity(entity)
 		{}
 
-		world::Entity m_entity;
+		Entity m_entity;
 	};
 
 	template<typename... Ts>
@@ -34,7 +34,7 @@ namespace perfectpixel { namespace api {
 	template<typename T, typename... Ts>
 	struct ComponentTypeList<T, Ts...>
 	{
-		static void getTypes(std::vector<world::ComponentTypeId> &out_types) 
+		static void getTypes(std::vector<ComponentTypeId> &out_types) 
 		{
 			if (out_types.capacity() < 1 + sizeof(Ts))
 			{
@@ -49,7 +49,7 @@ namespace perfectpixel { namespace api {
 	template<>
 	struct ComponentTypeList<>
 	{
-		static void getTypes(std::vector<world::ComponentTypeId> &)
+		static void getTypes(std::vector<ComponentTypeId> &)
 		{
 			// Recursion base
 		}
@@ -74,7 +74,7 @@ namespace perfectpixel { namespace api {
 
 		static Query build()
 		{
-			std::vector<world::ComponentTypeId> with, without;
+			std::vector<ComponentTypeId> with, without;
 			WithComponents::getTypes(with);
 			WithoutComponents::getTypes(without);
 
@@ -92,12 +92,12 @@ namespace perfectpixel { namespace api {
 			return query;
 		}
 
-		static ResultType pack(world::Entity entity)
+		static ResultType pack(Entity entity)
 		{
 			return ResultType(entity);
 		}
 
-		static void packAll(const std::vector<world::Entity> entities, ResultSet &out_results)
+		static void packAll(const std::vector<Entity> entities, ResultSet &out_results)
 		{
 			out_results.reserve(entities.size());
 			out_results.clear();

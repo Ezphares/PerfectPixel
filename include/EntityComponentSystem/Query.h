@@ -7,15 +7,15 @@
 #include "types/BitSet.h"
 
 namespace perfectpixel {
-	namespace api {
+	namespace ecs {
 
 		class Query
 		{
 		public:
 			Query();
 
-			Query &with(world::ComponentTypeId id);
-			Query &without(world::ComponentTypeId id);
+			Query &with(ComponentTypeId id);
+			Query &without(ComponentTypeId id);
 
 			template<typename Component>
 			Query &with()
@@ -31,9 +31,9 @@ namespace perfectpixel {
 
 			void executeMaskOnly();
 			void executeMaskOnly(const types::BitSet &start);
-			std::vector<world::Entity> execute(world::EntityManager::EntityFunc callback = 0);
-			std::vector<world::Entity> execute(const types::BitSet &start, world::EntityManager::EntityFunc callback = 0);
-			std::vector<world::Entity> finalize(world::EntityManager::EntityFunc callback = 0);
+			std::vector<Entity> execute(EntityManager::EntityFunc callback = 0);
+			std::vector<Entity> execute(const types::BitSet &start, EntityManager::EntityFunc callback = 0);
+			std::vector<Entity> finalize(EntityManager::EntityFunc callback = 0);
 
 			const types::BitSet &getLastResult() const;
 
@@ -41,8 +41,8 @@ namespace perfectpixel {
 			void applyMask();
 
 		private:
-			std::vector<world::ComponentTypeId> m_with;
-			std::vector<world::ComponentTypeId> m_without;
+			std::vector<ComponentTypeId> m_with;
+			std::vector<ComponentTypeId> m_without;
 			types::BitSet m_lastResult;
 		};
 	}

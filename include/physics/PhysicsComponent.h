@@ -21,23 +21,23 @@ namespace perfectpixel
 
 		public:
 			PhysicsComponent(
-				world::Entity entity,
+				ecs::Entity entity,
 				types::PpFloat mass,
 				types::PpFloat bounciness,
 				SimulationType simulation);
 			~PhysicsComponent();
 
 		public:
-			static PhysicsComponent staticCollider(world::Entity entity);
+			static PhysicsComponent staticCollider(ecs::Entity entity);
 
-			world::Entity getEntity() const;
+			ecs::Entity getEntity() const;
 
 			types::PpFloat getMass();
 			types::PpFloat getBounciness() const;
 			void setMass(types::PpFloat mass);
 
 		private:
-			world::Entity m_entity;
+			ecs::Entity m_entity;
 			types::PpFloat m_mass;
 			types::PpFloat m_bounciness;
 			SimulationType m_simulation;

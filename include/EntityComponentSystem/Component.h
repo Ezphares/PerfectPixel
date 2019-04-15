@@ -19,7 +19,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 namespace perfectpixel {
-	namespace world {
+	namespace ecs {
 		typedef int ComponentTypeId;
 } }
 
@@ -41,13 +41,13 @@ namespace perfectpixel {
 #define FinalizeComponent(N) struct N \
 { \
 	inline static std::string getTypeName() { return COMPONENT_TYPE_NAME(N); } \
-	inline static ::perfectpixel::world::ComponentTypeId getTypeId() { return COMPONENT_TYPE_ID_GENERATOR(N); } \
+	inline static ::perfectpixel::ecs::ComponentTypeId getTypeId() { return COMPONENT_TYPE_ID_GENERATOR(N); } \
 	\
 	ComponentDataName(N) m_data; \
-	perfectpixel::world::Entity m_entity; \
+	::perfectpixel::ecs::Entity m_entity; \
 	COMPONENT_NAME_VARIABLE \
 	\
-	inline N(perfectpixel::world::Entity entity) \
+	inline N(::perfectpixel::ecs::Entity entity) \
 		: m_data() \
 		, m_entity(entity) \
 		COMPONENT_NAME_INITIALIZER \

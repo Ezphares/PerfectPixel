@@ -5,7 +5,7 @@ namespace perfectpixel {
 
 
 SpriteComponent::SpriteComponent(
-	world::Entity entity,
+	ecs::Entity entity,
 	graphics::Sprite *sprite,
 	types::Vector2 worldSize,
 	types::Vector2 offset,
@@ -27,7 +27,7 @@ SpriteComponent::~SpriteComponent()
 {
 }
 
-perfectpixel::world::Entity SpriteComponent::getEntity() const
+perfectpixel::ecs::Entity SpriteComponent::getEntity() const
 {
 	return m_entity;
 }

@@ -5,7 +5,7 @@
 #include <functional>
 
 namespace perfectpixel {
-	namespace api {
+	namespace ecs {
 
 		Processor::Processor(Query query)
 			: m_query(query)
@@ -24,7 +24,7 @@ namespace perfectpixel {
 
 		void Processor::doCreate()
 		{
-			onCreate(Query().with<world::CreatedLifecycleComponent>().execute(m_queryState));
+			onCreate(Query().with<CreatedLifecycleComponent>().execute(m_queryState));
 		}
 
 		void Processor::doProcess()
@@ -35,19 +35,19 @@ namespace perfectpixel {
 
 		void Processor::doDestroy()
 		{
-			onCreate(Query().with<world::DestroyedLifecycleComponent>().execute(m_queryState));
+			onCreate(Query().with<DestroyedLifecycleComponent>().execute(m_queryState));
 		}
 
 		void Processor::onPreProcess()
 		{
 		}
 
-		void Processor::onCreate(const std::vector<world::Entity> &entities)
+		void Processor::onCreate(const std::vector<Entity> &entities)
 		{
 		}
 
 
-		void Processor::onDestroy(const std::vector<world::Entity> &entities)
+		void Processor::onDestroy(const std::vector<Entity> &entities)
 		{
 
 		}
@@ -61,9 +61,9 @@ namespace perfectpixel {
 			{
 			}
 
-			virtual void onProcess(const std::vector<world::Entity> &entities)
+			virtual void onProcess(const std::vector<Entity> &entities)
 			{
-				for (world::Entity e : entities)
+				for (Entity e : entities)
 				{
 					auto helper{ CollisionQuery::pack(e) };
 				}

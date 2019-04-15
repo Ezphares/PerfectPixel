@@ -60,8 +60,8 @@ private:
 
 protected:
 	api::ManagerInterface m_managerInterface;
-	world::EntityManager m_entityManager;
-	world::ComponentRegistry m_componentRegistry;
+	ecs::EntityManager m_entityManager;
+	ecs::ComponentRegistry m_componentRegistry;
 	physics::PhysicsManager m_physicsManager;
 	input::InputManager m_inputManager;
 	graphics::GraphicsManager m_graphicsManager;

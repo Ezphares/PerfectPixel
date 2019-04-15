@@ -1,8 +1,8 @@
-#include "EntityComponentSystem/ComponentRegistry.h"
+#include <EntityComponentSystem/ComponentRegistry.h>
 
 namespace perfectpixel
 {
-	namespace world {
+	namespace ecs {
 
 		ComponentRegistry *ComponentRegistry::m_instance = nullptr;
 
@@ -28,7 +28,7 @@ namespace perfectpixel
 			}
 		}
 
-		perfectpixel::world::ComponentRegistry * ComponentRegistry::Instance()
+		ComponentRegistry * ComponentRegistry::Instance()
 		{
 			if (m_instance == nullptr)
 			{
@@ -48,7 +48,7 @@ namespace perfectpixel
 		}
 
 
-		world::EntityManager * ComponentRegistry::getEntityManager()
+		EntityManager * ComponentRegistry::getEntityManager()
 		{
 			return m_entityManager;
 		}

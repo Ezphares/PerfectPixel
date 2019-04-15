@@ -8,7 +8,7 @@ namespace perfectpixel
 	{
 
 		PhysicsComponent::PhysicsComponent(
-			world::Entity entity,
+			ecs::Entity entity,
 			types::PpFloat mass, 
 			types::PpFloat bounciness,
 			SimulationType simulation)
@@ -23,12 +23,12 @@ namespace perfectpixel
 		{
 		}
 
-		PhysicsComponent PhysicsComponent::staticCollider(world::Entity entity)
+		PhysicsComponent PhysicsComponent::staticCollider(ecs::Entity entity)
 		{
 			return PhysicsComponent(entity, std::numeric_limits<types::PpFloat>::infinity(), 0, KINEMATIC);
 		}
 
-		world::Entity PhysicsComponent::getEntity() const
+		ecs::Entity PhysicsComponent::getEntity() const
 		{
 			return m_entity;
 		}

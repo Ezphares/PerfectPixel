@@ -3,7 +3,7 @@
 #include <EntityComponentSystem/Component.h>
 
 namespace perfectpixel {
-	namespace world {
+	namespace ecs {
 
 		class ComponentRegistry;
 

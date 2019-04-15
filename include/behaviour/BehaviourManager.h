@@ -18,17 +18,17 @@ namespace perfectpixel {
 		{
 		public:
 			BehaviourManager(
-				world::EntityManager *entityManager,
+				ecs::EntityManager *entityManager,
 				api::ManagerInterface *managerInterface);
 			~BehaviourManager();
 
 		public:
-			void registerBehaviour(world::Entity entity, Behaviour *component);
+			void registerBehaviour(ecs::Entity entity, Behaviour *component);
 
 			void update(types::PpFloat deltaT);
 
 			template<typename T>
-			T *getBehaviour(world::Entity entity)
+			T *getBehaviour(ecs::Entity entity)
 			{
 				auto &it = m_behaviours.find(entity);
 				if (it != m_behaviours.end())
@@ -50,7 +50,7 @@ namespace perfectpixel {
 			types::BitSet getMask(const types::BitSet &reference) const
 			{
 				// FIXME optimize
-				std::vector<world::Entity> entities;
+				std::vector<ecs::Entity> entities;
 				m_entityManager->expandMask(reference, entities);
 
 				types::BitSet result{ reference.size() };
@@ -59,7 +59,7 @@ namespace perfectpixel {
 				{
 					if (getBehaviour<T>(it) != nullptr)
 					{
-						result.set(world::entityIndex(it), true);
+						result.set(ecs::entityIndex(it), true);
 					}
 				}
 
@@ -67,19 +67,19 @@ namespace perfectpixel {
 			}
 
 		private:
-			void registerBehaviourInternal(world::Entity entity, Behaviour *component);
+			void registerBehaviourInternal(ecs::Entity entity, Behaviour *component);
 			void destroyBehaviour(Behaviour *behaviour);
 
 		private:
-			typedef std::map< world::Entity, std::vector<Behaviour*>> BehaviourList;
+			typedef std::map< ecs::Entity, std::vector<Behaviour*>> BehaviourList;
 
 			std::vector<Behaviour*> m_created;
-			std::vector<std::pair<world::Entity, Behaviour*>> m_deferredCreate;
+			std::vector<std::pair<ecs::Entity, Behaviour*>> m_deferredCreate;
 
-			std::set<world::Entity> m_toDestroyAll;
+			std::set<ecs::Entity> m_toDestroyAll;
 			std::set<Behaviour*> m_toDestroySingle;
 
-			world::EntityManager *m_entityManager;
+			ecs::EntityManager *m_entityManager;
 			api::ManagerInterface *m_managerInterface;
 
 			BehaviourList m_behaviours;

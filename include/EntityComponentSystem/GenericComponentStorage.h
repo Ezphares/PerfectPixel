@@ -6,7 +6,7 @@
 #include <map>
 
 namespace perfectpixel {
-	namespace world {
+	namespace ecs {
 
 		template<typename T>
 		class GenericComponentStorage : public IComponentStorage<T>

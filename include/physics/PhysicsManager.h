@@ -37,7 +37,7 @@ namespace physics
 		};
 
 	public:
-		PhysicsManager(world::EntityManager *entityManager);
+		PhysicsManager(ecs::EntityManager *entityManager);
 		~PhysicsManager();
 
 	public:
@@ -46,46 +46,46 @@ namespace physics
 		void cleanup();
 
 		// Component functions
-		TransformComponent &getTransform(world::Entity entity);
-		types::Vector3 getPosition(world::Entity entity);
+		TransformComponent &getTransform(ecs::Entity entity);
+		types::Vector3 getPosition(ecs::Entity entity);
 		
 		void registerPhysics(const PhysicsComponent &physicsComponent);
-		bool hasPhysics(world::Entity entity) const;
-		PhysicsComponent &getPhysics(world::Entity entity);
+		bool hasPhysics(ecs::Entity entity) const;
+		PhysicsComponent &getPhysics(ecs::Entity entity);
 
 		void registerCollider(const ColliderComponent &collider);
-		bool hasCollider(world::Entity entity);
-		ColliderComponent &getCollider(world::Entity entity);
+		bool hasCollider(ecs::Entity entity);
+		ColliderComponent &getCollider(ecs::Entity entity);
 
 		// Force functions
-		void pulseForce(world::Entity entity, const Force &force, types::PpFloat deltaTime);
-		void setConstantForce(world::Entity entity, const Force &force);
-		void removeConstantForce(world::Entity entity, types::PpInt forceId);
+		void pulseForce(ecs::Entity entity, const Force &force, types::PpFloat deltaTime);
+		void setConstantForce(ecs::Entity entity, const Force &force);
+		void removeConstantForce(ecs::Entity entity, types::PpInt forceId);
 
 		// Utility functions
 		types::Vector2 absoluteCenter(const ColliderComponent &collider);
-		world::PositionCallback positionCallback();
+		ecs::PositionCallback positionCallback();
 
-		void translate(world::Entity entiy, types::Vector3 vec);
+		void translate(ecs::Entity entiy, types::Vector3 vec);
 
 		// Collision functions
 	private:
 		void handleCollisions();
-		void handleCollisionSingle(const ColliderComponent &collider, std::set<world::Entity> &collisionCache);
-		void possibleCollissions(const ColliderComponent &collider, std::set<world::Entity> &collisionCache, std::vector<ColliderComponent> *out_colliders);
+		void handleCollisionSingle(const ColliderComponent &collider, std::set<ecs::Entity> &collisionCache);
+		void possibleCollissions(const ColliderComponent &collider, std::set<ecs::Entity> &collisionCache, std::vector<ColliderComponent> *out_colliders);
 
 		bool checkCollision(const ColliderComponent &first, const ColliderComponent &second, CollisionData *out_collision);
 		bool collideRectRect(
-			world::Entity first,
+			ecs::Entity first,
 			const types::AARectangle &firstRect,
-			world::Entity second,
+			ecs::Entity second,
 			const types::AARectangle &secondRect,
 			CollisionData *out_collision);
 
 		bool collideCircleCircle(
-			world::Entity first,
+			ecs::Entity first,
 			const types::Circle &firstCircle,
-			world::Entity second,
+			ecs::Entity second,
 			const types::Circle &secondCircle,
 			CollisionData *out_collision);
 
@@ -101,20 +101,20 @@ namespace physics
 			types::PpFloat *out_newVelocity2);
 
 	private:
-		typedef std::map<world::Entity, TransformComponent> TransformMap;
-		typedef std::map<world::Entity, PhysicsComponent> PhysicsMap;
+		typedef std::map<ecs::Entity, TransformComponent> TransformMap;
+		typedef std::map<ecs::Entity, PhysicsComponent> PhysicsMap;
 		typedef std::map<types::PpInt, Force> ConstantForceList;
-		typedef std::map<world::Entity, ConstantForceList> ConstantForceMap;
-		typedef std::map<world::Entity, ColliderComponent> ColliderMap;
+		typedef std::map<ecs::Entity, ConstantForceList> ConstantForceMap;
+		typedef std::map<ecs::Entity, ColliderComponent> ColliderMap;
 
-		world::EntityManager *m_entityManager;
+		ecs::EntityManager *m_entityManager;
 
 		TransformMap m_transforms;
 		PhysicsMap m_physics;
 		ConstantForceMap m_constantForces;
 		ColliderMap m_colliders;
 
-		std::vector<world::Entity> m_cleanup;
+		std::vector<ecs::Entity> m_cleanup;
 	};
 }
 }

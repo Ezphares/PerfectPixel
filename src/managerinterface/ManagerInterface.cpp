@@ -19,12 +19,12 @@ namespace perfectpixel {
 		{
 		}
 
-		void ManagerInterface::setEntityManager(world::EntityManager *manager)
+		void ManagerInterface::setEntityManager(ecs::EntityManager *manager)
 		{
 			m_entityManager = manager;
 		}
 
-		perfectpixel::world::EntityManager * ManagerInterface::Entities() const
+		perfectpixel::ecs::EntityManager * ManagerInterface::Entities() const
 		{
 			return m_entityManager;
 		}
@@ -69,22 +69,22 @@ namespace perfectpixel {
 			return m_inputManager;
 		}
 
-		perfectpixel::physics::TransformComponent * ManagerInterface::getTransformComponent(world::Entity entity)
+		perfectpixel::physics::TransformComponent * ManagerInterface::getTransformComponent(ecs::Entity entity)
 		{
 			return &m_physicsManager->getTransform(entity);
 		}
 
-		perfectpixel::physics::PhysicsComponent * ManagerInterface::getPhysicsComponent(world::Entity entity)
+		perfectpixel::physics::PhysicsComponent * ManagerInterface::getPhysicsComponent(ecs::Entity entity)
 		{
 			return m_physicsManager->hasPhysics(entity) ? &m_physicsManager->getPhysics(entity) : nullptr;
 		}
 
-		perfectpixel::physics::ColliderComponent * ManagerInterface::getColliderComponent(world::Entity entity)
+		perfectpixel::physics::ColliderComponent * ManagerInterface::getColliderComponent(ecs::Entity entity)
 		{
 			return m_physicsManager->hasCollider(entity) ? &m_physicsManager->getCollider(entity) : nullptr;
 		}
 
-		perfectpixel::graphics::SpriteComponent * ManagerInterface::getSpriteComponent(world::Entity entity)
+		perfectpixel::graphics::SpriteComponent * ManagerInterface::getSpriteComponent(ecs::Entity entity)
 		{
 			return m_graphicsManager->hasSprite(entity) ? &m_graphicsManager->getSprite(entity) : nullptr;
 		}

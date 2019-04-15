@@ -14,7 +14,7 @@ namespace perfectpixel {
 		{
 		public:
 			SpriteComponent(
-				world::Entity entity,
+				ecs::Entity entity,
 				graphics::Sprite *m_sprite,
 
 				types::Vector2 worldSize,
@@ -26,7 +26,7 @@ namespace perfectpixel {
 			~SpriteComponent();
 
 		public:
-			world::Entity getEntity() const;
+			ecs::Entity getEntity() const;
 
 			Sprite *getSprite() const;
 			types::PpInt getFrame() const;
@@ -39,7 +39,7 @@ namespace perfectpixel {
 			void update(types::PpFloat deltaTime);
 
 		private:
-			world::Entity m_entity;
+			ecs::Entity m_entity;
 			graphics::Sprite *m_sprite;
 			types::Vector2 m_size;
 			types::Vector2 m_offset;

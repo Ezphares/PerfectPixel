@@ -7,7 +7,7 @@
 
 namespace perfectpixel
 {
-	namespace world
+	namespace ecs
 	{
 		class IComponentStorageBase
 		{

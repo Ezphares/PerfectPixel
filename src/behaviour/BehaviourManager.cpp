@@ -5,7 +5,7 @@ namespace perfectpixel {
 	namespace behaviour {
 
 		BehaviourManager::BehaviourManager(
-			world::EntityManager *entityManager,
+			ecs::EntityManager *entityManager,
 			api::ManagerInterface *managers)
 			: m_entityManager(entityManager)
 			, m_managerInterface(managers)
@@ -18,7 +18,7 @@ namespace perfectpixel {
 		{
 		}
 
-		void BehaviourManager::registerBehaviour(world::Entity entity, Behaviour *component)
+		void BehaviourManager::registerBehaviour(ecs::Entity entity, Behaviour *component)
 		{
 			component->m_managerInterface = m_managerInterface;
 			m_deferredCreate.emplace_back(entity, component);
@@ -119,7 +119,7 @@ namespace perfectpixel {
 			m_updating = false;
 		}
 
-		void BehaviourManager::registerBehaviourInternal(world::Entity entity, Behaviour *component)
+		void BehaviourManager::registerBehaviourInternal(ecs::Entity entity, Behaviour *component)
 		{
 			m_behaviours[entity].push_back(component);
 			m_created.push_back(component);

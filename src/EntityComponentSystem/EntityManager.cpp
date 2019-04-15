@@ -1,7 +1,7 @@
 #include <EntityComponentSystem/EntityManager.h>
 
 namespace perfectpixel {
-	namespace world {
+	namespace ecs {
 
 EntityManager::EntityManager(
 	std::uint32_t indexReuseDelay)
@@ -46,7 +46,7 @@ void EntityManager::kill(Entity entity)
 	}
 }
 
-perfectpixel::world::Entity EntityManager::at(std::uint32_t index)
+Entity EntityManager::at(std::uint32_t index)
 {
 	if (index > m_entities.size())
 	{
@@ -74,7 +74,7 @@ void EntityManager::expandMask(types::BitSet bits, std::vector<Entity> *out_enti
 	}
 }
 
-perfectpixel::types::BitSet EntityManager::all() const
+types::BitSet EntityManager::all() const
 {
 	return types::BitSet(m_entities.size(), true);
 }

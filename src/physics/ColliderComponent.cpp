@@ -5,7 +5,7 @@
 namespace perfectpixel {
 	namespace physics {
 
-		ColliderComponent::ColliderComponent(world::Entity entity)
+		ColliderComponent::ColliderComponent(ecs::Entity entity)
 			: m_entity(entity)
 			, m_type(UNSET)
 			, m_eventTag()
@@ -13,13 +13,13 @@ namespace perfectpixel {
 		}
 
 
-		ColliderComponent::ColliderComponent(world::Entity entity, const types::AARectangle &rectangle)
+		ColliderComponent::ColliderComponent(ecs::Entity entity, const types::AARectangle &rectangle)
 			: m_entity(entity)
 		{
 			setMaskRectangle(rectangle);
 		}
 
-		ColliderComponent::ColliderComponent(world::Entity entity, const types::Circle &circle)
+		ColliderComponent::ColliderComponent(ecs::Entity entity, const types::Circle &circle)
 			: m_entity(entity)
 		{
 			setMaskCircle(circle);
@@ -29,7 +29,7 @@ namespace perfectpixel {
 		{
 		}
 
-		perfectpixel::world::Entity ColliderComponent::getEntity() const
+		perfectpixel::ecs::Entity ColliderComponent::getEntity() const
 		{
 			return m_entity;
 		}

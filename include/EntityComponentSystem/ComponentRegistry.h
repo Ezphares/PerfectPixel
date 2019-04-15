@@ -8,7 +8,7 @@
 #include <vector>
 
 namespace perfectpixel {
-	namespace world {
+	namespace ecs {
 
 		class ComponentRegistry
 		{

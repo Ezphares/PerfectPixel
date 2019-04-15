@@ -16,7 +16,7 @@ class BatBehaviour : public behaviour::Behaviour
 {
 public:
 	BatBehaviour(
-		world::Entity entity)
+		ecs::Entity entity)
 		: behaviour::Behaviour(entity)
 		, m_transform(nullptr)
 		, m_speed(35)
@@ -42,8 +42,8 @@ class AIBatBehaviour : public behaviour::Behaviour
 {
 public:
 	AIBatBehaviour(
-		world::Entity entity,
-		world::Entity ball)
+		ecs::Entity entity,
+		ecs::Entity ball)
 		: Behaviour(entity)
 		, m_transform(nullptr)
 		, m_ballTransform(nullptr)
@@ -67,14 +67,14 @@ public:
 private:
 	physics::TransformComponent *m_transform;
 	physics::TransformComponent *m_ballTransform;
-	world::Entity m_ball;
+	ecs::Entity m_ball;
 	types::PpFloat m_speed;
 };
 
 class BallBehaviour : public behaviour::Behaviour
 {
 public:
-	BallBehaviour(world::Entity entity)
+	BallBehaviour(ecs::Entity entity)
 		: behaviour::Behaviour(entity)
 	{}
 
@@ -133,7 +133,7 @@ private:
 
 class Pong : public core::Game
 {
-	world::Entity m_ball;
+	ecs::Entity m_ball;
 
 	virtual void preInit()
 	{
@@ -147,7 +147,7 @@ class Pong : public core::Game
 
 	void createBat(types::PpFloat x, graphics::Sprite *spr, bool isAi)
 	{
-		world::Entity e{ m_entityManager.create() };
+		ecs::Entity e{ m_entityManager.create() };
 		m_physicsManager.getTransform(e).m_position.x() = x;
 
 		graphics::SpriteComponent sprite{ e, spr,{ 4, 16 },{ -2,  -8 }, 1 };
@@ -171,7 +171,7 @@ class Pong : public core::Game
 
 	virtual void gameStart()
 	{
-		world::Entity
+		ecs::Entity
 			ePlayer1{ m_entityManager.create() },
 			ePlayer2{ m_entityManager.create() },
 			eTopWall{ m_entityManager.create() },

@@ -7,9 +7,9 @@
 #include <functional>
 
 namespace perfectpixel {
-	namespace world {
+	namespace ecs {
 
-		typedef std::function<types::Vector3(world::Entity)> PositionCallback;
+		typedef std::function<types::Vector3(Entity)> PositionCallback;
 
 
 	}

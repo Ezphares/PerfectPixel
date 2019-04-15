@@ -35,11 +35,11 @@ namespace graphics {
 			ShaderProgram *m_program;
 		};
 
-		typedef std::map<world::Entity, SpriteComponent> SpriteComponents;
+		typedef std::map<ecs::Entity, SpriteComponent> SpriteComponents;
 		typedef std::vector<SpriteDrawInfo> SpriteDrawList;
 
 	public:
-		GraphicsManager(world::EntityManager *entityManager, world::PositionCallback positionCallback);
+		GraphicsManager(ecs::EntityManager *entityManager, ecs::PositionCallback positionCallback);
 		~GraphicsManager();
 
 	public:
@@ -53,9 +53,9 @@ namespace graphics {
 		void setMainCamera(const CameraSettings &camera);
 		void setWindowSize(types::Point2 size);
 
-		void registerSprite(world::Entity entity, const SpriteComponent &spriteComponent);
-		bool hasSprite(world::Entity entity) const;
-		SpriteComponent &getSprite(world::Entity entity);
+		void registerSprite(ecs::Entity entity, const SpriteComponent &spriteComponent);
+		bool hasSprite(ecs::Entity entity) const;
+		SpriteComponent &getSprite(ecs::Entity entity);
 
 		void cleanup();
 
@@ -77,8 +77,8 @@ namespace graphics {
 		static bool compSortSoftalpha(const SpriteDrawInfo &first, const SpriteDrawInfo &second);
 
 	private:
-		world::EntityManager *m_entityManager;
-		world::PositionCallback m_positionCallback;
+		ecs::EntityManager *m_entityManager;
+		ecs::PositionCallback m_positionCallback;
 
 		SpriteComponents m_spriteComponents;
 
@@ -103,7 +103,7 @@ namespace graphics {
 		types::PpFloat m_windowRatio;
 		CameraSettings m_mainCamera;
 
-		std::vector<world::Entity> m_cleanup;
+		std::vector<ecs::Entity> m_cleanup;
 
 		std::vector<double> m_ftBuffer;
 		std::size_t m_ftWrite;

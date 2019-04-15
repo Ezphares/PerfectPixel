@@ -4,7 +4,7 @@
 
 namespace perfectpixel
 {
-	namespace api {
+	namespace ecs {
 
 		Query::Query()
 			: m_with()
@@ -12,13 +12,13 @@ namespace perfectpixel
 			, m_lastResult()
 		{}
 
-		Query & Query::with(world::ComponentTypeId id)
+		Query & Query::with(ComponentTypeId id)
 		{
 			m_with.push_back(id);
 			return *this;
 		}
 
-		Query & Query::without(world::ComponentTypeId id)
+		Query & Query::without(ComponentTypeId id)
 		{
 			m_without.push_back(id);
 			return *this;
@@ -26,7 +26,7 @@ namespace perfectpixel
 
 		void Query::applyMask()
 		{
-			world::ComponentRegistry *registry = world::ComponentRegistry::Instance();
+			ComponentRegistry *registry = ComponentRegistry::Instance();
 
 			for (auto id : m_with)
 			{
@@ -41,7 +41,7 @@ namespace perfectpixel
 
 		void Query::executeMaskOnly()
 		{
-			world::ComponentRegistry *registry = world::ComponentRegistry::Instance();
+			ComponentRegistry *registry = ComponentRegistry::Instance();
 
 			executeMaskOnly(registry->getEntityManager()->all());
 		}
@@ -52,23 +52,23 @@ namespace perfectpixel
 			applyMask();
 		}
 
-		std::vector<perfectpixel::world::Entity> Query::execute(world::EntityManager::EntityFunc callback)
+		std::vector<Entity> Query::execute(EntityManager::EntityFunc callback)
 		{
 			executeMaskOnly();
 			return finalize(callback);
 		}
 
-		std::vector<perfectpixel::world::Entity> Query::execute(const types::BitSet &start, world::EntityManager::EntityFunc callback)
+		std::vector<Entity> Query::execute(const types::BitSet &start, EntityManager::EntityFunc callback)
 		{
 			executeMaskOnly(start);
 			return finalize(callback);		
 		}
 
-		std::vector<perfectpixel::world::Entity> Query::finalize(world::EntityManager::EntityFunc callback /*= 0*/)
+		std::vector<Entity> Query::finalize(EntityManager::EntityFunc callback /*= 0*/)
 		{
-			world::ComponentRegistry *registry = world::ComponentRegistry::Instance();
+			ComponentRegistry *registry = ComponentRegistry::Instance();
 
-			std::vector<world::Entity> result;
+			std::vector<Entity> result;
 			registry->getEntityManager()->expandMask(m_lastResult, &result, callback);
 			return result;
 		}

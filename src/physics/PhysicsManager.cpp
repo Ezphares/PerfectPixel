@@ -15,7 +15,7 @@ namespace perfectpixel
 			types::PpFloat COLLISON_LEEWAY = 0.01f;
 		}
 		
-		PhysicsManager::PhysicsManager(world::EntityManager *entityManager)
+		PhysicsManager::PhysicsManager(ecs::EntityManager *entityManager)
 			: m_entityManager(entityManager)
 		{
 		}
@@ -69,7 +69,7 @@ namespace perfectpixel
 			m_cleanup.clear();
 		}
 
-		perfectpixel::physics::TransformComponent &PhysicsManager::getTransform(world::Entity entity)
+		perfectpixel::physics::TransformComponent &PhysicsManager::getTransform(ecs::Entity entity)
 		{
 			auto it = m_transforms.find(entity);
 			if (it == m_transforms.end())
@@ -80,7 +80,7 @@ namespace perfectpixel
 			return it->second;
 		}
 
-		perfectpixel::types::Vector3 PhysicsManager::getPosition(world::Entity entity)
+		perfectpixel::types::Vector3 PhysicsManager::getPosition(ecs::Entity entity)
 		{
 			return getTransform(entity).m_position;
 		}
@@ -93,12 +93,12 @@ namespace perfectpixel
 			getTransform(physicsComponent.getEntity());
 		}
 
-		bool PhysicsManager::hasPhysics(world::Entity entity) const
+		bool PhysicsManager::hasPhysics(ecs::Entity entity) const
 		{
 			return m_physics.find(entity) != m_physics.end();
 		}
 
-		perfectpixel::physics::PhysicsComponent & PhysicsManager::getPhysics(world::Entity entity)
+		perfectpixel::physics::PhysicsComponent & PhysicsManager::getPhysics(ecs::Entity entity)
 		{
 			auto it = m_physics.find(entity);
 			if (it == m_physics.end())
@@ -113,12 +113,12 @@ namespace perfectpixel
 			m_colliders.emplace(collider.getEntity(), collider);
 		}
 
-		bool PhysicsManager::hasCollider(world::Entity entity)
+		bool PhysicsManager::hasCollider(ecs::Entity entity)
 		{
 			return m_colliders.find(entity) != m_colliders.end();
 		}
 
-		perfectpixel::physics::ColliderComponent & PhysicsManager::getCollider(world::Entity entity)
+		perfectpixel::physics::ColliderComponent & PhysicsManager::getCollider(ecs::Entity entity)
 		{
 			auto it = m_colliders.find(entity);
 			if (it == m_colliders.end())
@@ -129,7 +129,7 @@ namespace perfectpixel
 			return it->second;
 		}
 
-		void PhysicsManager::pulseForce(world::Entity entity, const Force &force, types::PpFloat deltaTime)
+		void PhysicsManager::pulseForce(ecs::Entity entity, const Force &force, types::PpFloat deltaTime)
 		{
 			// TODO Alive Check 
 			
@@ -148,12 +148,12 @@ namespace perfectpixel
 			transform.m_velocity += resultForce * deltaTime;
 		}
 
-		void PhysicsManager::setConstantForce(world::Entity entity, const Force &force)
+		void PhysicsManager::setConstantForce(ecs::Entity entity, const Force &force)
 		{
 			m_constantForces[entity][force.m_identifier] = force;
 		}
 
-		void PhysicsManager::removeConstantForce(world::Entity entity, types::PpInt forceId)
+		void PhysicsManager::removeConstantForce(ecs::Entity entity, types::PpInt forceId)
 		{
 			auto forces = m_constantForces.find(entity);
 			if (forces == m_constantForces.end())
@@ -183,12 +183,12 @@ namespace perfectpixel
 			return result;
 		}
 
-		perfectpixel::world::PositionCallback PhysicsManager::positionCallback()
+		perfectpixel::ecs::PositionCallback PhysicsManager::positionCallback()
 		{
 			return std::bind(&physics::PhysicsManager::getPosition, this, std::placeholders::_1);
 		}
 
-		void PhysicsManager::translate(world::Entity entiy, types::Vector3 vec)
+		void PhysicsManager::translate(ecs::Entity entiy, types::Vector3 vec)
 		{
 			getTransform(entiy).m_position += vec;
 		}
@@ -207,7 +207,7 @@ namespace perfectpixel
 			return false;
 		}
 
-		bool PhysicsManager::collideRectRect(world::Entity first, const types::AARectangle &firstRect, world::Entity second, const types::AARectangle &secondRect, CollisionData *out_collision)
+		bool PhysicsManager::collideRectRect(ecs::Entity first, const types::AARectangle &firstRect, ecs::Entity second, const types::AARectangle &secondRect, CollisionData *out_collision)
 		{
 			TransformComponent
 				firstTransform = getTransform(first),
@@ -237,7 +237,7 @@ namespace perfectpixel
 
 		}
 
-		bool PhysicsManager::collideCircleCircle(world::Entity first, const types::Circle &firstCircle, world::Entity second, const types::Circle &secondCircle, CollisionData *out_collision)
+		bool PhysicsManager::collideCircleCircle(ecs::Entity first, const types::Circle &firstCircle, ecs::Entity second, const types::Circle &secondCircle, CollisionData *out_collision)
 		{
 			TransformComponent
 				firstTransform = getTransform(first),
@@ -267,7 +267,7 @@ namespace perfectpixel
 		{
 			// FIXME: Generate events
 
-			world::Entity
+			ecs::Entity
 				first = collision.m_firstCollider->getEntity(),
 				second = collision.m_secondCollider->getEntity();
 
@@ -418,12 +418,12 @@ namespace perfectpixel
 		{
 			for (auto it = m_colliders.begin(); it != m_colliders.end(); ++it)
 			{
-				std::set<world::Entity> collisionCache;
+				std::set<ecs::Entity> collisionCache;
 				handleCollisionSingle(it->second, collisionCache);
 			}
 		}
 
-		void PhysicsManager::handleCollisionSingle(const ColliderComponent &collider, std::set<world::Entity> &collisionCache)
+		void PhysicsManager::handleCollisionSingle(const ColliderComponent &collider, std::set<ecs::Entity> &collisionCache)
 		{
 			// Entity alive check
 			if (!m_entityManager->isAlive(collider.getEntity()))
@@ -453,12 +453,12 @@ namespace perfectpixel
 			}
 		}
 
-		void PhysicsManager::possibleCollissions(const ColliderComponent &collider, std::set<world::Entity> &collisionCache, std::vector<ColliderComponent> *out_colliders)
+		void PhysicsManager::possibleCollissions(const ColliderComponent &collider, std::set<ecs::Entity> &collisionCache, std::vector<ColliderComponent> *out_colliders)
 		{
 			// FIXME store colliders in a QuadTree instead, so that we can partition
 			for (auto it : m_colliders)
 			{
-				world::Entity other = it.second.getEntity();
+				ecs::Entity other = it.second.getEntity();
 
 				if (collider.getEntity() != other
 					&& m_entityManager->isAlive(other)

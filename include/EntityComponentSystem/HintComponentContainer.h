@@ -3,7 +3,7 @@
 #include <EntityComponentSystem/IComponentStorage.h>
 
 namespace perfectpixel {
-	namespace world {
+	namespace ecs {
 
 		template <typename ComponentType>
 		class HintComponentContainer : public IComponentStorage<ComponentType>

@@ -1,7 +1,7 @@
 #include <EntityComponentSystem/Entity.h>
 
 namespace perfectpixel {
-	namespace world {
+	namespace ecs {
 
 		uint32_t entityGeneration(Entity entity)
 		{
@@ -13,7 +13,7 @@ namespace perfectpixel {
 			return entity & ((1 << INDEX_BITS) - 1);
 		}
 
-		perfectpixel::world::Entity entityCreate(std::uint32_t generation, std::uint32_t index)
+		Entity entityCreate(std::uint32_t generation, std::uint32_t index)
 		{
 			return (generation << INDEX_BITS | index & INDEX_MASK);
 		}

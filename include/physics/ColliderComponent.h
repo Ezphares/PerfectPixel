@@ -20,13 +20,13 @@ namespace perfectpixel {
 			};
 
 		public:
-			ColliderComponent(world::Entity entity);
-			ColliderComponent(world::Entity entity, const types::AARectangle &rectangle);
-			ColliderComponent(world::Entity entity, const types::Circle &circle);
+			ColliderComponent(ecs::Entity entity);
+			ColliderComponent(ecs::Entity entity, const types::AARectangle &rectangle);
+			ColliderComponent(ecs::Entity entity, const types::Circle &circle);
 			~ColliderComponent();
 
 		public:
-			world::Entity getEntity() const;
+			ecs::Entity getEntity() const;
 			MaskType getMaskType() const;
 
 			void setMaskRectangle(const types::AARectangle &rectangle);
@@ -39,7 +39,7 @@ namespace perfectpixel {
 			std::string getEventTag() const;
 
 		private:
-			world::Entity m_entity;
+			ecs::Entity m_entity;
 
 			MaskType m_type;
 

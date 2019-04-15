@@ -10,7 +10,7 @@
 #include <queue>
 
 namespace perfectpixel {
-	namespace world {
+	namespace ecs {
 
 		class EntityManager
 		{

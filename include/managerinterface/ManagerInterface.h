@@ -46,8 +46,8 @@ namespace perfectpixel {
 			/*
 			Manager Block
 			*/
-			void setEntityManager(world::EntityManager *manager);
-			world::EntityManager *Entities() const;
+			void setEntityManager(ecs::EntityManager *manager);
+			ecs::EntityManager *Entities() const;
 
 			void setPhysicsManager(physics::PhysicsManager *manager);
 			physics::PhysicsManager *Physics() const;
@@ -66,9 +66,9 @@ namespace perfectpixel {
 			*/
 			// Default to behaviours
 			template<typename T>
-			T *getComponent(world::Entity entity)
+			T *getComponent(ecs::Entity entity)
 			{
-				return m_behaviourManager->getBehaviour<T>(world::Entity entity);
+				return m_behaviourManager->getBehaviour<T>(ecs::Entity entity);
 			}
 
 			template<typename T>
@@ -77,20 +77,20 @@ namespace perfectpixel {
 				return m_behaviourManager->getMask<T>(const types::BitSet &reference);
 			}
 
-			physics::TransformComponent *getTransformComponent(world::Entity entity);
-			template<> physics::TransformComponent *getComponent<physics::TransformComponent>(world::Entity entity) { return getTransformComponent(entity); }
+			physics::TransformComponent *getTransformComponent(ecs::Entity entity);
+			template<> physics::TransformComponent *getComponent<physics::TransformComponent>(ecs::Entity entity) { return getTransformComponent(entity); }
 
-			physics::PhysicsComponent *getPhysicsComponent(world::Entity entity);
-			template<> physics::PhysicsComponent *getComponent<physics::PhysicsComponent>(world::Entity entity) { return getPhysicsComponent(entity); }
+			physics::PhysicsComponent *getPhysicsComponent(ecs::Entity entity);
+			template<> physics::PhysicsComponent *getComponent<physics::PhysicsComponent>(ecs::Entity entity) { return getPhysicsComponent(entity); }
 
-			physics::ColliderComponent *getColliderComponent(world::Entity entity);
-			template<> physics::ColliderComponent *getComponent<physics::ColliderComponent>(world::Entity entity) { return getColliderComponent(entity); }
+			physics::ColliderComponent *getColliderComponent(ecs::Entity entity);
+			template<> physics::ColliderComponent *getComponent<physics::ColliderComponent>(ecs::Entity entity) { return getColliderComponent(entity); }
 
-			graphics::SpriteComponent *getSpriteComponent(world::Entity entity);
-			template<> graphics::SpriteComponent *getComponent<graphics::SpriteComponent>(world::Entity entity) { return getSpriteComponent(entity); }
+			graphics::SpriteComponent *getSpriteComponent(ecs::Entity entity);
+			template<> graphics::SpriteComponent *getComponent<graphics::SpriteComponent>(ecs::Entity entity) { return getSpriteComponent(entity); }
 
 		private:
-			world::EntityManager *m_entityManager;
+			ecs::EntityManager *m_entityManager;
 			physics::PhysicsManager *m_physicsManager;
 			behaviour::BehaviourManager *m_behaviourManager;
 			graphics::GraphicsManager *m_graphicsManager;

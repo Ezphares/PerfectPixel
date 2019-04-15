@@ -19,13 +19,13 @@ namespace tests
 	TEST_CLASS(test_PhysicsManager)
 	{
 	public:
-		world::EntityManager *m_entityManager;
+		ecs::EntityManager *m_entityManager;
 		PhysicsManager *m_manager;
 
 	public:
 		TEST_METHOD_INITIALIZE(setup)
 		{
-			m_entityManager = new world::EntityManager();
+			m_entityManager = new ecs::EntityManager();
 			m_manager = new PhysicsManager(m_entityManager);
 		}
 
@@ -37,7 +37,7 @@ namespace tests
 
 		TEST_METHOD(test_PhysicsManager_checkCollision_rect_rect)
 		{
-			world::Entity a{ m_entityManager->create() }, b{ m_entityManager->create() };
+			ecs::Entity a{ m_entityManager->create() }, b{ m_entityManager->create() };
 			
 			PhysicsManager::CollisionData data;
 			types::Vector2 *overlap = &data.m_data_RectRectOverlap;

@@ -22,7 +22,7 @@ public:
 		LC_DEAD
 	};
 
-	Behaviour(world::Entity entity)
+	Behaviour(ecs::Entity entity)
 		: m_entity(entity)
 		, m_state(LC_NEW)
 		, m_managerInterface(nullptr)
@@ -38,7 +38,7 @@ public:
 	virtual void onUpdate(types::PpFloat deltaT) {}
 	virtual void onDestroy() {};
 
-	inline world::Entity getEntity()
+	inline ecs::Entity getEntity()
 	{
 		return m_entity;
 	}
@@ -49,7 +49,7 @@ public:
 	}
 
 private:
-	world::Entity m_entity;
+	ecs::Entity m_entity;
 	LifeCycle m_state;
 	api::ManagerInterface *m_managerInterface;
 

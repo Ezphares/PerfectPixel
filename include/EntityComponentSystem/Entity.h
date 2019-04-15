@@ -3,7 +3,7 @@
 #include <cstdint>
 
 namespace perfectpixel {
-namespace world {
+namespace ecs {
 
 	typedef std::uint32_t Entity;
 
