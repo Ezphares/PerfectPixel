@@ -77,6 +77,7 @@ void EntityManager::expandMask(types::BitSet bits, std::vector<Entity> *out_enti
 types::BitSet EntityManager::all() const
 {
 	return types::BitSet(m_entities.size(), true);
+
 }
 
 }}

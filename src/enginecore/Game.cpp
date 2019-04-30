@@ -1,5 +1,8 @@
 #include <enginecore/Game.h>
 
+#include <EntityComponentSystem/LifecycleComponents.h>
+#include <EntityComponentSystem/DebugProcessor.h>
+
 #include <graphics/IWindow.h>
 
 #include <functional>
@@ -39,6 +42,8 @@ void Game::run()
 	mainWindowSettings.dimensions = graphics::WindowDimensions(640, 480);
 	mainWindowSettings.type = graphics::WindowSettings::WINDOWED;
 
+	PP_LOG(LEVEL_INFO, "Setting up window");
+
 	// Virtual call, change window settings
 	setupMainWindow(mainWindowSettings);
 
@@ -48,6 +53,8 @@ void Game::run()
 	mainWindow->setKeyCallback(m_inputManager.getKeyCallback());
 	mainWindow->setFocusCallback(std::bind(&Game::focus, this, std::placeholders::_1));
 	mainWindow->setResizeCallback(std::bind(&Game::windowResized, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+
+	PP_LOG(LEVEL_INFO, "Setting up renderer");
 
 	m_graphicsManager.initialize();
 	graphics::CameraSettings camera;
@@ -59,14 +66,20 @@ void Game::run()
 	// Fire a resize event to initialize size dependent variables
 	windowResized(*mainWindow, mainWindowSettings.dimensions.first, mainWindowSettings.dimensions.second);
 
+	PP_LOG(LEVEL_INFO, "Setting up ECS processors");
+
+	setupProcessors();
+
+	PP_LOG(LEVEL_INFO, "Starting game");
+
 	gameStart();
 
 	// Set up frame timers
 	typedef std::chrono::steady_clock Clock;
 	typedef std::chrono::duration<double> Duration;
 
-	double deltaT = 1 / m_targetUps;
-	double accumulator = 0;
+	double deltaT = 1.0 / m_targetUps;
+	double accumulator = 0.0;
 	Clock::time_point lastTime = Clock::now();
 
 	while (!m_shouldExit)
@@ -89,10 +102,14 @@ void Game::run()
 
 		if (safety <= 0)
 		{
+			PP_LOG(LEVEL_WARN, "Throttling updates. This might happen when alt-tabbing, changing settings etc. "
+				"If it happens during normal play, it is a sign of performance issues");
+			PP_LOG(LEVEL_WARN, "  Last frame recorded as " << unsigned(frametime.count() * 1000) << " ms");
 			accumulator = 0;
 		}
 		
 		// Render step
+		types::Logger::touchLog(types::Logger::LOG_TOUCH_RENDER);
 		m_graphicsManager.drawAll(frametime.count());
 		m_graphicsManager.cleanup();
 		mainWindow->draw();
@@ -103,6 +120,8 @@ void Game::run()
 
 		m_shouldExit = mainWindow->isClosed();
 	}
+
+	PP_LOG(LEVEL_INFO, "Shutting down...");
 
 	m_initializer->exit();
 }
@@ -144,10 +163,27 @@ void Game::exit()
 	m_shouldExit = true;
 }
 
+void Game::setupProcessors()
+{
+	registerLifecycleComponents(&m_componentRegistry);
+	
+	m_processorQueue.registerProcessor(new ecs::DebugProcessor(), 200, true);
+
+	setupCustomProcessors(m_processorQueue);
+
+	ecs::Entity entity = m_entityManager.create();
+
+	m_componentRegistry.registerComponent(ecs::DebugComponent(entity));
+	m_componentRegistry.registerComponent(ecs::DestroyedLifecycleComponent(entity));
+}
+
 void Game::update(double dt)
 {
+	types::Logger::touchLog(types::Logger::LOG_TOUCH_UPDATE);
+
 	types::PpFloat ppdt = static_cast<types::PpFloat>(dt);
 
+	m_processorQueue.processAll(ppdt);
 	m_physicsManager.update(ppdt);
 	m_behaviourManager.update(ppdt);
 }

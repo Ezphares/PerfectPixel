@@ -6,6 +6,7 @@ namespace perfectpixel {
 
 		BitSet::BitSet(std::size_t initialSize, bool initToOne /*= false*/)
 			: m_bitSize(initialSize)
+			, m_negated(false)
 		{
 			m_data = std::vector<uint8_t>((m_bitSize + 7) / 8, initToOne ? 0xff : 0x00);
 			if (initToOne)
@@ -29,11 +30,12 @@ namespace perfectpixel {
 
 		bool BitSet::get(uint32_t index) const
 		{
-			return (m_data[index / 8] & (1 << (index % 8))) != 0;
+			return ((m_data[index / 8] & (1 << (index % 8))) != 0) ^ m_negated;
 		}
 
 		void BitSet::set(uint32_t index, bool val)
 		{
+			val ^= m_negated;
 			if (val)
 			{
 				m_data[index / 8] |= (1 << (index % 8));
@@ -51,6 +53,8 @@ namespace perfectpixel {
 				throw "Index out of bounds";
 			}
 
+			executeNegation();
+
 			return BitReference(&m_data[index / 8], index % 8);
 		}
 
@@ -61,20 +65,21 @@ namespace perfectpixel {
 				throw "Index out of bounds";
 			}
 
-			return BitReference((m_data[index / 8] & (1 << (index % 8))) > 0);
+			return BitReference(((m_data[index / 8] & (1 << (index % 8))) > 0) ^ m_negated);
 		}
 
 		BitSet & BitSet::operator&=(const BitSet &other)
 		{
+			executeNegation();
 			for (uint32_t i = 0; i < m_data.size(); ++i)
 			{
 				if (i < other.m_data.size())
 				{
-					m_data[i] &= other.m_data[i];
+					m_data[i] &= other.m_data[i] ^ (other.m_negated ? 0xff : 0x00);
 				}
 				else
 				{
-					m_data[i] = 0u;
+					m_data[i] = other.m_negated;
 				}
 			}
 
@@ -90,12 +95,7 @@ namespace perfectpixel {
 
 		BitSet & BitSet::negate()
 		{
-			for (uint32_t i = 0; i < m_data.size(); ++i)
-			{
-				m_data[i] = ~m_data[i];
-			}
-
-			trim(); // Unincluded bits may have been set to 1
+			m_negated = !m_negated;
 
 			return *this;
 		}
@@ -107,11 +107,28 @@ namespace perfectpixel {
 			return result;
 		}
 
+		void BitSet::executeNegation()
+		{
+			if (m_negated)
+			{
+				for (uint32_t i = 0; i < m_data.size(); ++i)
+				{
+					m_data[i] = ~m_data[i];
+				}
+
+				trim(); // Unincluded bits may have been set to 1
+
+			}
+			m_negated = false;
+		}
+
 		void BitSet::trim()
 		{
 			if (!m_data.empty())
 			{
-				m_data[m_data.size() - 1] &= (uint8_t)((1 << (m_bitSize % 8)) - 1);
+				uint32_t mod = m_bitSize % 8;
+				uint8_t mask = mod == 0 ? 0xff : (1 << mod) - 1;
+				m_data[m_data.size() - 1] &= mask;
 			}
 		}
 

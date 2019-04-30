@@ -36,9 +36,9 @@ namespace perfectpixel { namespace ecs {
 	{
 		static void getTypes(std::vector<ComponentTypeId> &out_types) 
 		{
-			if (out_types.capacity() < 1 + sizeof(Ts))
+			if (out_types.capacity() < 1 + sizeof...(Ts))
 			{
-				out_types.reserve(1 + sizeof(Ts));
+				out_types.reserve(1 + sizeof...(Ts));
 			}
 			
 			out_types.push_back(T::getTypeId());
@@ -66,7 +66,7 @@ namespace perfectpixel { namespace ecs {
 	{
 	};
 
-	template<typename WithComponents, typename WithoutComponents>
+	template<typename WithComponents, typename WithoutComponents = typename Without<>>
 	struct QueryHelper
 	{
 		typedef typename WithComponents::QueryResultType ResultType;

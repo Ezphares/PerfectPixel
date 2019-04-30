@@ -4,6 +4,7 @@
 
 #include <EntityComponentSystem/EntityManager.h>
 #include <EntityComponentSystem/ComponentRegistry.h>
+#include <EntityComponentSystem/ProcessorQueue.h>
 #include <graphics/GraphicsManager.h>
 #include <physics/PhysicsManager.h>
 #include <input/InputManager.h>
@@ -36,6 +37,7 @@ public:
 	virtual void gameStart() = 0;
 	virtual void step() {};
 	virtual void splashScreenUpdate(bool &closeSplash);
+	virtual void setupCustomProcessors(ecs::ProcessorQueue &queue) {};
 
 protected:
 	graphics::IWindow *createWindow(const graphics::WindowSettings &settings);
@@ -43,6 +45,7 @@ protected:
 	void exit();
 
 private:
+	void setupProcessors();
 	void update(double dt);
 	void cleanup();
 	void loadResources();
@@ -62,6 +65,7 @@ protected:
 	api::ManagerInterface m_managerInterface;
 	ecs::EntityManager m_entityManager;
 	ecs::ComponentRegistry m_componentRegistry;
+	ecs::ProcessorQueue m_processorQueue;
 	physics::PhysicsManager m_physicsManager;
 	input::InputManager m_inputManager;
 	graphics::GraphicsManager m_graphicsManager;
