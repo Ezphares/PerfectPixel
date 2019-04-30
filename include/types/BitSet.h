@@ -45,12 +45,15 @@ namespace perfectpixel {
 			BitSet &negate();
 			BitSet operator~() const;
 
+			void executeNegation();
+
 		private:
 			void trim();
 
 		private:
 			std::vector<uint8_t> m_data;
 			std::size_t m_bitSize;
+			bool m_negated;
 		};
 
 	}

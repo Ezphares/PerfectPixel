@@ -2,7 +2,7 @@
 
 #include "managerinterface/ManagerInterface.h"
 
-#include "EntityComponentSystem/Component.h"
+#include <EntityComponentSystem/Component.h>
 
 #include "types/BitSet.h"
 
@@ -17,16 +17,16 @@ namespace perfectpixel {
 			Query &with(ComponentTypeId id);
 			Query &without(ComponentTypeId id);
 
-			template<typename Component>
+			template<typename ComponentType>
 			Query &with()
 			{
-				return with(Component::getTypeId());
+				return with(ComponentType::getTypeId());
 			}
 
-			template<typename Without>
+			template<typename ComponentType>
 			Query &without()
 			{
-				return without(Component::getTypeId());
+				return without(ComponentType::getTypeId());
 			}
 
 			void executeMaskOnly();

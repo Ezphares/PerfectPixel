@@ -33,8 +33,8 @@ namespace perfectpixel {
 
 			virtual bool hasComponent(Entity entity) const
 			{
-				uint32_t index{ entityIndex(component.m_entity) };
-				return m_bitSet.size() > index && m_bitSet[entityIndex(component.m_entity)] = true;
+				uint32_t index{ entityIndex(entity) };
+				return m_bitSet.size() > index && m_bitSet[entityIndex(entity)] == true;
 			}
 
 			virtual void registerComponent(const ComponentType &component)
@@ -50,7 +50,7 @@ namespace perfectpixel {
 
 			virtual void removeComponent(Entity entity)
 			{
-				uint32_t index{ entityIndex(component.m_entity) };
+				uint32_t index{ entityIndex(entity) };
 				if (m_bitSet.size() > index)
 				{
 					m_bitSet[index] = false;

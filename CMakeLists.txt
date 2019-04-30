@@ -85,6 +85,7 @@ add_library(Types
 	"${Types_SRC_DIR}/File.cpp" 
 	"${Types_SRC_DIR}/PpException.cpp"
 	"${Types_SRC_DIR}/BitSet.cpp"
+	"${Types_SRC_DIR}/Logger.cpp"
 )
 
 set (EntityComponentSystem_SRC_DIR "${CMAKE_SOURCE_DIR}/src/EntityComponentSystem")
@@ -92,8 +93,10 @@ add_library(EntityComponentSystem
 	"${EntityComponentSystem_SRC_DIR}/Entity.cpp" 
 	"${EntityComponentSystem_SRC_DIR}/EntityManager.cpp" 
 	"${EntityComponentSystem_SRC_DIR}/ComponentRegistry.cpp" 
+	"${EntityComponentSystem_SRC_DIR}/LifecycleComponents.cpp" 
 	"${EntityComponentSystem_SRC_DIR}/Query.cpp" 
 	"${EntityComponentSystem_SRC_DIR}/Processor.cpp" 
+	"${EntityComponentSystem_SRC_DIR}/ProcessorQueue.cpp" 
 )
 
 set (Interface_SRC_DIR "${CMAKE_SOURCE_DIR}/src/managerinterface")

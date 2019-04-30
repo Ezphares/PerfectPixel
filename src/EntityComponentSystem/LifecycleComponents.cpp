@@ -1,13 +1,13 @@
 
-#include <worldgraph/LifecycleComponents.h>
-#include <worldgraph/ComponentRegistry.h>
-#include <worldgraph/HintComponentContainer.h>
+#include <EntityComponentSystem/LifecycleComponents.h>
+#include <EntityComponentSystem/ComponentRegistry.h>
+#include <EntityComponentSystem/HintComponentContainer.h>
 
-namespace perfectpixel {namespace world {
+namespace perfectpixel {namespace ecs {
 
-	void registerLifecycleComponents(ComponentRegistry *registry)
+	void perfectpixel::ecs::registerLifecycleComponents(ComponentRegistry *registry)
 	{
-		registry->registerStorage(CreatedLifecycleComponent::getTypeId(), new HintComponentContainer<CreatedLifecycleComponent>(), true);
+		registry->registerStorage(CreationDoneLifecycleComponent::getTypeId(), new HintComponentContainer<CreationDoneLifecycleComponent>(), true);
 		registry->registerStorage(DestroyedLifecycleComponent::getTypeId(), new HintComponentContainer<DestroyedLifecycleComponent>(), true);
 	}
 

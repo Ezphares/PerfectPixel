@@ -7,11 +7,11 @@ namespace perfectpixel {
 
 		class ComponentRegistry;
 
-		Component(CreatedLifecycleComponent) {};
-		FinalizeComponent(CreatedLifecycleComponent)
+		Component(CreationDoneLifecycleComponent) {};
+		FinalizeComponent(CreationDoneLifecycleComponent)
 
 		Component(DestroyedLifecycleComponent) {};
 		FinalizeComponent(DestroyedLifecycleComponent)
 
-		static void registerLifecycleComponents(ComponentRegistry *registry);
+		void registerLifecycleComponents(ComponentRegistry *registry);
 } }
