@@ -14,6 +14,7 @@ namespace perfectpixel {
 			types::Vector3 m_vector;
 			bool m_relativeDirection; // Relative direction is compared to FORWARD
 			bool m_relativeMagnitude;
+			bool m_ignoreMass;
 
 			/// Create a constant force representing gravity. Magnitude is in Units / Second^2
 			inline static Force gravity(types::PpFloat magnitude = 1)
@@ -21,7 +22,7 @@ namespace perfectpixel {
 				return Force{
 					FORCE_ID_GRAVITY,
 					types::Vector3::DOWN * magnitude,
-					false, false};
+					false, false, true};
 			}
 
 			/// Create a constant force representing drag. Magnitude is in Units / Second^2. Progressive drag gets stronger the faster an object moves
@@ -30,7 +31,7 @@ namespace perfectpixel {
 				return Force{
 					FORCE_ID_DRAG,
 					types::Vector3::FORWARD * magnitude,
-					true, progressive };
+					true, progressive, true };
 			}
 		};
 

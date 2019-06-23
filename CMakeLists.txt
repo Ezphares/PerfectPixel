@@ -75,6 +75,7 @@ add_library(Physics
 	"${Physics_SRC_DIR}/ColliderComponent.cpp" 
 	"${Physics_SRC_DIR}/PhysicsComponent.cpp" 
 	"${Physics_SRC_DIR}/CollisionProcessor.cpp" 
+	"${Physics_SRC_DIR}/IntegratorProcessor.cpp.cpp" 
 	
 	"${Physics_INCLUDE_FILES}"
 )

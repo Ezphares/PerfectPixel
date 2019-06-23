@@ -60,4 +60,70 @@ namespace perfectpixel { namespace ecs {
 		std::vector<T> m_data;
 	};
 
+	template <typename Owner, typename T, std::uint32_t Capacity>
+	class ArrayField : public IField
+	{
+	public:
+		// FIXME Use a better container type
+		typedef std::vector<T> Container;
+
+		ArrayField()
+		{
+			Owner::AddField(this);
+		}
+
+		Container at(uint32_t idx)
+		{
+			return m_data[idx];
+		}
+
+		Container Get(Entity entity) const
+		{
+			return m_data[Owner::Index(entity)];
+		}
+
+		void Set(Entity entity, const Container& value)
+		{
+			m_data[Owner::Index(entity)] = false;
+		}
+
+		uint32_t Count(Entity entity)
+		{
+			return m_data[Owner::Index(entity)].size();
+		}
+
+		// Raw access operator
+		Container &operator()(Entity entity)
+		{
+			return m_data[Owner::Index(entity)];
+		}
+
+		T &operator()(Entity entity, uint32_t index)
+		{
+			return m_data[Owner::Index(entity)][index];
+		}
+
+		const Container &operator()(Entity entity) const
+		{
+			return m_data.at(Owner::Index(entity));
+		}
+
+		const T &operator()(Entity entity, uint32_t index) const
+		{
+			return m_data.at(Owner::Index(entity)).at(index);
+		}
+
+		virtual void reset(uint32_t idx)
+		{
+			if (m_data.size() <= idx)
+			{
+				m_data.resize(idx + 1);
+			}
+			m_data[idx] = std::vector<T>();
+		}
+
+	private:
+		std::vector<std::vector<T>> m_data;
+	};
+
 } }
