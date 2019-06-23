@@ -30,14 +30,11 @@ graphics::IWindow *Win32Initializer::createWindow()
 
 void Win32Initializer::handleOsStep()
 {
-	MSG msg = { 0 };
-	while (true)
+	MSG msg;
+	ZeroMemory(&msg, sizeof(MSG));
+	while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 	{
-		BOOL messagePresent = PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
-		if (messagePresent == 0)
-		{
-			break;
-		}
+		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
 }

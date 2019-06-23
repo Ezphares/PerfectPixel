@@ -4,8 +4,7 @@
 
 #include <types/numbers.h>
 
-namespace perfectpixel {
-	namespace ecs {
+namespace perfectpixel { namespace ecs {
 
 		class Processor
 		{
@@ -41,9 +40,6 @@ namespace perfectpixel {
 			Query m_queryDestroy;
 
 			types::BitSet m_queryState;
-		};
+		}; 
 
-
-
-	}
-}
+} }

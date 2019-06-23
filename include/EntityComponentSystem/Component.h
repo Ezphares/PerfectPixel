@@ -1,67 +1,136 @@
 #pragma once
 
-#include <EntityComponentSystem/Entity.h>
+#include <EntityComponentSystem/Field.h>
+#include <EntityComponentSystem/IComponentStorage.h>
 
-#include <type_traits>
-#include <string>
+#include <types/Singleton.h>
+#include <types/Bitset.h>
 
-//////////////////////////////////////////////////////////////////////////
-// This file contains a set of macro definitions for creating components
-// for the entity-component system (new-style).
-//
-// The bare minimum is using "Component(N) { <struct body> };" for the 
-// data definition followed by "FinalizeComponent(N);"
-//
-// If the component data need specialized constructors, assignment
-// operators or destructors, use the provided macros, as the data
-// part of the structure will have it's data mangled.
-// If you MUST reference the data directly, use "ComponentDataName(N)"
-//////////////////////////////////////////////////////////////////////////
+namespace perfectpixel { namespace ecs {
 
-namespace perfectpixel {
-	namespace ecs {
-		typedef int ComponentTypeId;
+	template <typename T>
+	class Component : public types::Singleton<T>
+	{
+	private:
+		static uint32_t objects;
+		static uint32_t lastIndex;
+		static std::vector<IField*> fields;
+
+	protected:
+		inline static Field<Component<T>, Entity> Owner;
+
+		virtual void purge(uint32_t idx) {};
+		virtual void initialize(uint32_t idx)
+		{
+			for (auto field : fields)
+			{
+				field->reset(idx);
+			}
+		};
+
+	public:
+		const static size_t Id;
+
+		static Entity at(uint32_t idx)
+		{
+			return Owner.at(idx);
+		}
+
+		static void AddField(IField *field)
+		{
+			fields.push_back(field);
+		}
+
+		static bool Has(Entity entity)
+		{
+			return getInstance()->_has(entity);
+		}
+
+		static uint32_t Index(Entity entity)
+		{
+			return getInstance()->_index(entity);
+		}
+
+		static void Register(Entity entity)
+		{
+			T *instance = getInstance();
+			uint32_t idx = instance->_register(entity, lastIndex);
+
+			if (idx >= lastIndex)
+			{
+				lastIndex++;
+			}
+
+			instance->initialize(idx);
+
+			objects++;
+		}
+
+		static void Delete(Entity entity)
+		{
+			uint32_t idx = getInstance()->_delete(entity);
+
+			getInstance()->purge(idx);
+
+			objects--;
+		}
+
+		static void Filter(types::BitSet &mask, IComponentStorage::ComponentStorageFilterType filterType)
+		{
+			getInstance()->_filter(mask, filterType);
+		}
+
+		static void SetToDefault(Entity entity)
+		{
+			T *instance = getInstance();
+			instance->initialize(instance->_index(entity));
+		}
+	};
+
+	template<typename T> uint32_t Component<T>::objects = 0;
+	template<typename T> uint32_t Component<T>::lastIndex = 0;
+	template<typename T> const size_t Component<T>::Id = std::hash(typeid(T).name());
+	template<typename T> std::vector<IField *> Component<T>::fields = std::vector<IField *>();
+
+	template <typename T>
+	class HintComponent : public Component<T>, public IComponentStorage
+	{
+	public:
+		virtual bool _has(Entity entity) const
+		{
+			uint32_t idx = entityIndex(entity);
+			return m_mask.size() > idx && m_mask[idx];
+		}
+
+		virtual uint32_t _index(Entity entity) const 
+		{
+			return entityIndex(entity);
+		}
+
+		virtual uint32_t _register(Entity entity, uint32_t currentSize)
+		{
+			uint32_t idx = entityIndex(entity);
+			if (m_mask.size() <= idx)
+			{
+				m_mask.resize(idx + 1);
+			}
+			m_mask[idx] = true;
+			return idx;
+		}
+		
+		virtual uint32_t _delete(Entity entity)
+		{
+			m_mask[entityIndex(entity)] = false;
+			return 0;
+		}
+
+		virtual void _filter(types::BitSet &mask, ComponentStorageFilterType filterType) const
+		{
+			mask &= (filterType == IComponentStorage::WITH) ? m_mask : ~m_mask;
+		}
+
+	private:
+		types::BitSet m_mask;
+	};
+
 } }
-
-#define ComponentDataName(N) PP_##N##_Data
-
-#define COMPONENT_TYPE_NAME(N) #N
-#define COMPONENT_TYPE_ID_GENERATOR(N) std::hash<std::string>()(#N)
-
-#define Component(N) struct ComponentDataName(N)
-
-#if defined(DEBUG) || defined(NDEBUG) || defined(_DEBUG)
-#define COMPONENT_NAME_VARIABLE std::string m_componentName;
-#define COMPONENT_NAME_INITIALIZER , m_componentName(getTypeName())
-#else 
-#define COMPONENT_NAME_VARIABLE
-#define COMPONENT_NAME_INITIALIZER
-#endif 
-
-#define FinalizeComponent(N) struct N \
-{ \
-	inline static std::string getTypeName() { return COMPONENT_TYPE_NAME(N); } \
-	inline static ::perfectpixel::ecs::ComponentTypeId getTypeId() { return COMPONENT_TYPE_ID_GENERATOR(N); } \
-	\
-	ComponentDataName(N) m_data; \
-	::perfectpixel::ecs::Entity m_entity; \
-	COMPONENT_NAME_VARIABLE \
-	\
-	inline N(::perfectpixel::ecs::Entity entity) \
-		: m_data() \
-		, m_entity(entity) \
-		COMPONENT_NAME_INITIALIZER \
-	{} \
-};
-
-#define ComponentData(Instance, Key) Instance ## .m_data. ## Key
-
-#define ComponentConstructor(N) explicit ComponentDataName(N)
-#define ComponentDefaultConstructor(N) ComponentDataName(N)()
-
-#define ComponentCopyConstructor(N) ComponentDataName(N)(const ComponentDataName(N) &other)
-#define ComponentMoveConstructor(N) ComponentDataName(N)(const ComponentDataName(N) &&other)
-#define ComponentCopyAssignment(N) ComponentDataName(N) &operator=(const ComponentDataName(N) &other)
-#define ComponentMoveAssignment(N) ComponentDataName(N) &operator=(const ComponentDataName(N) &&other)
-#define ComponentDestructor(N) ~ComponentDataName(N)
-

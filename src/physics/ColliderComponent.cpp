@@ -1,82 +1,47 @@
 #include <physics/ColliderComponent.h>
 
+#include <EntityComponentSystem/EntityManager.h>
+
 #include <types/PpException.h>
 
 namespace perfectpixel {
 	namespace physics {
 
-		ColliderComponent::ColliderComponent(ecs::Entity entity)
-			: m_entity(entity)
-			, m_type(UNSET)
-			, m_eventTag()
+		void ColliderComponent::setMaskRectangle(ecs::Entity entity, const types::AARectangle &rectangle)
 		{
+			ColliderComponent::MaskType(entity) = RECTANGLE;
+			ColliderComponent::Mask(entity).m_rectangle = rectangle;
 		}
 
-
-		ColliderComponent::ColliderComponent(ecs::Entity entity, const types::AARectangle &rectangle)
-			: m_entity(entity)
+		types::AARectangle ColliderComponent::getMaskRectangle(ecs::Entity entity)
 		{
-			setMaskRectangle(rectangle);
-		}
-
-		ColliderComponent::ColliderComponent(ecs::Entity entity, const types::Circle &circle)
-			: m_entity(entity)
-		{
-			setMaskCircle(circle);
-		}
-
-		ColliderComponent::~ColliderComponent()
-		{
-		}
-
-		perfectpixel::ecs::Entity ColliderComponent::getEntity() const
-		{
-			return m_entity;
-		}
-
-		void ColliderComponent::setMaskRectangle(const types::AARectangle &rectangle)
-		{
-			m_type = RECTANGLE;
-			m_rectangle = rectangle;
-		}
-
-		types::AARectangle ColliderComponent::getMaskRectangle() const
-		{
-			if (m_type != RECTANGLE)
+			if (ColliderComponent::MaskType(entity) != RECTANGLE)
 			{
 				types::PpException("Invalid mask type");
 			}
-			return m_rectangle;
+			return ColliderComponent::Mask(entity).m_rectangle;
 		}
 
-		void ColliderComponent::setMaskCircle(const types::Circle &circle)
+		void ColliderComponent::setMaskCircle(ecs::Entity entity, const types::Circle &circle)
 		{
-			m_type = CIRCLE;
-			m_circle = circle;
+			ColliderComponent::MaskType(entity) = CIRCLE;
+			ColliderComponent::Mask(entity).m_circle = circle;
 		}
 
-		const perfectpixel::types::Circle ColliderComponent::getMaskCircle() const
+		const perfectpixel::types::Circle ColliderComponent::getMaskCircle(ecs::Entity entity)
 		{
-			if (m_type != CIRCLE)
+			if (ColliderComponent::MaskType(entity) != CIRCLE)
 			{
 				types::PpException("Invalid mask type");
 			}
-			return m_circle;
+			return ColliderComponent::Mask(entity).m_circle;
 		}
 
-		void ColliderComponent::setEventTag(const std::string &text)
+		void ColliderComponent::GetNear(ecs::EntityManager *entityManager, std::vector<ecs::Entity> &toCheck, const types::Vector2 &point)
 		{
-			m_eventTag = text;
-		}
-
-		std::string ColliderComponent::getEventTag() const
-		{
-			return m_eventTag;
-		}
-
-		ColliderComponent::MaskType ColliderComponent::getMaskType() const
-		{
-			return m_type;
+			types::BitSet mask = entityManager->all();
+			Filter(mask, IComponentStorage::WITH);
+			entityManager->expandMask(mask, &toCheck, nullptr);
 		}
 
 	}

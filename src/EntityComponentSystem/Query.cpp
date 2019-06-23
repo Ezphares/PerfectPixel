@@ -1,49 +1,27 @@
 #include <EntityComponentSystem/Query.h>
 
-#include <EntityComponentSystem/ComponentRegistry.h>
-
 namespace perfectpixel
 {
 	namespace ecs {
 
-		Query::Query()
-			: m_with()
-			, m_without()
+		Query::Query(EntityManager *entityManager, QueryFunction queryFunction)
+			: m_entityManager(entityManager)
+			, m_queryFunction(queryFunction)
 			, m_lastResult()
 		{}
 
-		Query & Query::with(ComponentTypeId id)
-		{
-			m_with.push_back(id);
-			return *this;
-		}
-
-		Query & Query::without(ComponentTypeId id)
-		{
-			m_without.push_back(id);
-			return *this;
-		}
-
 		void Query::applyMask()
 		{
-			ComponentRegistry *registry = ComponentRegistry::Instance();
-
-			for (auto id : m_with)
+			if (m_queryFunction != nullptr)
 			{
-				m_lastResult &= registry->getStorage(id)->getMask(id, m_lastResult);
-			}
+				m_queryFunction(m_lastResult);
 
-			for (auto id : m_without)
-			{
-				m_lastResult &= ~registry->getStorage(id)->getMask(id, m_lastResult);
 			}
 		}
 
 		void Query::executeMaskOnly()
 		{
-			ComponentRegistry *registry = ComponentRegistry::Instance();
-
-			executeMaskOnly(registry->getEntityManager()->all());
+			executeMaskOnly(m_entityManager->all());
 		}
 
 		void Query::executeMaskOnly(const types::BitSet &start)
@@ -66,10 +44,8 @@ namespace perfectpixel
 
 		std::vector<Entity> Query::finalize(EntityManager::EntityFunc callback /*= 0*/)
 		{
-			ComponentRegistry *registry = ComponentRegistry::Instance();
-
 			std::vector<Entity> result;
-			registry->getEntityManager()->expandMask(m_lastResult, &result, callback);
+			m_entityManager->expandMask(m_lastResult, &result, callback);
 			return result;
 		}
 

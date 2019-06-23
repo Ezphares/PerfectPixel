@@ -3,6 +3,9 @@
 #include <EntityComponentSystem/LifecycleComponents.h>
 #include <EntityComponentSystem/DebugProcessor.h>
 
+#include <Physics/IntegratorProcessor.h>
+#include <Physics/CollisionProcessor.h>
+
 #include <graphics/IWindow.h>
 
 #include <functional>
@@ -16,17 +19,14 @@ namespace core {
 	Game::Game()
 		: m_shouldExit(false)
 		, m_entityManager()
-		, m_componentRegistry(&m_entityManager)
-		, m_physicsManager(&m_entityManager)
 		, m_inputManager()
-		, m_graphicsManager(&m_entityManager, m_physicsManager.positionCallback())
+		, m_graphicsManager(&m_entityManager, [](ecs::Entity entity) {return ecs::TransformComponent::Position(entity); })
 		, m_behaviourManager(&m_entityManager, &m_managerInterface)
 		, m_targetUps(100)
 		, m_splashFilename("splash.png")
 	{
 		m_managerInterface.setEntityManager(&m_entityManager);
 		m_managerInterface.setBehaviourManager(&m_behaviourManager);
-		m_managerInterface.setPhysicsManager(&m_physicsManager);
 		m_managerInterface.setGraphicsManager(&m_graphicsManager);
 		m_managerInterface.setInputManager(&m_inputManager);
 	}
@@ -115,8 +115,8 @@ void Game::run()
 		mainWindow->draw();
 
 		// Handle input
-		m_inputManager.update();
 		m_initializer->handleOsStep();
+		m_inputManager.update();
 
 		m_shouldExit = mainWindow->isClosed();
 	}
@@ -165,16 +165,13 @@ void Game::exit()
 
 void Game::setupProcessors()
 {
-	registerLifecycleComponents(&m_componentRegistry);
-	
-	m_processorQueue.registerProcessor(new ecs::DebugProcessor(), 200, true);
+	m_processorQueue.registerProcessor(new ecs::DebugProcessor(&m_entityManager), 200, true);
+	m_processorQueue.registerProcessor(new physics::IntegratorProcessor(&m_entityManager), 240, true);
+	m_processorQueue.registerProcessor(new physics::CollisionProcessor(&m_entityManager), 250, true);
 
 	setupCustomProcessors(m_processorQueue);
 
 	ecs::Entity entity = m_entityManager.create();
-
-	m_componentRegistry.registerComponent(ecs::DebugComponent(entity));
-	m_componentRegistry.registerComponent(ecs::DestroyedLifecycleComponent(entity));
 }
 
 void Game::update(double dt)
@@ -184,13 +181,11 @@ void Game::update(double dt)
 	types::PpFloat ppdt = static_cast<types::PpFloat>(dt);
 
 	m_processorQueue.processAll(ppdt);
-	m_physicsManager.update(ppdt);
 	m_behaviourManager.update(ppdt);
 }
 
 void Game::cleanup()
 {
-	m_physicsManager.cleanup();
 }
 
 void Game::showSplashScreen()

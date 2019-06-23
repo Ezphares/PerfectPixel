@@ -7,7 +7,7 @@
 namespace perfectpixel {
 	namespace types {
 
-		File::File(const std::string &filename, std::ios_base::open_mode mode)
+		File::File(const std::string &filename, std::ios_base::openmode mode)
 			: m_buffer(NULL)
 			, m_length()
 		{

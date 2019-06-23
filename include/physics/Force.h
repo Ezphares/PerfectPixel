@@ -30,7 +30,7 @@ namespace perfectpixel {
 				return Force{
 					FORCE_ID_DRAG,
 					types::Vector3::FORWARD * magnitude,
-					true, true };
+					true, progressive };
 			}
 		};
 

@@ -1,8 +1,6 @@
 #pragma once
 
 #include <EntityComponentSystem/Processor.h>
-#include <EntityComponentSystem/ComponentRegistry.h>
-#include <EntityComponentSystem/HintComponentContainer.h>
 #include <EntityComponentSystem/LifecycleComponents.h>
 
 #include <types/Logger.h>
@@ -13,57 +11,46 @@
 namespace perfectpixel {
 	namespace ecs {
 
-		Component(DebugComponent) {};
-		FinalizeComponent(DebugComponent);
+	class DebugComponent : public HintComponent<DebugComponent> {};
 
-		typedef QueryHelper<With<DebugComponent>> DebugQuery;
+	typedef QueryHelper<With<DebugComponent>> DebugQuery;
 
-		class DebugProcessor : public Processor
+	class DebugProcessor : public Processor
+	{
+	public:
+		DebugProcessor(EntityManager *m_entityManager)
+			: Processor(DebugQuery::build(m_entityManager))
 		{
-		public:
-			DebugProcessor()
-				: Processor(DebugQuery::build())
-				, m_storage(new HintComponentContainer<DebugComponent>())
+		}
+
+		virtual void onCreate(const std::vector<Entity> &entities)
+		{
+			for (Entity entity : entities)
 			{
-
-
-				ComponentRegistry::Instance()->registerStorage(
-					DebugComponent::getTypeId(),
-					m_storage,
-					true);
+				PP_LOG(LEVEL_INFO, "Creating entity [" << entity << "]");
 			}
+		}
 
-			virtual void onCreate(const std::vector<Entity> &entities)
+		virtual void onProcess(const std::vector<Entity> &entities, types::PpFloat deltaT)
+		{
+			for (Entity entity : entities)
 			{
-				for (Entity entity : entities)
+				if (!CreationDoneLifecycleComponent::Has(entity))
 				{
-					PP_LOG(LEVEL_INFO, "Creating entity [" << entity << "]");
+					PP_LOG(LEVEL_ERROR, "Processing entity [" << entity << "] before running creation");
 				}
 			}
+		}
 
-			virtual void onProcess(const std::vector<Entity> &entities, types::PpFloat deltaT)
+		virtual void onDestroy(const std::vector<Entity> &entities)
+		{
+			for (Entity entity : entities)
 			{
-				for (Entity entity : entities)
-				{
-					if (!ComponentRegistry::Instance()->getStorage<CreationDoneLifecycleComponent>()->hasComponent(entity))
-					{
-						PP_LOG(LEVEL_ERROR, "Processing entity [" << entity << "] before running creation");
-					}
-				}
+				DebugComponent::Delete(entity);
+				PP_LOG(LEVEL_INFO, "Destroying entity [" << entity << "]");
 			}
-
-			virtual void onDestroy(const std::vector<Entity> &entities)
-			{
-				for (Entity entity : entities)
-				{
-					m_storage->removeComponent(entity);
-					PP_LOG(LEVEL_INFO, "Destroying entity [" << entity << "]");
-				}
-			}
-
-			HintComponentContainer<DebugComponent> *m_storage;
-
-		};
+		}
+	};
 
 } }
 

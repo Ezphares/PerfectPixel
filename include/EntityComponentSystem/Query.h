@@ -4,7 +4,9 @@
 
 #include <EntityComponentSystem/Component.h>
 
-#include "types/BitSet.h"
+#include <types/BitSet.h>
+
+#include <vector>
 
 namespace perfectpixel {
 	namespace ecs {
@@ -12,22 +14,9 @@ namespace perfectpixel {
 		class Query
 		{
 		public:
-			Query();
+			typedef void(*QueryFunction)(types::BitSet &);
 
-			Query &with(ComponentTypeId id);
-			Query &without(ComponentTypeId id);
-
-			template<typename ComponentType>
-			Query &with()
-			{
-				return with(ComponentType::getTypeId());
-			}
-
-			template<typename ComponentType>
-			Query &without()
-			{
-				return without(ComponentType::getTypeId());
-			}
+			Query(EntityManager *entityManager, QueryFunction func);
 
 			void executeMaskOnly();
 			void executeMaskOnly(const types::BitSet &start);
@@ -36,14 +25,15 @@ namespace perfectpixel {
 			std::vector<Entity> finalize(EntityManager::EntityFunc callback = 0);
 
 			const types::BitSet &getLastResult() const;
+			EntityManager *getEntityManager() const { return m_entityManager; }
 
 		private:
 			void applyMask();
 
 		private:
-			std::vector<ComponentTypeId> m_with;
-			std::vector<ComponentTypeId> m_without;
 			types::BitSet m_lastResult;
+			QueryFunction m_queryFunction;
+			EntityManager *m_entityManager;
 		};
 	}
 }

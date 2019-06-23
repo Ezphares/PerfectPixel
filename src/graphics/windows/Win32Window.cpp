@@ -42,13 +42,16 @@ void Win32Window::initialize(const WindowSettings &trySettings)
 
 	m_dimensions = settings.dimensions;
 
+	ZeroMemory(&m_wc, sizeof(WNDCLASSEX));
+	m_wc.cbSize = sizeof(WNDCLASSEX);
 	m_wc.lpfnWndProc = Win32Window::WndProc;
 	m_wc.hInstance = m_hInstance;
 	m_wc.hbrBackground = m_brush;
 	m_wc.lpszClassName = m_wndClassName.c_str();
-	m_wc.style = CS_OWNDC;
+	m_wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+	m_wc.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
 
-	if (!RegisterClass(&m_wc))
+	if (!RegisterClassEx(&m_wc))
 	{
 		throw types::PpException("Could not register window class");
 	}

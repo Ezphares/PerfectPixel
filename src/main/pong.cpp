@@ -2,10 +2,11 @@
 #include <enginecore/Game.h>
 #include <graphics/IWindow.h>
 #include <graphics/Texture.h>
+#include <EntityComponentSystem/TransformComponent.h>
 #include <types/vectors.h>
 #include <behaviour/Behaviour.h>
-
-#include "EntityComponentSystem/ComponentRegistry.h"
+#include <physics/PhysicsComponent.h>
+#include <physics/ColliderComponent.h>
 
 #include <chrono>
 #include <thread>
@@ -18,23 +19,16 @@ public:
 	BatBehaviour(
 		ecs::Entity entity)
 		: behaviour::Behaviour(entity)
-		, m_transform(nullptr)
 		, m_speed(35)
 	{}
 	virtual ~BatBehaviour() {}
 
-	virtual void onCreate()
-	{
-		m_transform = pp()->getComponent<physics::TransformComponent>(getEntity());
-	}
-
 	virtual void onUpdate(types::PpFloat deltaT)
 	{
-		m_transform->m_velocity.y() = pp()->Input()->getAxisState("Vertical") * m_speed;
+		ecs::TransformComponent::Velocity(getEntity()).y() = pp()->Input()->getAxisState("Vertical") * m_speed;
 	}
 
 private:
-	physics::TransformComponent *m_transform;
 	types::PpFloat m_speed;
 };
 
@@ -45,8 +39,6 @@ public:
 		ecs::Entity entity,
 		ecs::Entity ball)
 		: Behaviour(entity)
-		, m_transform(nullptr)
-		, m_ballTransform(nullptr)
 		, m_ball(ball)
 		, m_speed(35)
 	{}
@@ -54,19 +46,15 @@ public:
 
 	virtual void onCreate()
 	{
-		m_transform = pp()->getComponent<physics::TransformComponent>(getEntity());
-		m_ballTransform = pp()->getComponent<physics::TransformComponent>(m_ball);
 	}
 
 	virtual void onUpdate(types::PpFloat deltaT)
 	{
-		bool up = m_transform->m_position.y() < m_ballTransform->m_position.y();
-		m_transform->m_velocity.y() = (up ? 1.0f : -1.0f) * m_speed;
+		bool up = ecs::TransformComponent::Position(getEntity()).y() < ecs::TransformComponent::Position(m_ball).y();
+		ecs::TransformComponent::Velocity(getEntity()).y() = (up ? 1.0f : -1.0f) * m_speed;
 	}
 
 private:
-	physics::TransformComponent *m_transform;
-	physics::TransformComponent *m_ballTransform;
 	ecs::Entity m_ball;
 	types::PpFloat m_speed;
 };
@@ -82,29 +70,31 @@ public:
 
 	virtual void onCreate()
 	{
-		m_transform = pp()->getComponent<physics::TransformComponent>(getEntity());
 		reset();
 	}
 
 	void reset()
 	{	
-		m_transform->m_position = { 0, 0, m_transform->m_position.z() };
+		types::Vector3 &position = ecs::TransformComponent::Position(getEntity());
+		position = { 0, 0, position.z() };
 
-		m_transform->m_velocity.x() = m_transform->m_velocity.x() > 0 ? -40.0f : 40.0f;
-		m_transform->m_velocity.y() = m_transform->m_velocity.y() > 0 ? 35.0f : -35.0f;
-		m_dxPrev = m_transform->m_velocity.x();
+		types::Vector3 &velocity = ecs::TransformComponent::Velocity(getEntity());
+
+		velocity.x() = velocity.x() > 0 ? -40.0f : 40.0f;
+		velocity.y() = velocity.y() > 0 ? 35.0f : -35.0f;
+		m_dxPrev = velocity.x();
 	}
 
 	virtual void onUpdate(types::PpFloat deltaT)
 	{
 		bool shouldReset = false;
 
-		if (m_transform->m_position.x() < -80)
+		if (ecs::TransformComponent::Position(getEntity()).x() < -80)
 		{
 			m_score2++;
 			shouldReset = true;
 		}
-		else if (m_transform->m_position.x() > 80)
+		else if (ecs::TransformComponent::Position(getEntity()).x() > 80)
 		{
 			m_score1++;
 			shouldReset = true;
@@ -114,14 +104,14 @@ public:
 		{
 			reset();
 		}
-
+		types::Vector3 &velocity = ecs::TransformComponent::Velocity(getEntity());
 		// Speed up after batting
-		if (m_dxPrev > 0 != m_transform->m_velocity.x() > 0)
+		if (m_dxPrev > 0 != velocity.x() > 0)
 		{
-			m_transform->m_velocity *= 1.05f;
+			velocity *= 1.05f;
 		}
 
-		m_dxPrev = m_transform->m_velocity.x();
+		m_dxPrev = velocity.x();
 	}
 
 
@@ -148,16 +138,19 @@ class Pong : public core::Game
 	void createBat(types::PpFloat x, graphics::Sprite *spr, bool isAi)
 	{
 		ecs::Entity e{ m_entityManager.create() };
-		m_physicsManager.getTransform(e).m_position.x() = x;
+		ecs::TransformComponent::Register(e);
+		ecs::TransformComponent::Position(e) =types:: Vector3::RIGHT * x;
 
 		graphics::SpriteComponent sprite{ e, spr,{ 4, 16 },{ -2,  -8 }, 1 };
 		m_graphicsManager.registerSprite(e, sprite);
 
-		physics::PhysicsComponent physics(e, 1.0f, 0.0f, physics::PhysicsComponent::FULL);
+		physics::PhysicsComponent::Register(e);
+		physics::PhysicsComponent::Bounciness(e) = 0.0f;
+		physics::PhysicsComponent::Mass(e) = 1.0f;
+		physics::PhysicsComponent::SimulationType(e) = physics::PhysicsComponent::FULL;
 
-		physics::ColliderComponent collider(e, types::AARectangle({ 4, 16 }));
-		m_physicsManager.registerPhysics(physics);
-		m_physicsManager.registerCollider(collider);
+		physics::ColliderComponent::Register(e);
+		physics::ColliderComponent::setMaskRectangle(e, types::AARectangle({ 4, 16 }));
 
 		if (!isAi)
 		{
@@ -172,15 +165,18 @@ class Pong : public core::Game
 	virtual void gameStart()
 	{
 		ecs::Entity
-			ePlayer1{ m_entityManager.create() },
-			ePlayer2{ m_entityManager.create() },
 			eTopWall{ m_entityManager.create() },
 			eBottomWall{ m_entityManager.create() };
 
 		m_ball = m_entityManager.create();
 
-		m_physicsManager.getTransform(eTopWall).m_position.y() = 58;
-		m_physicsManager.getTransform(eBottomWall).m_position.y() = -58;
+		ecs::TransformComponent::Register(m_ball);
+		ecs::TransformComponent::Register(eTopWall);
+		ecs::TransformComponent::Register(eBottomWall);
+
+
+		ecs::TransformComponent::Position(eTopWall) = types::Vector3::UP * 58.0f;
+		ecs::TransformComponent::Position(eBottomWall) = types::Vector3::DOWN * 58.0f;
 
 		graphics::Texture *tex = new  graphics::Texture(graphics::PNG::fromFile("pong-all.png") );
 
@@ -212,23 +208,25 @@ class Pong : public core::Game
 		m_graphicsManager.registerSprite(eTopWall, sprComTop);
 		m_graphicsManager.registerSprite(eBottomWall, sprComBottom);
 
-		physics::ColliderComponent 
-			colliderBall(m_ball, types::AARectangle({ 4, 4 })),
-			colliderTop(eTopWall, types::AARectangle({ 160, 4 })),
-			colliderBottom(eBottomWall, types::AARectangle({ 160, 4 }));
+		physics::ColliderComponent::Register(m_ball);
+		physics::ColliderComponent::setMaskRectangle(m_ball, types::AARectangle({ 4, 4 }));
 
-		physics::PhysicsComponent
-			physicsBall(m_ball, 0.0f, 1.0f, physics::PhysicsComponent::FULL),
-			physicsTop(physics::PhysicsComponent::staticCollider(eTopWall)),
-			physicsBottom(physics::PhysicsComponent::staticCollider(eBottomWall));
+		physics::ColliderComponent::Register(eTopWall);
+		physics::ColliderComponent::setMaskRectangle(eTopWall, types::AARectangle({ 160, 4 }));
 
-		m_physicsManager.registerCollider(colliderBall);
-		m_physicsManager.registerCollider(colliderTop);
-		m_physicsManager.registerCollider(colliderBottom);
+		physics::ColliderComponent::Register(eBottomWall);
+		physics::ColliderComponent::setMaskRectangle(eBottomWall, types::AARectangle({ 160, 4 }));
 
-		m_physicsManager.registerPhysics(physicsBall);
-		m_physicsManager.registerPhysics(physicsTop);
-		m_physicsManager.registerPhysics(physicsBottom);
+		physics::PhysicsComponent::Register(m_ball);
+		physics::PhysicsComponent::Bounciness(m_ball) = 1.0f;
+		physics::PhysicsComponent::Mass(m_ball) = 0.0f;
+		physics::PhysicsComponent::SimulationType(m_ball) = physics::PhysicsComponent::FULL;
+
+		physics::PhysicsComponent::Register(eTopWall);
+		physics::PhysicsComponent::MakeStaticCollider(eTopWall);
+
+		physics::PhysicsComponent::Register(eBottomWall);
+		physics::PhysicsComponent::MakeStaticCollider(eBottomWall);
 
 		createBat(-78, sprPlayer1, false);
 		createBat(78, sprPlayer2, true);

@@ -5,30 +5,22 @@
 
 #include "types/BitSet.h"
 
-namespace perfectpixel
-{
-	namespace ecs
+namespace perfectpixel{ namespace ecs {
+
+	class IComponentStorage
 	{
-		class IComponentStorageBase
+	public:
+		enum ComponentStorageFilterType
 		{
-		public:
-			virtual ~IComponentStorageBase(){}
-
-			virtual void clean() = 0;
-			virtual types::BitSet getMask(ComponentTypeId selector, const types::BitSet &hint) const = 0;
-			virtual bool hasComponent(Entity entity) const = 0;
+			WITH,
+			WITHOUT,
 		};
 
-		template<typename T>
-		class IComponentStorage : public IComponentStorageBase
-		{
-		public:
-			virtual ~IComponentStorage() {}
-
-			virtual T *getComponent(Entity entity) = 0;
-
-			virtual void registerComponent(const T &component) = 0;
-			virtual void removeComponent(Entity entity) = 0;
-		};
-	}
-}
+		virtual bool _has(Entity entity) const = 0;
+		virtual uint32_t _index(Entity entity) const = 0;
+		virtual uint32_t _register(Entity entity, uint32_t currentSize) = 0;
+		virtual uint32_t _delete(Entity entity) = 0;
+		virtual void _filter(types::BitSet &mask, ComponentStorageFilterType filterType) const = 0;
+	};
+	
+}}

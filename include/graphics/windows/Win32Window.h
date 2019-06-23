@@ -41,7 +41,7 @@ private:
 	HBITMAP m_splash;
 	HBRUSH m_brush;
 
-	WNDCLASS m_wc;
+	WNDCLASSEX m_wc;
 	HWND m_hwnd;
 	HDC m_deviceContext;
 	HGLRC m_renderingContext;

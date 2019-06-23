@@ -2,46 +2,29 @@
 
 #include <types/numbers.h>
 
+#include <EntityComponentSystem/Component.h>
 #include <EntityComponentSystem/Entity.h>
+#include <EntityComponentSystem/CoreComponentStorage.h>
 
-namespace perfectpixel
-{
-	namespace physics
+namespace perfectpixel { namespace physics {
+
+	class PhysicsComponent
+		: public ecs::Component<PhysicsComponent>
+		, public ecs::LinearScanComponentStorage
 	{
-
-		class PhysicsComponent
+	public:
+		enum PhysicsSimulationType
 		{
-		public:
-			enum SimulationType
-			{
-				TRIGGER,
-				KINEMATIC,
-				FULL
-			};
-
-		public:
-			PhysicsComponent(
-				ecs::Entity entity,
-				types::PpFloat mass,
-				types::PpFloat bounciness,
-				SimulationType simulation);
-			~PhysicsComponent();
-
-		public:
-			static PhysicsComponent staticCollider(ecs::Entity entity);
-
-			ecs::Entity getEntity() const;
-
-			types::PpFloat getMass();
-			types::PpFloat getBounciness() const;
-			void setMass(types::PpFloat mass);
-
-		private:
-			ecs::Entity m_entity;
-			types::PpFloat m_mass;
-			types::PpFloat m_bounciness;
-			SimulationType m_simulation;
+			TRIGGER,
+			KINEMATIC,
+			FULL
 		};
 
-	}
-}
+		inline static ecs::Field<PhysicsComponent, types::PpFloat> Mass;
+		inline static ecs::Field<PhysicsComponent, types::PpFloat> Bounciness;
+		inline static ecs::Field<PhysicsComponent, PhysicsSimulationType> SimulationType;
+
+		static void MakeStaticCollider(ecs::Entity entity);
+	};
+
+} }

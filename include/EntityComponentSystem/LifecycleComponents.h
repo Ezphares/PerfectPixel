@@ -2,16 +2,8 @@
 
 #include <EntityComponentSystem/Component.h>
 
-namespace perfectpixel {
-	namespace ecs {
+namespace perfectpixel { namespace ecs {
 
-		class ComponentRegistry;
-
-		Component(CreationDoneLifecycleComponent) {};
-		FinalizeComponent(CreationDoneLifecycleComponent)
-
-		Component(DestroyedLifecycleComponent) {};
-		FinalizeComponent(DestroyedLifecycleComponent)
-
-		void registerLifecycleComponents(ComponentRegistry *registry);
+	class CreationDoneLifecycleComponent : public HintComponent<CreationDoneLifecycleComponent> {};
+	class DestroyedLifecycleComponent : public HintComponent<DestroyedLifecycleComponent> {};
 } }

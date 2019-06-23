@@ -9,7 +9,7 @@ class File
 {
 public:
 
-	File(const std::string &filename, std::ios_base::open_mode mode = std::ios_base::in | std::ios_base::binary);
+	File(const std::string &filename, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::binary);
 	~File();
 
 public:
