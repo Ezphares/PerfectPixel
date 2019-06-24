@@ -24,4 +24,16 @@ namespace perfectpixel { namespace physics {
 		ActiveForces(entity).push_back(force);
 	}
 
+	void PhysicsComponent::DeactivateForce(ecs::Entity entity, types::PpInt forceId)
+	{
+		for (auto it = ActiveForces(entity).begin(); it != ActiveForces(entity).end(); ++it)
+		{
+			if (it->m_identifier == forceId)
+			{
+				ActiveForces(entity).erase(it);
+				return;
+			}
+		}
+	}
+
 } }

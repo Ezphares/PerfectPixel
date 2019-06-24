@@ -27,7 +27,7 @@ namespace perfectpixel { namespace physics {
 
 		static void MakeStaticCollider(ecs::Entity entity);
 		static void ActivateForce(ecs::Entity entity, const Force &force);
-		static void DeactivateForce(ecs::Entity entity, types::PpInt forceId):
+		static void DeactivateForce(ecs::Entity entity, types::PpInt forceId);
 	};
 
 } }

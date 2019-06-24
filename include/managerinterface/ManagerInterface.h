@@ -9,13 +9,6 @@ namespace perfectpixel {
 
 	class ManagerInterface;
 
-	namespace physics
-	{
-		class TransformComponent;
-		class PhysicsComponent;
-		class ColliderComponent;
-	}
-
 	namespace behaviour
 	{
 		class BehaviourManager;

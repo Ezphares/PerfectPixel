@@ -116,7 +116,6 @@ public:
 
 
 private:
-	physics::TransformComponent *m_transform;
 	int m_score1, m_score2;
 	types::PpFloat m_dxPrev;
 };
