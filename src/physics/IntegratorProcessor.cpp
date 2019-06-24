@@ -8,6 +8,10 @@
 
 namespace perfectpixel { namespace physics {
 
+	namespace {
+		const types::PpInt EULER_STEPS = 1;
+	}
+
 	typedef ecs::QueryHelper<ecs::With<ecs::TransformComponent>> IntegratorQuery;
 
 	IntegratorProcessor::IntegratorProcessor(ecs::EntityManager *entityManager)
@@ -20,11 +24,11 @@ namespace perfectpixel { namespace physics {
 		for (ecs::Entity entity : entities)
 		{
 			types::Vector3 &velocity = ecs::TransformComponent::Velocity(entity);
+			types::Vector3 acceleration = types::Vector3();
 
 			if (PhysicsComponent::Has(entity))
 			{
 				types::PpFloat velocityMagnitude = types::Infinity;
-				types::Vector3 totalForce = types::Vector3();
 
 				for (Force &force : PhysicsComponent::ActiveForces(entity))
 				{
@@ -50,13 +54,16 @@ namespace perfectpixel { namespace physics {
 						forceVector /= PhysicsComponent::Mass(entity);
 					}
 
-					totalForce += forceVector;
+					acceleration += forceVector;
 				}
-
-				velocity += totalForce * deltaT;
 			}
 
-			ecs::TransformComponent::Position(entity) += ecs::TransformComponent::Velocity(entity) * deltaT;
+			types::PpFloat eulerDeltaT = deltaT / static_cast<types::PpFloat>(EULER_STEPS);
+			for (types::PpInt i = 0; i < EULER_STEPS; ++i)
+			{
+				velocity += acceleration * eulerDeltaT;
+				ecs::TransformComponent::Position(entity) += ecs::TransformComponent::Velocity(entity) * eulerDeltaT;
+			}
 		}
 	}
 
