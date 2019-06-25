@@ -7,13 +7,6 @@ set (PerfectPixel_VERSION_MINOR 1)
 set (CMAKE_CXX_STANDARD 17)
 
 # PACKAGES
-find_package(Boost)
-if (Boost_FOUND)
-	include_directories(${Boost_INCLUDE_DIRS})
-else()
-	message(FATAL_ERROR "No Boost found")
-endif()
-
 find_package(ZLIB)
 if (ZLIB_FOUND)
 	include_directories(${ZLIB_INCLUDE_DIRS})

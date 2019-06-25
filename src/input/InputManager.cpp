@@ -12,6 +12,8 @@ namespace perfectpixel {
 			, m_axes()
 			, m_buttonBindings()
 		{
+			registerButton("NOBUTTON");
+			registerButton("NOAXIS");
 		}
 
 
@@ -32,8 +34,8 @@ namespace perfectpixel {
 
 		void InputManager::handleInput(types::KeyCode keyCode, types::KeyEvent keyEvent)
 		{
-			auto binding = m_buttonBindings.left.find(keyCode);
-			if (binding != m_buttonBindings.left.end())
+			auto binding = m_buttonBindings.find(keyCode);
+			if (binding != m_buttonBindings.end())
 			{
 				types::PpInt id = binding->second;
 
@@ -65,9 +67,9 @@ namespace perfectpixel {
 		perfectpixel::types::PpInt InputManager::registerButton(const std::string &name)
 		{
 			// FIXME check already existing
-			types::PpInt id = m_buttons.size() + 1;
+			types::PpInt id = m_buttons.size();
 
-			m_buttons.insert(boost::bimap<types::PpInt, std::string>::value_type(id, name));
+			m_buttons.push_back(name);
 
 			m_buttonState[id] = false;
 			m_buttonStatePrev[id] = false;
@@ -78,9 +80,9 @@ namespace perfectpixel {
 		perfectpixel::types::PpInt InputManager::registerAxis(const std::string &name)
 		{
 			// FIXME check already existing
-			types::PpInt id = m_axes.size() + 1;
+			types::PpInt id = m_axes.size();
 
-			m_axes.insert(boost::bimap<types::PpInt, std::string>::value_type(id, name));
+			m_axes.push_back(name);
 
 			m_axisState[id] = 0.0f;
 			m_axisStatePrev[id] = 0.0f;
@@ -88,54 +90,69 @@ namespace perfectpixel {
 			return id;
 		}
 
+		perfectpixel::types::PpInt InputManager::lookupButton(const std::string &name) const
+		{
+			for (types::PpInt i = 0; i < static_cast<types::PpInt>(m_buttons.size()); ++i)
+			{
+				if (m_buttons[i] == name)
+				{
+					return i;
+				}
+			}
+			throw types::PpException("Unrecognized button");
+		}
+
+		perfectpixel::types::PpInt InputManager::lookupAxis(const std::string &name) const
+		{
+			for (types::PpInt i = 0; i < static_cast<types::PpInt>(m_axes.size()); ++i)
+			{
+				if (m_axes[i] == name)
+				{
+					return i;
+				}
+			}
+
+			throw types::PpException("Unrecognized axis");
+		}
+
 		void InputManager::bindButton(const std::string &name, types::KeyCode keyCode)
 		{
-			auto it = m_buttons.right.find(name);
-			if (it == m_buttons.right.end())
+			types::PpInt buttonId = lookupButton(name);
+
+			for (types::PpInt i = 0; i < static_cast<types::PpInt>(m_buttons.size()); ++i)
 			{
-				throw types::PpException("Tried to map unregistered button");
+				if (m_buttons[i] == name)
+				{
+					buttonId = i;
+					break;
+				}
 			}
 
-			types::PpInt buttonId = it->second;
-
-			if (m_buttonBindings.left.find(keyCode) != m_buttonBindings.left.end())
+			if (buttonId == 0)
 			{
-				// FIXME unmap event
-				m_buttonBindings.left.erase(keyCode);
+				throw types::PpException("Unrecognized button");
 			}
 
-			auto existingMapping = m_buttonBindings.right.find(buttonId);
-			if (existingMapping != m_buttonBindings.right.end())
+
+			for (auto it = m_buttonBindings.begin(); it != m_buttonBindings.end(); ++it)
 			{
-				// FIXME existing mapping unbind
-				m_buttonBindings.right.erase(buttonId);
+				if (it->first == keyCode || it->second == buttonId)
+				{
+					it = m_buttonBindings.erase(it);
+				}
 			}
 
-			m_buttonBindings.insert(boost::bimap<types::KeyCode, types::PpInt>::value_type(keyCode, buttonId));
+			m_buttonBindings[keyCode] = buttonId;
 		}
 
 		void InputManager::bindAxisToButtons(const std::string &axisName, const std::string &negativeButton, const std::string &positiveButton)
 		{
-			auto axis = m_axes.right.find(axisName);
-			if (axis == m_axes.right.end())
-			{
-				throw types::PpException("Axis [" + axisName + "] not registered");
-			}
+			types::PpInt axisId = lookupAxis(axisName);
+			types::PpInt negativeId = lookupButton(negativeButton);
+			types::PpInt positiveId = lookupButton(axisName);
 
-			auto negative = m_buttons.right.find(negativeButton);
-			if (negative == m_buttons.right.end())
-			{
-				throw types::PpException("Button [" + negativeButton + "] not registered");
-			}
-
-			auto positive = m_buttons.right.find(positiveButton);
-			if (positive == m_buttons.right.end())
-			{
-				throw types::PpException("Button [" + positiveButton + "] not registered");
-			}
-
-			std::pair<types::PpInt, types::PpInt> axisButtons{ negative->second, positive->second };
-			m_buttonAxisBindings[axisButtons] = axis->second;
+			std::pair<types::PpInt, types::PpInt> axisButtons{ negativeId, positiveId };
+			m_buttonAxisBindings[axisButtons] = axisId;
 		}
 
 		void InputManager::clearState()
@@ -155,21 +172,14 @@ namespace perfectpixel {
 
 		bool InputManager::isButtonDown(const std::string &name)
 		{
-			auto it = m_buttons.right.find(name);
-			if (it == m_buttons.right.end())
-			{
-				throw types::PpException("Name [" + name + "] did not match a known button");
-			}
-
-			return m_buttonState[it->second];
+			return m_buttonState[lookupButton(name)];
 		}
 
 		bool InputManager::isButtonDown(types::PpInt id)
 		{
-			auto it = m_buttons.left.find(id);
-			if (it == m_buttons.left.end())
+			if (id >= static_cast<types::PpInt>(m_buttons.size()))
 			{
-				throw types::PpException("Id did not match a known button");
+				throw types::PpException("Unregistered button ID");
 			}
 
 			return m_buttonState[id];
@@ -177,21 +187,14 @@ namespace perfectpixel {
 
 		bool InputManager::wasButtonDownPrevious(const std::string &name)
 		{
-			auto it = m_buttons.right.find(name);
-			if (it == m_buttons.right.end())
-			{
-				throw types::PpException("Name [" + name + "] did not match a known button");
-			}
-
-			return m_buttonStatePrev[it->second];
+			return m_buttonStatePrev[lookupButton(name)];
 		}
 
 		bool InputManager::wasButtonDownPrevious(types::PpInt id)
 		{
-			auto it = m_buttons.left.find(id);
-			if (it == m_buttons.left.end())
+			if (id >= static_cast<types::PpInt>(m_buttons.size()))
 			{
-				throw types::PpException("Id did not match a known button");
+				throw types::PpException("Unregistered button ID");
 			}
 
 			return m_buttonStatePrev[id];
@@ -219,13 +222,7 @@ namespace perfectpixel {
 
 		perfectpixel::types::PpFloat InputManager::getAxisState(const std::string &name)
 		{
-			auto it = m_axes.right.find(name);
-			if (it == m_axes.right.end())
-			{
-				throw types::PpException("Name [" + name + "] did not match a known button");
-			}
-
-			return m_axisState[it->second];
+			return m_axisState[lookupAxis(name)];
 		}
 
 	}

@@ -14,7 +14,6 @@
 #include <EntityComponentSystem/PositionCallback.h>
 #include <types/vectors.h>
 
-#include <boost/function.hpp>
 #include <map>
 
 namespace perfectpixel {
