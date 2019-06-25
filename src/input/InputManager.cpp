@@ -149,7 +149,7 @@ namespace perfectpixel {
 		{
 			types::PpInt axisId = lookupAxis(axisName);
 			types::PpInt negativeId = lookupButton(negativeButton);
-			types::PpInt positiveId = lookupButton(axisName);
+			types::PpInt positiveId = lookupButton(positiveButton);
 
 			std::pair<types::PpInt, types::PpInt> axisButtons{ negativeId, positiveId };
 			m_buttonAxisBindings[axisButtons] = axisId;
