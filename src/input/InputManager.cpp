@@ -225,5 +225,10 @@ namespace perfectpixel {
 			return m_axisState[lookupAxis(name)];
 		}
 
+		perfectpixel::types::PpFloat InputManager::getAxisState(types::PpInt id)
+		{
+			return m_axisState[id];
+		}
+
 	}
 }

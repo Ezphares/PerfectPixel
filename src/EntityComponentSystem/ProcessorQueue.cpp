@@ -79,6 +79,7 @@ void ProcessorQueue::registerProcessor(Processor *processor, types::PpInt priori
 	{
 		it = m_processors.insert(std::pair<types::PpInt, std::vector<Processor*>>(priority, std::vector<Processor*>())).first;
 		m_priorities.push_back(priority);
+		std::sort(m_priorities.begin(), m_priorities.end());
 	}
 
 	it->second.push_back(processor);

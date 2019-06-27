@@ -38,7 +38,7 @@ namespace graphics {
 		typedef std::vector<SpriteDrawInfo> SpriteDrawList;
 
 	public:
-		GraphicsManager(ecs::EntityManager *entityManager, ecs::PositionCallback positionCallback);
+		GraphicsManager(ecs::PositionCallback positionCallback);
 		~GraphicsManager();
 
 	public:
@@ -76,7 +76,6 @@ namespace graphics {
 		static bool compSortSoftalpha(const SpriteDrawInfo &first, const SpriteDrawInfo &second);
 
 	private:
-		ecs::EntityManager *m_entityManager;
 		ecs::PositionCallback m_positionCallback;
 
 		SpriteComponents m_spriteComponents;

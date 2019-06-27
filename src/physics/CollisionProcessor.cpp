@@ -13,13 +13,13 @@ namespace perfectpixel { namespace physics {
 	namespace
 	{
 		types::PpFloat COLLISON_LEEWAY = 0.01f;
-		typedef ecs::QueryHelper<ecs::With<ColliderComponent, ecs::TransformComponent>> CollisionQuery;
+		typedef ecs::QueryHelper<
+			ecs::With<ColliderComponent, ecs::TransformComponent>>
+			CollisionQuery;
 	}
 
-	CollisionProcessor::CollisionProcessor(
-		ecs::EntityManager *entityManager)
-		: Processor(CollisionQuery::build(entityManager))
-		, m_entityManager(entityManager)
+	CollisionProcessor::CollisionProcessor()
+		: Processor(CollisionQuery::build())
 	{
 
 	}
@@ -64,7 +64,7 @@ namespace perfectpixel { namespace physics {
 	void CollisionProcessor::possibleCollisions(const ecs::Entity entity, std::set<ecs::Entity> &cache, std::vector<ecs::Entity> &out_possibleCollisions)
 	{
 		std::vector<ecs::Entity> toCheck;
-		ColliderComponent::GetNear(m_entityManager, toCheck, absoluteCenter(entity));
+		ColliderComponent::GetNear(toCheck, absoluteCenter(entity));
 
 		for (auto other : toCheck)
 		{
@@ -89,6 +89,13 @@ namespace perfectpixel { namespace physics {
 				second, ColliderComponent::Mask(second).m_rectangle,
 				out_collision);
 		}
+		else if (ColliderComponent::MaskType(first) == ColliderComponent::CIRCLE && ColliderComponent::MaskType(second) == ColliderComponent::CIRCLE)
+		{
+			return collideCircleCircle(
+				first, ColliderComponent::Mask(first).m_circle,
+				second, ColliderComponent::Mask(second).m_circle,
+				out_collision);
+		}
 
 		// TODO Call other mask types
 		return false;
@@ -96,15 +103,12 @@ namespace perfectpixel { namespace physics {
 
 	bool CollisionProcessor::collideRectRect(ecs::Entity first, const types::AARectangle &firstRect, ecs::Entity second, const types::AARectangle &secondRect, CollisionData &out_collision)
 	{
-		types::Vector3
-			&firstPosition = ecs::TransformComponent::Position(first),
-			&secondPosition = ecs::TransformComponent::Position(second);
+		types::Vector2
+			&firstPosition = types::Vector2(ecs::TransformComponent::Position(first)),
+			&secondPosition = types::Vector2(ecs::TransformComponent::Position(second));
 
-			
-		types::Vector2 offset{
-			(secondPosition.x() + secondRect.m_center.x()) - (firstPosition.x() + firstRect.m_center.x()),
-			(secondPosition.y() + secondRect.m_center.y()) - (firstPosition.y() + firstRect.m_center.y())
-		};
+
+		types::Vector2 offset = (secondPosition + secondRect.m_center) - (firstPosition + firstRect.m_center);
 
 		types::Vector2 overlap{
 			firstRect.m_halfSize.x() + secondRect.m_halfSize.x() - std::abs(offset.x()),
@@ -123,6 +127,31 @@ namespace perfectpixel { namespace physics {
 
 		return true;
 
+	}
+
+	bool CollisionProcessor::collideCircleCircle(ecs::Entity first, const types::Circle &firstCircle, ecs::Entity second, const types::Circle &secondCircle, CollisionData &out_collision)
+	{
+		types::Vector2
+			&firstPosition = types::Vector2(ecs::TransformComponent::Position(first)),
+			&secondPosition = types::Vector2(ecs::TransformComponent::Position(second));
+
+
+		types::Vector2 offset = (secondPosition + secondCircle.m_center) - (firstPosition + firstCircle.m_center);
+		types::PpFloat squareDistance = types::Vector2::dot(offset, offset);
+		types::PpFloat sumRadii = firstCircle.m_radius + secondCircle.m_radius;
+
+
+		if (squareDistance > (sumRadii - COLLISON_LEEWAY) * (sumRadii - COLLISON_LEEWAY))
+		{
+			// No collision
+			return false;
+		}
+
+		out_collision.m_data_CircCircOverlap = sumRadii - std::sqrt(squareDistance);
+		out_collision.m_maskTypeFirst = ColliderComponent::ColliderMaskType::CIRCLE;
+		out_collision.m_maskTypeSecond = ColliderComponent::ColliderMaskType::CIRCLE;
+
+		return true;
 	}
 
 	void CollisionProcessor::resolveCollision(const CollisionData &collision)

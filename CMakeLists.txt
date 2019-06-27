@@ -6,6 +6,8 @@ set (PerfectPixel_VERSION_MINOR 1)
 
 set (CMAKE_CXX_STANDARD 17)
 
+add_definitions(-DPP_CLEANUP_CALLBACKS)
+
 # PACKAGES
 find_package(ZLIB)
 if (ZLIB_FOUND)
@@ -32,15 +34,6 @@ endif()
 include_directories("${CMAKE_SOURCE_DIR}/include")
 
 # LIBRARIES
-set (Behaviour_SRC_DIR "${CMAKE_SOURCE_DIR}/src/behaviour")
-set (Behaviour_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/behaviour")
-file (GLOB Behaviour_INCLUDE_FILES "${Behaviour_INCLUDE_DIR}/*.h")
-add_library(Behaviour 
-	"${Behaviour_SRC_DIR}/BehaviourManager.cpp"
-	
-	"${Behaviour_INCLUDE_FILES}"
-)
-
 set (Core_SRC_DIR "${CMAKE_SOURCE_DIR}/src/enginecore")
 set (Core_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/enginecore")
 file (GLOB Core_INCLUDE_FILES "${Core_INCLUDE_DIR}/*.h")
@@ -120,15 +113,6 @@ add_library(EntityComponentSystem
 	"${EntityComponentSystem_INCLUDE_FILES}"
 )
 
-set (Interface_SRC_DIR "${CMAKE_SOURCE_DIR}/src/managerinterface")
-set (Interface_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/interface")
-file (GLOB Interface_INCLUDE_FILES "${Interface_INCLUDE_DIR}/*.h")
-add_library(Interface
-	"${Interface_SRC_DIR}/ManagerInterface.cpp"
-	
-	"${Interface_INCLUDE_FILES}"
-)
-
 # set (Serialization_SRC_DIR "${CMAKE_SOURCE_DIR}/src/serialization")
 # set (Serialization_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/serialization")
 # file (GLOB Serialization_INCLUDE_FILES "${Serialization_INCLUDE_DIR}/*.h")
@@ -140,10 +124,8 @@ add_library(Interface
 
 add_executable(Pong WIN32 "${CMAKE_SOURCE_DIR}/src/main/pong.cpp")
 
-list(APPEND LIBRARIES_INTERNAL 
-	Behaviour 
+list(APPEND LIBRARIES_INTERNAL  
 	Core
-	Interface
 	Input
 	Physics
 	Graphics

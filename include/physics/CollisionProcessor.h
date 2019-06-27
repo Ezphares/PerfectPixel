@@ -32,8 +32,7 @@ namespace perfectpixel { namespace physics {
 		};
 
 	public:
-		CollisionProcessor(
-			ecs::EntityManager *entityManager);
+		CollisionProcessor();
 		virtual ~CollisionProcessor();
 
 		virtual void onProcess(const std::vector<ecs::Entity> &entities, types::PpFloat deltaT);
@@ -44,6 +43,7 @@ namespace perfectpixel { namespace physics {
 
 		bool checkCollision(ecs::Entity first, ecs::Entity second, CollisionData &out_collision);
 		bool collideRectRect(ecs::Entity first, const types::AARectangle &firstRect, ecs::Entity second, const types::AARectangle &secondRect, CollisionData &out_collision);
+		bool collideCircleCircle(ecs::Entity first, const types::Circle &firstCircle, ecs::Entity second, const types::Circle &secondCircle, CollisionData &out_collision);
 
 		void resolveCollision(const CollisionData &collision);
 		void singleAxisReposition(types::PpFloat mass1, types::PpFloat mass2, types::PpFloat overlap, types::PpFloat *out_magnitude1, types::PpFloat *out_magnitude2);
@@ -57,9 +57,6 @@ namespace perfectpixel { namespace physics {
 			types::PpFloat *out_newVelocity2);
 
 		types::Vector2 absoluteCenter(ecs::Entity entity);
-
-	private:
-		ecs::EntityManager *m_entityManager;
 	};
 
 } }

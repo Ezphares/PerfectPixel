@@ -40,6 +40,10 @@ void EntityManager::kill(Entity entity)
 {
 	if (isAlive(entity))
 	{
+		for (auto callback : m_onKill)
+		{
+			callback(entity);
+		}
 		uint32_t index = entityIndex(entity);
 		m_entities[index] = entityCreate(entityGeneration(entity) + 1, index);
 		m_indexReuse.push(index);
@@ -78,6 +82,11 @@ types::BitSet EntityManager::all() const
 {
 	return types::BitSet(m_entities.size(), true);
 
+}
+
+void EntityManager::addKillCallback(EntityFunc callback)
+{
+	m_onKill.push_back(callback);
 }
 
 }}

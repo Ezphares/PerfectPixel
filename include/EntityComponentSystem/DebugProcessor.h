@@ -18,8 +18,8 @@ namespace perfectpixel {
 	class DebugProcessor : public Processor
 	{
 	public:
-		DebugProcessor(EntityManager *m_entityManager)
-			: Processor(DebugQuery::build(m_entityManager))
+		DebugProcessor()
+			: Processor(DebugQuery::build())
 		{
 		}
 

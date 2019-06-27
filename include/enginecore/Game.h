@@ -6,7 +6,6 @@
 #include <EntityComponentSystem/ProcessorQueue.h>
 #include <graphics/GraphicsManager.h>
 #include <input/InputManager.h>
-#include <behaviour/BehaviourManager.h>
 
 #include <types/numbers.h>
 
@@ -60,12 +59,9 @@ private:
 	bool m_shouldExit;
 
 protected:
-	api::ManagerInterface m_managerInterface;
-	ecs::EntityManager m_entityManager;
 	ecs::ProcessorQueue m_processorQueue;
 	input::InputManager m_inputManager;
 	graphics::GraphicsManager m_graphicsManager;
-	behaviour::BehaviourManager m_behaviourManager;
 
 private:
 	// Use double over PpFloat, precision is required here

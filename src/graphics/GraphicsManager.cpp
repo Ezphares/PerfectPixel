@@ -38,9 +38,8 @@ namespace graphics {
 	}
 
 
-GraphicsManager::GraphicsManager(ecs::EntityManager *entityManager, ecs::PositionCallback positionCallback)
-	: m_entityManager(entityManager)
-	, m_positionCallback(positionCallback)
+GraphicsManager::GraphicsManager(ecs::PositionCallback positionCallback)
+	: m_positionCallback(positionCallback)
 	, m_programSpriteHardAlpha(NULL)
 	, m_programSpriteSoftAlpha(NULL)
 	, m_programPostProcess(NULL)
@@ -268,7 +267,7 @@ void GraphicsManager::drawSpriteComponent(const SpriteComponent &spriteComponent
 {
 	const ecs::Entity entity{ spriteComponent.getEntity() };
 
-	if (!m_entityManager->isAlive(entity))
+	if (!ecs::EntityManager::getInstance()->isAlive(entity))
 	{
 		m_cleanup.push_back(entity);
 		return;

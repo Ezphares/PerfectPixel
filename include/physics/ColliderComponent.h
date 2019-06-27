@@ -35,13 +35,13 @@ namespace physics {
 		};
 
 	public:
-		static void setMaskRectangle(ecs::Entity entity, const types::AARectangle &rectangle);
-		static types::AARectangle getMaskRectangle(ecs::Entity entity);
+		static void SetMaskRectangle(ecs::Entity entity, const types::AARectangle &rectangle);
+		static types::AARectangle SetMaskRectangle(ecs::Entity entity);
 
-		static void setMaskCircle(ecs::Entity entity, const types::Circle &circle);
-		static const types::Circle getMaskCircle(ecs::Entity entity);
+		static void SetMaskCircle(ecs::Entity entity, const types::Circle &circle);
+		static const types::Circle GetMaskCircle(ecs::Entity entity);
 
-		static void GetNear(ecs::EntityManager *entityManager, std::vector<ecs::Entity> &toCheck, const types::Vector2 &point);
+		static void GetNear(std::vector<ecs::Entity> &toCheck, const types::Vector2 &point);
 
 	public:
 		inline static ecs::Field<ColliderComponent, ColliderMaskType> MaskType;

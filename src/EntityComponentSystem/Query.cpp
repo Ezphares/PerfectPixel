@@ -4,9 +4,8 @@ namespace perfectpixel
 {
 	namespace ecs {
 
-		Query::Query(EntityManager *entityManager, QueryFunction queryFunction)
-			: m_entityManager(entityManager)
-			, m_queryFunction(queryFunction)
+		Query::Query(QueryFunction queryFunction)
+			: m_queryFunction(queryFunction)
 			, m_lastResult()
 		{}
 
@@ -21,7 +20,7 @@ namespace perfectpixel
 
 		void Query::executeMaskOnly()
 		{
-			executeMaskOnly(m_entityManager->all());
+			executeMaskOnly(EntityManager::getInstance()->all());
 		}
 
 		void Query::executeMaskOnly(const types::BitSet &start)
@@ -45,7 +44,7 @@ namespace perfectpixel
 		std::vector<Entity> Query::finalize(EntityManager::EntityFunc callback /*= 0*/)
 		{
 			std::vector<Entity> result;
-			m_entityManager->expandMask(m_lastResult, &result, callback);
+			EntityManager::getInstance()->expandMask(m_lastResult, &result, callback);
 			return result;
 		}
 

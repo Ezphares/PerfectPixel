@@ -3,8 +3,8 @@
 #include <graphics/IWindow.h>
 #include <graphics/Texture.h>
 #include <EntityComponentSystem/TransformComponent.h>
+#include <EntityComponentSystem/Component.h>
 #include <types/vectors.h>
-#include <behaviour/Behaviour.h>
 #include <physics/PhysicsComponent.h>
 #include <physics/ColliderComponent.h>
 
@@ -12,112 +12,174 @@
 #include <thread>
 
 using namespace perfectpixel;
+using namespace perfectpixel::ecs;
 
-class BatBehaviour : public behaviour::Behaviour
+class BatComponent
+	: public Component<BatComponent>
+	, public LinearScanComponentStorage
 {
 public:
-	BatBehaviour(
-		ecs::Entity entity)
-		: behaviour::Behaviour(entity)
-		, m_speed(35)
-	{}
-	virtual ~BatBehaviour() {}
-
-	virtual void onUpdate(types::PpFloat deltaT)
-	{
-		ecs::TransformComponent::Velocity(getEntity()).y() = pp()->Input()->getAxisState("Vertical") * m_speed;
-	}
-
-private:
-	types::PpFloat m_speed;
+	inline static Field<BatComponent, types::PpFloat> MaxSpeed;
+	inline static Field<BatComponent, types::PpFloat> CurrentDirection;
 };
 
-class AIBatBehaviour : public behaviour::Behaviour
+class PlayerComponent
+	: public Component<PlayerComponent>
+	, public MapComponentStorage
 {
 public:
-	AIBatBehaviour(
-		ecs::Entity entity,
-		ecs::Entity ball)
-		: Behaviour(entity)
-		, m_ball(ball)
-		, m_speed(35)
-	{}
-	virtual ~AIBatBehaviour(){}
-
-	virtual void onCreate()
-	{
-	}
-
-	virtual void onUpdate(types::PpFloat deltaT)
-	{
-		bool up = ecs::TransformComponent::Position(getEntity()).y() < ecs::TransformComponent::Position(m_ball).y();
-		ecs::TransformComponent::Velocity(getEntity()).y() = (up ? 1.0f : -1.0f) * m_speed;
-	}
-
-private:
-	ecs::Entity m_ball;
-	types::PpFloat m_speed;
+	inline static Field<PlayerComponent, types::PpInt> InputAxis;
 };
 
-class BallBehaviour : public behaviour::Behaviour
+class AIComponent
+	: public Component<AIComponent>
+	, public MapComponentStorage
 {
 public:
-	BallBehaviour(ecs::Entity entity)
-		: behaviour::Behaviour(entity)
-	{}
+	inline static Field<AIComponent, Entity> BallToTrack;
+};
 
-	virtual ~BallBehaviour() {}
+class BallComponent
+	: public Component<BallComponent>
+	, public MapComponentStorage
+{
+public:
+	inline static Field<BallComponent, types::PpFloat> DeltaXPrev;
+	inline static Field<BallComponent, types::PpInt> Score1;
+	inline static Field<BallComponent, types::PpInt> Score2;
 
-	virtual void onCreate()
+	static void Reset(Entity entity)
 	{
-		reset();
-	}
-
-	void reset()
-	{	
-		types::Vector3 &position = ecs::TransformComponent::Position(getEntity());
+		types::Vector3 &position = TransformComponent::Position(entity);
 		position = { 0, 0, position.z() };
 
-		types::Vector3 &velocity = ecs::TransformComponent::Velocity(getEntity());
+		types::Vector3 &velocity = TransformComponent::Velocity(entity);
 
 		velocity.x() = velocity.x() > 0 ? -40.0f : 40.0f;
 		velocity.y() = velocity.y() > 0 ? 35.0f : -35.0f;
-		m_dxPrev = velocity.x();
+		BallComponent::DeltaXPrev(entity) = velocity.x();
 	}
+};
 
-	virtual void onUpdate(types::PpFloat deltaT)
+class BatProcessor : public Processor
+{
+	typedef QueryHelper<With< BatComponent, TransformComponent>> BatQuery;
+public:
+	BatProcessor()
+		: Processor(BatQuery::build())
+	{}
+
+	virtual void onCreate(const std::vector<Entity> &entities)
 	{
-		bool shouldReset = false;
-
-		if (ecs::TransformComponent::Position(getEntity()).x() < -80)
+		for (auto entity : entities)
 		{
-			m_score2++;
-			shouldReset = true;
+			BatComponent::MaxSpeed(entity) = 35.0f;
+			BatComponent::CurrentDirection(entity) = 0.0f;
 		}
-		else if (ecs::TransformComponent::Position(getEntity()).x() > 80)
-		{
-			m_score1++;
-			shouldReset = true;
-		}
-
-		if (shouldReset)
-		{
-			reset();
-		}
-		types::Vector3 &velocity = ecs::TransformComponent::Velocity(getEntity());
-		// Speed up after batting
-		if (m_dxPrev > 0 != velocity.x() > 0)
-		{
-			velocity *= 1.05f;
-		}
-
-		m_dxPrev = velocity.x();
 	}
 
+	virtual void onProcess(const std::vector<Entity> &entities, types::PpFloat deltaT)
+	{
+	    for (auto entity : entities)
+		{
+			TransformComponent::Velocity(entity) = 
+				types::Vector3::UP *
+				BatComponent::MaxSpeed(entity) * 
+				BatComponent::CurrentDirection(entity);
+		}
+	}
+};
 
-private:
-	int m_score1, m_score2;
-	types::PpFloat m_dxPrev;
+class PlayerProcessor : public Processor
+{
+	typedef QueryHelper<With< PlayerComponent, BatComponent >> PlayerQuery;
+public:
+	PlayerProcessor()
+		: Processor(PlayerQuery::build())
+	{}
+
+	virtual void onProcess(const std::vector<Entity> &entities, types::PpFloat deltaT)
+	{
+		for (auto entity : entities)
+		{
+			BatComponent::CurrentDirection(entity) =
+				m_Input->getAxisState(PlayerComponent::InputAxis(entity));
+		}
+	}
+
+	// TODO:
+	static input::InputManager *m_Input;
+};
+input::InputManager *PlayerProcessor::m_Input = nullptr;
+
+class AIProcessor : public Processor
+{
+	typedef QueryHelper<With< AIComponent, BatComponent >> AIQuery;
+public:
+	AIProcessor()
+		: Processor(AIQuery::build())
+	{}
+
+	virtual void onProcess(const std::vector<Entity> &entities, types::PpFloat deltaT)
+	{
+		for (auto entity : entities)
+		{
+			BatComponent::CurrentDirection(entity) =
+				TransformComponent::Position(entity).y() <
+				TransformComponent::Position(AIComponent::BallToTrack(entity)).y() ?
+				1.0f : -1.0f;
+		}
+	}
+};
+
+class BallProcessor : public Processor
+{
+	typedef QueryHelper<With< BallComponent, TransformComponent>> BallQuery;
+public:
+	BallProcessor() 
+		: Processor(BallQuery::build())
+	{}
+
+	virtual void onCreate(const std::vector<Entity> &entities)
+	{
+		for (auto entity : entities)
+		{
+			BallComponent::Reset(entity);
+		}
+	}
+
+	virtual void onProcess(const std::vector<Entity> &entities, types::PpFloat deltaT)
+	{
+		for (auto entity : entities)
+		{
+			bool shouldReset = false;
+
+			if (TransformComponent::Position(entity).x() < -80)
+			{
+				BallComponent::Score2(entity)++;
+				shouldReset = true;
+			}
+			else if (TransformComponent::Position(entity).x() > 80)
+			{
+				BallComponent::Score1(entity)++;
+				shouldReset = true;
+			}
+
+			if (shouldReset)
+			{
+				BallComponent::Reset(entity);
+			}
+
+			types::Vector3 &velocity = TransformComponent::Velocity(entity);
+			// Speed up after batting
+			if (BallComponent::DeltaXPrev(entity) > 0.0f != velocity.x() > 0.0f)
+			{
+				velocity *= 1.05f;
+			}
+
+			BallComponent::DeltaXPrev(entity) = velocity.x();
+		}
+	}
 };
 
 class Pong : public core::Game
@@ -136,9 +198,12 @@ class Pong : public core::Game
 
 	void createBat(types::PpFloat x, graphics::Sprite *spr, bool isAi)
 	{
-		ecs::Entity e{ m_entityManager.create() };
-		ecs::TransformComponent::Register(e);
-		ecs::TransformComponent::Position(e) =types:: Vector3::RIGHT * x;
+		Entity e{ EntityManager::getInstance()->create() };
+
+		BatComponent::Register(e);
+
+		TransformComponent::Register(e);
+		TransformComponent::Position(e) =types:: Vector3::RIGHT * x;
 
 		graphics::SpriteComponent sprite{ e, spr,{ 4, 16 },{ -2,  -8 }, 1 };
 		m_graphicsManager.registerSprite(e, sprite);
@@ -149,33 +214,67 @@ class Pong : public core::Game
 		physics::PhysicsComponent::SimulationType(e) = physics::PhysicsComponent::FULL;
 
 		physics::ColliderComponent::Register(e);
-		physics::ColliderComponent::setMaskRectangle(e, types::AARectangle({ 4, 16 }));
+		physics::ColliderComponent::SetMaskRectangle(e, types::AARectangle({ 4, 16 }));
 
 		if (!isAi)
 		{
-			m_behaviourManager.registerBehaviour(e, new BatBehaviour(e));
+			PlayerComponent::Register(e);
+			PlayerComponent::InputAxis(e) = m_inputManager.lookupAxis("Vertical");
 		}
 		else
 		{
-			m_behaviourManager.registerBehaviour(e, new AIBatBehaviour(e, m_ball));
+			AIComponent::Register(e);
+			AIComponent::BallToTrack(e) = m_ball;
 		}
+	}
+
+	virtual void setupCustomProcessors(ecs::ProcessorQueue &queue)
+	{
+
+		m_inputManager.registerButton("Left");
+		m_inputManager.registerButton("Right");
+		m_inputManager.registerButton("Up");
+		m_inputManager.registerButton("Down");
+		m_inputManager.registerButton("Jump");
+		m_inputManager.registerButton("Info");
+
+		m_inputManager.registerAxis("Horizontal");
+		m_inputManager.registerAxis("Vertical");
+
+		m_inputManager.bindAxisToButtons("Horizontal", "Left", "Right");
+		m_inputManager.bindAxisToButtons("Vertical", "Down", "Up");
+
+		m_inputManager.bindButton("Left", VK_LEFT);
+		m_inputManager.bindButton("Right", VK_RIGHT);
+		m_inputManager.bindButton("Up", VK_UP);
+		m_inputManager.bindButton("Down", VK_DOWN);
+		m_inputManager.bindButton("Jump", 0x5A); // Z
+		m_inputManager.bindButton("Info", VK_F1);
+
+		queue.registerProcessor(new PlayerProcessor(), 10, true);
+		queue.registerProcessor(new AIProcessor(), 10, true);
+		queue.registerProcessor(new BatProcessor(), 15, true);
+		queue.registerProcessor(new BallProcessor(), 15, true);
+
+		PlayerProcessor::m_Input = &m_inputManager;
 	}
 
 	virtual void gameStart()
 	{
 		ecs::Entity
-			eTopWall{ m_entityManager.create() },
-			eBottomWall{ m_entityManager.create() };
+			eTopWall{ EntityManager::getInstance()->create() },
+			eBottomWall{ EntityManager::getInstance()->create() };
 
-		m_ball = m_entityManager.create();
+		m_ball = EntityManager::getInstance()->create();
+		BallComponent::Register(m_ball);
 
-		ecs::TransformComponent::Register(m_ball);
-		ecs::TransformComponent::Register(eTopWall);
-		ecs::TransformComponent::Register(eBottomWall);
+		TransformComponent::Register(m_ball);
+		TransformComponent::Register(eTopWall);
+		TransformComponent::Register(eBottomWall);
 
 
-		ecs::TransformComponent::Position(eTopWall) = types::Vector3::UP * 58.0f;
-		ecs::TransformComponent::Position(eBottomWall) = types::Vector3::DOWN * 58.0f;
+		TransformComponent::Position(eTopWall) = types::Vector3::UP * 58.0f;
+		TransformComponent::Position(eBottomWall) = types::Vector3::DOWN * 58.0f;
 
 		graphics::Texture *tex = new  graphics::Texture(graphics::PNG::fromFile("pong-all.png") );
 
@@ -208,13 +307,13 @@ class Pong : public core::Game
 		m_graphicsManager.registerSprite(eBottomWall, sprComBottom);
 
 		physics::ColliderComponent::Register(m_ball);
-		physics::ColliderComponent::setMaskRectangle(m_ball, types::AARectangle({ 4, 4 }));
+		physics::ColliderComponent::SetMaskRectangle(m_ball, types::AARectangle({ 4, 4 }));
 
 		physics::ColliderComponent::Register(eTopWall);
-		physics::ColliderComponent::setMaskRectangle(eTopWall, types::AARectangle({ 160, 4 }));
+		physics::ColliderComponent::SetMaskRectangle(eTopWall, types::AARectangle({ 160, 4 }));
 
 		physics::ColliderComponent::Register(eBottomWall);
-		physics::ColliderComponent::setMaskRectangle(eBottomWall, types::AARectangle({ 160, 4 }));
+		physics::ColliderComponent::SetMaskRectangle(eBottomWall, types::AARectangle({ 160, 4 }));
 
 		physics::PhysicsComponent::Register(m_ball);
 		physics::PhysicsComponent::Bounciness(m_ball) = 1.0f;
@@ -229,27 +328,6 @@ class Pong : public core::Game
 
 		createBat(-78, sprPlayer1, false);
 		createBat(78, sprPlayer2, true);
-		m_behaviourManager.registerBehaviour(m_ball, new BallBehaviour(m_ball));
-
-		m_inputManager.registerButton("Left");
-		m_inputManager.registerButton("Right");
-		m_inputManager.registerButton("Up");
-		m_inputManager.registerButton("Down");
-		m_inputManager.registerButton("Jump");
-		m_inputManager.registerButton("Info");
-
-		m_inputManager.registerAxis("Horizontal");
-		m_inputManager.registerAxis("Vertical");
-
-		m_inputManager.bindAxisToButtons("Horizontal", "Left", "Right");
-		m_inputManager.bindAxisToButtons("Vertical", "Down", "Up");
-
-		m_inputManager.bindButton("Left", VK_LEFT);
-		m_inputManager.bindButton("Right", VK_RIGHT);
-		m_inputManager.bindButton("Up", VK_UP);
-		m_inputManager.bindButton("Down", VK_DOWN);
-		m_inputManager.bindButton("Jump", 0x5A); // Z
-		m_inputManager.bindButton("Info", VK_F1);
 	}
 
 	virtual void step()

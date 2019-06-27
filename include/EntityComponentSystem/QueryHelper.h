@@ -5,9 +5,6 @@
 
 namespace perfectpixel { namespace ecs {
 
-	class CreationDoneLifecycleComponent;
-	class DestroyedLifecycleComponent;
-
 	template<typename... Ts>
 	struct ComponentTypeList;
 
@@ -37,7 +34,7 @@ namespace perfectpixel { namespace ecs {
 	};
 
 	template<typename ...Ts>
-	struct Without : public ComponentTypeList<Ts...>
+	struct Without
 	{
 		static void execute(types::BitSet &mask)
 		{
@@ -48,9 +45,9 @@ namespace perfectpixel { namespace ecs {
 	template<typename WithComponents, typename WithoutComponents = typename Without<>>
 	struct QueryHelper
 	{
-		static Query build(EntityManager *entityManager)
+		static Query build()
 		{
-			return Query(entityManager, [](types::BitSet &mask)
+			return Query([](types::BitSet &mask)
 			{
 				WithComponents::execute(mask);
 				WithoutComponents::execute(mask);

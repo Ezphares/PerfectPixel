@@ -79,7 +79,7 @@ namespace perfectpixel {
 				}
 				else
 				{
-					m_data[i] = other.m_negated;
+					m_data[i] &= other.m_negated ? 0xff : 0x00;
 				}
 			}
 

@@ -18,17 +18,11 @@ namespace core {
 
 	Game::Game()
 		: m_shouldExit(false)
-		, m_entityManager()
 		, m_inputManager()
-		, m_graphicsManager(&m_entityManager, [](ecs::Entity entity) {return ecs::TransformComponent::Position(entity); })
-		, m_behaviourManager(&m_entityManager, &m_managerInterface)
+		, m_graphicsManager([](ecs::Entity entity) {return ecs::TransformComponent::Position(entity); })
 		, m_targetUps(100)
 		, m_splashFilename("splash.png")
 	{
-		m_managerInterface.setEntityManager(&m_entityManager);
-		m_managerInterface.setBehaviourManager(&m_behaviourManager);
-		m_managerInterface.setGraphicsManager(&m_graphicsManager);
-		m_managerInterface.setInputManager(&m_inputManager);
 	}
 
 void Game::run()
@@ -165,13 +159,11 @@ void Game::exit()
 
 void Game::setupProcessors()
 {
-	m_processorQueue.registerProcessor(new ecs::DebugProcessor(&m_entityManager), 200, true);
-	m_processorQueue.registerProcessor(new physics::IntegratorProcessor(&m_entityManager), 240, true);
-	m_processorQueue.registerProcessor(new physics::CollisionProcessor(&m_entityManager), 250, true);
+	m_processorQueue.registerProcessor(new ecs::DebugProcessor(), 200, true);
+	m_processorQueue.registerProcessor(new physics::IntegratorProcessor(), 240, true);
+	m_processorQueue.registerProcessor(new physics::CollisionProcessor(), 250, true);
 
 	setupCustomProcessors(m_processorQueue);
-
-	ecs::Entity entity = m_entityManager.create();
 }
 
 void Game::update(double dt)
@@ -181,7 +173,6 @@ void Game::update(double dt)
 	types::PpFloat ppdt = static_cast<types::PpFloat>(dt);
 
 	m_processorQueue.processAll(ppdt);
-	m_behaviourManager.update(ppdt);
 }
 
 void Game::cleanup()

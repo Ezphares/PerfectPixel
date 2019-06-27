@@ -47,6 +47,7 @@ namespace perfectpixel {
 			bool wasButtonReleased(types::PpInt id);
 
 			types::PpFloat getAxisState(const std::string &name);
+			types::PpFloat getAxisState(types::PpInt id);
 
 		private:
 			std::vector<std::string> m_buttons;

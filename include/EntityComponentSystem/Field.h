@@ -17,6 +17,7 @@ namespace perfectpixel { namespace ecs {
 	{
 	public:
 		Field()
+			: m_data()
 		{
 			Owner::AddField(this);
 		}

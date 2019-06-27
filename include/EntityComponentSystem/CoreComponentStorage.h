@@ -67,6 +67,11 @@ namespace perfectpixel { namespace ecs {
 			return 0;
 		}
 
+		virtual uint32_t _safeDelete(Entity entity)
+		{
+			return _delete(entity);
+		}
+
 		virtual void _filter(types::BitSet &mask, ComponentStorageFilterType filterType) const
 		{
 			types::BitSet localMask = types::BitSet(m_maxEntityIndex + 1, filterType == IComponentStorage::WITHOUT);
@@ -76,6 +81,18 @@ namespace perfectpixel { namespace ecs {
 			}
 
 			mask &= localMask;
+		}
+
+		virtual void _clean()
+		{
+			for (auto it = m_entities.begin(); it != m_entities.end(); ++it)
+			{
+				EntityManager *em = EntityManager::getInstance();
+				if (!em->isAlive(*it))
+				{
+					it = m_entities.erase(it);
+				}
+			}
 		}
 
 	private:
@@ -110,15 +127,33 @@ namespace perfectpixel { namespace ecs {
 			m_mask[idx] = true;
 			return idx;
 		}
+
 		virtual uint32_t _delete(Entity entity)
 		{
 			m_mask[entityIndex(entity)] = false;
 			return entityIndex(entity);
 		}
 
+		virtual uint32_t _safeDelete(Entity entity)
+		{
+			return _delete(entity);
+		}
+
 		virtual void _filter(types::BitSet &mask, ComponentStorageFilterType filterType) const
 		{
 			mask &= (filterType == IComponentStorage::WITH) ? m_mask : ~m_mask;
+		}
+
+		virtual void _clean()
+		{
+			EntityManager *em = EntityManager::getInstance();
+			for (size_t i = 0; i < m_mask.size(); ++i)
+			{
+				if (m_mask[i] && !em->isAlive(T::at(i)))
+				{
+					m_mask[i] = false;
+				}
+			}
 		}
 
 	private:
@@ -170,6 +205,11 @@ namespace perfectpixel { namespace ecs {
 			return idx;
 		}
 
+		virtual uint32_t _safeDelete(Entity entity)
+		{
+			return _delete(entity);
+		}
+
 		virtual void _filter(types::BitSet &mask, IComponentStorage::ComponentStorageFilterType filterType) const
 		{
 			types::BitSet localMask = types::BitSet(m_maxEntityIndex + 1, filterType == IComponentStorage::WITHOUT);
@@ -180,6 +220,22 @@ namespace perfectpixel { namespace ecs {
 			}
 
 			mask &= localMask;
+		}
+
+		virtual void _clean()
+		{
+			EntityManager *em = EntityManager::getInstance();
+			for (auto it = m_indices.cbegin(); it != m_indices.cend();)
+			{
+				if (!em->isAlive(it->first))
+				{
+					m_indices.erase(it++);
+				}
+				else
+				{
+					++it;
+				}
+			}
 		}
 
 	private:

@@ -14,8 +14,8 @@ namespace perfectpixel { namespace physics {
 
 	typedef ecs::QueryHelper<ecs::With<ecs::TransformComponent>> IntegratorQuery;
 
-	IntegratorProcessor::IntegratorProcessor(ecs::EntityManager *entityManager)
-		: ecs::Processor(IntegratorQuery::build(entityManager))
+	IntegratorProcessor::IntegratorProcessor()
+		: ecs::Processor(IntegratorQuery::build())
 	{
 	}
 

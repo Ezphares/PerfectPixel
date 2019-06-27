@@ -16,8 +16,8 @@ namespace perfectpixel { namespace ecs {
 
 	Processor::Processor(Query query)
 		: m_query(query)
-		, m_queryCreate(QueryHelperCreate::build(query.getEntityManager()))
-		, m_queryDestroy(QueryHelperDestroy::build(query.getEntityManager()))
+		, m_queryCreate(QueryHelperCreate::build())
+		, m_queryDestroy(QueryHelperDestroy::build())
 	{
 	}
 
@@ -62,7 +62,7 @@ namespace perfectpixel { namespace ecs {
 	void Processor::doRender(types::PpFloat deltaT)
 	{
 		// Do not render uninitialized components
-		Query render = QueryHelperRender::build(m_query.getEntityManager());
+		Query render = QueryHelperRender::build();
 		onRender(render.execute(m_queryState), deltaT);
 	}
 
@@ -70,12 +70,6 @@ namespace perfectpixel { namespace ecs {
 	{
 		std::vector<Entity> entities = m_queryDestroy.finalize();
 		onDestroy(entities);
-		for (Entity entity : entities)
-		{
-			CreationDoneLifecycleComponent::Delete(entity);
-			DestroyedLifecycleComponent::Delete(entity);
-			m_query.getEntityManager()->kill(entity);
-		}
 	}
 
 	void Processor::onCreate(const std::vector<Entity> &entities)

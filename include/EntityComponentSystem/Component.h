@@ -2,6 +2,7 @@
 
 #include <EntityComponentSystem/Field.h>
 #include <EntityComponentSystem/IComponentStorage.h>
+#include <EntityComponentSystem/EntityManager.h>
 
 #include <types/Singleton.h>
 #include <types/Bitset.h>
@@ -11,13 +12,21 @@ namespace perfectpixel { namespace ecs {
 	template <typename T>
 	class Component : public types::Singleton<T>
 	{
+	protected:
+		Component()
+		{
+#if defined(PP_CLEANUP_CALLBACKS)
+			EntityManager::getInstance()->addKillCallback(&SafeDelete);
+#endif
+		}
+
 	private:
-		static uint32_t objects;
-		static uint32_t lastIndex;
-		static std::vector<IField*> fields;
+		uint32_t objects;
+		uint32_t lastIndex;
+		std::vector<IField*> fields;
 
 	protected:
-		inline static Field<Component<T>, Entity> Owner;
+		static Field<Component<T>, Entity> Owner;
 
 		virtual void purge(uint32_t idx) {};
 		virtual void initialize(uint32_t idx)
@@ -38,7 +47,21 @@ namespace perfectpixel { namespace ecs {
 
 		static void AddField(IField *field)
 		{
-			fields.push_back(field);
+			auto &fields = getInstance()->fields;
+			// Inline statics are weird, we have to check for duplicates
+			bool found = false;
+			for (IField *existing : fields)
+			{
+				if (existing == field)
+				{
+					found = true;
+					break;
+				}
+			}
+			if (!found)
+			{
+				fields.push_back(field);
+			}
 		}
 
 		static bool Has(Entity entity)
@@ -54,16 +77,15 @@ namespace perfectpixel { namespace ecs {
 		static void Register(Entity entity)
 		{
 			T *instance = getInstance();
-			uint32_t idx = instance->_register(entity, lastIndex);
+			uint32_t idx = instance->_register(entity, instance->lastIndex);
 
-			if (idx >= lastIndex)
+			if (idx >= instance->lastIndex)
 			{
-				lastIndex++;
+				instance->lastIndex++;
 			}
 
 			instance->initialize(idx);
-
-			objects++;
+			instance->objects++;
 		}
 
 		static void Delete(Entity entity)
@@ -72,7 +94,12 @@ namespace perfectpixel { namespace ecs {
 
 			getInstance()->purge(idx);
 
-			objects--;
+			getInstance()->objects--;
+		}
+
+		static void SafeDelete(Entity entity)
+		{
+			if (getInstance()->_has(entity)) Delete(entity);
 		}
 
 		static void Filter(types::BitSet &mask, IComponentStorage::ComponentStorageFilterType filterType)
@@ -85,12 +112,15 @@ namespace perfectpixel { namespace ecs {
 			T *instance = getInstance();
 			instance->initialize(instance->_index(entity));
 		}
+
+		static void Clean()
+		{
+			getInstance()->_clean();
+		}
 	};
 
-	template<typename T> uint32_t Component<T>::objects = 0;
-	template<typename T> uint32_t Component<T>::lastIndex = 0;
 	template<typename T> const size_t Component<T>::Id = std::hash(typeid(T).name());
-	template<typename T> std::vector<IField *> Component<T>::fields = std::vector<IField *>();
+	template<typename T> Field<Component<T>, Entity> Component<T>::Owner{};
 
 	template <typename T>
 	class HintComponent : public Component<T>, public IComponentStorage
@@ -124,10 +154,18 @@ namespace perfectpixel { namespace ecs {
 			return 0;
 		}
 
+		virtual uint32_t _safeDelete(Entity entity)
+		{
+			return _delete(entity);
+		}
+
 		virtual void _filter(types::BitSet &mask, ComponentStorageFilterType filterType) const
 		{
 			mask &= (filterType == IComponentStorage::WITH) ? m_mask : ~m_mask;
 		}
+
+		virtual void _clean()
+		{}
 
 	private:
 		types::BitSet m_mask;

@@ -26,7 +26,7 @@ namespace tests
 		TEST_METHOD_INITIALIZE(setup)
 		{
 			m_entityManager = new ecs::EntityManager();
-			m_processor = new CollisionProcessor(m_entityManager);
+			m_processor = new CollisionProcessor();
 		}
 
 		TEST_METHOD_CLEANUP(cleanup)
@@ -45,8 +45,8 @@ namespace tests
 			ColliderComponent::Register(a);
 			ColliderComponent::Register(b);
 
-			ColliderComponent::setMaskRectangle(a, types::AARectangle({ 10, 10 }));
-			ColliderComponent::setMaskRectangle(a, types::AARectangle({ 20, 10 }));
+			ColliderComponent::SetMaskRectangle(a, types::AARectangle({ 10, 10 }));
+			ColliderComponent::SetMaskRectangle(a, types::AARectangle({ 20, 10 }));
 
 			Assert::IsTrue(m_processor->checkCollision(a, b, data), L"Collision missed", LINE_INFO());
 			AssertFloatApprox(overlap->x(), 15);
