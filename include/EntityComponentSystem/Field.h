@@ -73,22 +73,22 @@ namespace perfectpixel { namespace ecs {
 			Owner::AddField(this);
 		}
 
-		Container at(uint32_t idx)
+		T at(uint32_t idx)
 		{
 			return m_data[idx];
 		}
 
-		Container Get(Entity entity) const
+		const T ^get(Entity entity) const
 		{
 			return m_data[Owner::Index(entity)];
 		}
 
-		void Set(Entity entity, const Container& value)
+		void set(Entity entity, const T& value)
 		{
-			m_data[Owner::Index(entity)] = false;
+			m_data[Owner::Index(entity)] = value;
 		}
 
-		uint32_t Count(Entity entity)
+		uint32_t capacity(Entity entity)
 		{
 			return m_data[Owner::Index(entity)].size();
 		}

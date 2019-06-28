@@ -38,6 +38,7 @@ namespace perfectpixel { namespace ecs {
 			Query m_query;
 			Query m_queryCreate;
 			Query m_queryDestroy;
+			Query m_queryRender;
 
 			types::BitSet m_queryState;
 		}; 

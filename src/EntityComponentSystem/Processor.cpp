@@ -18,6 +18,7 @@ namespace perfectpixel { namespace ecs {
 		: m_query(query)
 		, m_queryCreate(QueryHelperCreate::build())
 		, m_queryDestroy(QueryHelperDestroy::build())
+		, m_queryRender(QueryHelperRender::build())
 	{
 	}
 
@@ -61,15 +62,12 @@ namespace perfectpixel { namespace ecs {
 
 	void Processor::doRender(types::PpFloat deltaT)
 	{
-		// Do not render uninitialized components
-		Query render = QueryHelperRender::build();
-		onRender(render.execute(m_queryState), deltaT);
+		onRender(m_queryRender.execute(m_queryState), deltaT);
 	}
 
 	void Processor::doDestroy()
 	{
-		std::vector<Entity> entities = m_queryDestroy.finalize();
-		onDestroy(entities);
+		onDestroy(m_queryDestroy.finalize());
 	}
 
 	void Processor::onCreate(const std::vector<Entity> &entities)
