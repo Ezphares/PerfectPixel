@@ -78,7 +78,7 @@ namespace perfectpixel { namespace ecs {
 			return m_data[idx];
 		}
 
-		const T ^get(Entity entity) const
+		const T &get(Entity entity) const
 		{
 			return m_data[Owner::Index(entity)];
 		}
