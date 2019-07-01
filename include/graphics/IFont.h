@@ -10,6 +10,8 @@
 namespace perfectpixel {
 	namespace graphics {
 		
+		class Texture;
+
 		class IFont {
 		public:
 			virtual ~IFont() {};

@@ -87,7 +87,7 @@ namespace perfectpixel {
 			{
 				width += m_width[c];
 			}
-			return width * size;
+			return width * size / (types::PpFloat)m_header.m_cellWidth;
 		}
 
 	}

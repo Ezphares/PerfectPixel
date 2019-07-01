@@ -80,6 +80,7 @@ add_library(Graphics
 	"${Graphics_SRC_DIR}/FrameBuffer.cpp" 
 	"${Graphics_SRC_DIR}/windows/Win32Window.cpp" 
 	"${Graphics_SRC_DIR}/CBFGFont.cpp"
+	"${Graphics_SRC_DIR}/UIProcessor.cpp"
 	
 	"${Graphics_INCLUDE_FILES}"
 )

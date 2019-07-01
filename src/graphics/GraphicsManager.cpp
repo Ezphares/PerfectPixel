@@ -181,6 +181,28 @@ void GraphicsManager::drawAll(double deltaT)
 	m_font->writeBuffer({ -75, 45, -1 }, 10, fpsText.str(), &text);
 	m_font->getTexture().bind();
 
+	// FIXME Decent ui pass
+	for (DrawQueueElement *element : m_uiQueue)
+	{
+		switch (element->m_type)
+		{
+		case (DQET_UI_TEXT):
+			UITextDrawQueueElement *textElement = static_cast<UITextDrawQueueElement *>(element);
+
+			// FIXME default font for now
+			if (!textElement->m_font)
+			{
+				textElement->m_font = m_font;
+			}
+
+			textElement->m_font->writeBuffer(textElement->m_position, textElement->m_fontSize, textElement->m_text, &text);
+			break;
+		}
+
+		DrawQueueElementFactory::getInstance()->deallocate(element);
+	}
+	m_uiQueue.clear();
+
 	m_programUiText->use();
 
 	m_vaoDynamicSprites->bindVAO();
@@ -251,6 +273,23 @@ perfectpixel::graphics::SpriteComponent & GraphicsManager::getSprite(ecs::Entity
 		throw types::PpException("Attempted to get SpriteComponent for entity without one attached");
 	}
 	return it->second;
+}
+
+void GraphicsManager::queueDrawSingle(DrawQueueElement *element)
+{
+	switch (element->m_type)
+	{
+	case (DQET_UI_TEXT):
+		m_uiQueue.push_back(element);
+		break;
+
+	case (DQET_SPRITE):
+		// m_spriteQueue.push_back(element);
+		break;
+
+	default:
+		break;
+	}
 }
 
 void GraphicsManager::cleanup()

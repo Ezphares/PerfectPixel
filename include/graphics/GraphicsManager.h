@@ -9,6 +9,7 @@
 #include <graphics/FrameBuffer.h>
 #include <graphics/Quad.h>
 #include <graphics/IFont.h>
+#include <graphics/DrawQueue.h>
 
 #include <EntityComponentSystem/EntityManager.h>
 #include <EntityComponentSystem/PositionCallback.h>
@@ -55,6 +56,10 @@ namespace graphics {
 		void registerSprite(ecs::Entity entity, const SpriteComponent &spriteComponent);
 		bool hasSprite(ecs::Entity entity) const;
 		SpriteComponent &getSprite(ecs::Entity entity);
+
+		void queueDrawSingle(DrawQueueElement *element);
+
+		IFont *getDefaultFont() {return m_font;}
 
 		void cleanup();
 
@@ -105,6 +110,8 @@ namespace graphics {
 
 		std::vector<double> m_ftBuffer;
 		std::size_t m_ftWrite;
+
+		DrawQueue m_uiQueue;
 	};
 
 }
