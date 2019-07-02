@@ -35,7 +35,7 @@ namespace perfectpixel { namespace physics {
 		CollisionProcessor();
 		virtual ~CollisionProcessor();
 
-		virtual void onProcess(const std::vector<ecs::Entity> &entities, types::PpFloat deltaT);
+		virtual void onUpdate(const std::vector<ecs::Entity> &entities, types::PpFloat deltaT);
 
 	private:
 		void collideSingle(ecs::Entity entity, std::set<ecs::Entity> &cache);

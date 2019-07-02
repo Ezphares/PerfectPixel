@@ -1,4 +1,5 @@
 #include <graphics/LocalGL.h>
+#include <graphics/UITextComponent.h>
 #include <enginecore/Game.h>
 #include <graphics/IWindow.h>
 #include <graphics/Texture.h>
@@ -10,6 +11,7 @@
 
 #include <chrono>
 #include <thread>
+#include <sstream>
 
 using namespace perfectpixel;
 using namespace perfectpixel::ecs;
@@ -61,6 +63,15 @@ public:
 	}
 };
 
+class ScoreUIComponent
+	: public Component<ScoreUIComponent>
+	, public LinearScanComponentStorage
+{
+public:
+	inline static Field<ScoreUIComponent, Entity> BallToTrack;
+	inline static Field<ScoreUIComponent, types::PpInt> PlayerIndex;
+};
+
 class BatProcessor : public Processor
 {
 	typedef QueryHelper<With< BatComponent, TransformComponent>> BatQuery;
@@ -78,7 +89,7 @@ public:
 		}
 	}
 
-	virtual void onProcess(const std::vector<Entity> &entities, types::PpFloat deltaT)
+	virtual void onUpdate(const std::vector<Entity> &entities, types::PpFloat deltaT)
 	{
 	    for (auto entity : entities)
 		{
@@ -98,7 +109,7 @@ public:
 		: Processor(PlayerQuery::build())
 	{}
 
-	virtual void onProcess(const std::vector<Entity> &entities, types::PpFloat deltaT)
+	virtual void onUpdate(const std::vector<Entity> &entities, types::PpFloat deltaT)
 	{
 		for (auto entity : entities)
 		{
@@ -120,7 +131,7 @@ public:
 		: Processor(AIQuery::build())
 	{}
 
-	virtual void onProcess(const std::vector<Entity> &entities, types::PpFloat deltaT)
+	virtual void onUpdate(const std::vector<Entity> &entities, types::PpFloat deltaT)
 	{
 		for (auto entity : entities)
 		{
@@ -148,7 +159,7 @@ public:
 		}
 	}
 
-	virtual void onProcess(const std::vector<Entity> &entities, types::PpFloat deltaT)
+	virtual void onUpdate(const std::vector<Entity> &entities, types::PpFloat deltaT)
 	{
 		for (auto entity : entities)
 		{
@@ -178,6 +189,27 @@ public:
 			}
 
 			BallComponent::DeltaXPrev(entity) = velocity.x();
+		}
+	}
+};
+
+class ScoreUIProcessor : public Processor
+{
+	typedef QueryHelper<With<ScoreUIComponent, graphics::UITextComponent>> ScoreUIQuery;
+public:
+	ScoreUIProcessor() : Processor(ScoreUIQuery::build()) {};
+
+	virtual void onUpdate(const std::vector<Entity> &entities, types::PpFloat deltaT)
+	{
+		for (auto entity : entities)
+		{
+			std::stringstream textStream;
+			textStream <<
+				((ScoreUIComponent::PlayerIndex(entity) == 1)
+				? BallComponent::Score1(ScoreUIComponent::BallToTrack(entity))
+				: BallComponent::Score2(ScoreUIComponent::BallToTrack(entity)));
+
+			graphics::UITextComponent::Text(entity) = textStream.str();
 		}
 	}
 };
@@ -255,6 +287,7 @@ class Pong : public core::Game
 		queue.registerProcessor(new AIProcessor(), 10, true);
 		queue.registerProcessor(new BatProcessor(), 15, true);
 		queue.registerProcessor(new BallProcessor(), 15, true);
+		queue.registerProcessor(new ScoreUIProcessor(), 15, true);
 
 		PlayerProcessor::m_Input = &m_inputManager;
 	}
@@ -328,6 +361,23 @@ class Pong : public core::Game
 
 		createBat(-78, sprPlayer1, false);
 		createBat(78, sprPlayer2, true);
+
+
+		for (types::PpInt i = 0; i < 2; ++i)
+		{
+			ecs::Entity ui{ EntityManager::getInstance()->create() };
+
+			TransformComponent::Register(ui);
+			TransformComponent::Position(ui) = types::Vector3(i == 0 ? -40.0f : 40.0f, -60.0f, -1.0f);
+
+			graphics::UITextComponent::Register(ui);
+			graphics::UITextComponent::Text(ui) = "0";
+			graphics::UITextComponent::Alignment(ui) = graphics::UIUtil::UITA_CENTER | graphics::UIUtil::UITA_TOP;
+
+			ScoreUIComponent::Register(ui);
+			ScoreUIComponent::BallToTrack(ui) = m_ball;
+			ScoreUIComponent::PlayerIndex(ui) = i + 1;
+		}
 	}
 
 	virtual void step()

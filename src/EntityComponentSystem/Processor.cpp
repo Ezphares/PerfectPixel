@@ -57,7 +57,7 @@ namespace perfectpixel { namespace ecs {
 
 	void Processor::doProcess(types::PpFloat deltaT)
 	{
-		onProcess(m_query.finalize(), deltaT);
+		onUpdate(m_query.finalize(), deltaT);
 	}
 
 	void Processor::doRender(types::PpFloat deltaT)
@@ -75,7 +75,7 @@ namespace perfectpixel { namespace ecs {
 	}
 
 
-	void Processor::onProcess(const std::vector<Entity> &entities, types::PpFloat deltaT)
+	void Processor::onUpdate(const std::vector<Entity> &entities, types::PpFloat deltaT)
 	{
 	}
 

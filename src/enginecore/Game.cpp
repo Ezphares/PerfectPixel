@@ -7,6 +7,7 @@
 #include <Physics/CollisionProcessor.h>
 
 #include <graphics/IWindow.h>
+#include <graphics/UIProcessor.h>
 
 #include <functional>
 
@@ -104,6 +105,7 @@ void Game::run()
 		
 		// Render step
 		types::Logger::touchLog(types::Logger::LOG_TOUCH_RENDER);
+		m_processorQueue.renderAll(static_cast<types::PpFloat>(frametime.count()));
 		m_graphicsManager.drawAll(frametime.count());
 		m_graphicsManager.cleanup();
 		mainWindow->draw();
@@ -162,6 +164,10 @@ void Game::setupProcessors()
 	m_processorQueue.registerProcessor(new ecs::DebugProcessor(), 200, true);
 	m_processorQueue.registerProcessor(new physics::IntegratorProcessor(), 240, true);
 	m_processorQueue.registerProcessor(new physics::CollisionProcessor(), 250, true);
+
+	graphics::UIProcessor *ui = new graphics::UIProcessor();
+	ui->m_gm = &m_graphicsManager;
+	m_processorQueue.registerProcessor(ui, 250, true);
 
 	setupCustomProcessors(m_processorQueue);
 }

@@ -29,7 +29,7 @@ namespace perfectpixel { namespace physics {
 
 	}
 
-	void CollisionProcessor::onProcess(const std::vector<ecs::Entity> &entities, types::PpFloat deltaT)
+	void CollisionProcessor::onUpdate(const std::vector<ecs::Entity> &entities, types::PpFloat deltaT)
 	{
 		for (ecs::Entity entity : entities)
 		{

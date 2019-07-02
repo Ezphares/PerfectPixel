@@ -30,7 +30,7 @@ namespace perfectpixel { namespace ecs {
 			void doDestroy();
 
 			virtual void onCreate(const std::vector<Entity> &entities);
-			virtual void onProcess(const std::vector<Entity> &entities, types::PpFloat deltaT);
+			virtual void onUpdate(const std::vector<Entity> &entities, types::PpFloat deltaT);
 			virtual void onRender(const std::vector<Entity> &entities, types::PpFloat deltaT);
 			virtual void onDestroy(const std::vector<Entity> &entities);
 

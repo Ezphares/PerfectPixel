@@ -19,7 +19,7 @@ namespace perfectpixel { namespace physics {
 	{
 	}
 
-	void perfectpixel::physics::IntegratorProcessor::onProcess(const std::vector<ecs::Entity> &entities, types::PpFloat deltaT)
+	void perfectpixel::physics::IntegratorProcessor::onUpdate(const std::vector<ecs::Entity> &entities, types::PpFloat deltaT)
 	{
 		for (ecs::Entity entity : entities)
 		{
