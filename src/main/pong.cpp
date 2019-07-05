@@ -21,8 +21,8 @@ class BatComponent
 	, public LinearScanComponentStorage
 {
 public:
-	inline static Field<BatComponent, types::PpFloat> MaxSpeed;
-	inline static Field<BatComponent, types::PpFloat> CurrentDirection;
+	_Field(BatComponent, types::PpFloat, MaxSpeed);
+	_Field(BatComponent, types::PpFloat, CurrentDirection);
 };
 
 class PlayerComponent
@@ -30,7 +30,7 @@ class PlayerComponent
 	, public MapComponentStorage
 {
 public:
-	inline static Field<PlayerComponent, types::PpInt> InputAxis;
+	_Field(PlayerComponent, types::PpInt, InputAxis);
 };
 
 class AIComponent
@@ -38,7 +38,7 @@ class AIComponent
 	, public MapComponentStorage
 {
 public:
-	inline static Field<AIComponent, Entity> BallToTrack;
+	_Field(AIComponent, Entity, BallToTrack);
 };
 
 class BallComponent
@@ -46,9 +46,9 @@ class BallComponent
 	, public MapComponentStorage
 {
 public:
-	inline static Field<BallComponent, types::PpFloat> DeltaXPrev;
-	inline static Field<BallComponent, types::PpInt> Score1;
-	inline static Field<BallComponent, types::PpInt> Score2;
+	_Field(BallComponent, types::PpFloat, DeltaXPrev);
+	_Field(BallComponent, types::PpInt, Score1);
+	_Field(BallComponent, types::PpInt, Score2);
 
 	static void Reset(Entity entity)
 	{
@@ -68,8 +68,8 @@ class ScoreUIComponent
 	, public LinearScanComponentStorage
 {
 public:
-	inline static Field<ScoreUIComponent, Entity> BallToTrack;
-	inline static Field<ScoreUIComponent, types::PpInt> PlayerIndex;
+	_Field(ScoreUIComponent, Entity, BallToTrack);
+	_Field(ScoreUIComponent, types::PpInt, PlayerIndex);
 };
 
 class BatProcessor : public Processor

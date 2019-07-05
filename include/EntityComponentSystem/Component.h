@@ -7,6 +7,8 @@
 #include <types/Singleton.h>
 #include <types/Bitset.h>
 
+#include <map>
+
 namespace perfectpixel { namespace ecs {
 
 	template <typename T>
@@ -23,7 +25,7 @@ namespace perfectpixel { namespace ecs {
 	private:
 		uint32_t objects;
 		uint32_t lastIndex;
-		std::vector<IField*> fields;
+		std::map<types::PpInt, IField*> fields;
 
 	protected:
 		static Field<Component<T>, Entity> Owner;
@@ -33,7 +35,7 @@ namespace perfectpixel { namespace ecs {
 		{
 			for (auto field : fields)
 			{
-				field->reset(idx);
+				field.second->reset(idx);
 			}
 		};
 
@@ -45,23 +47,22 @@ namespace perfectpixel { namespace ecs {
 			return Owner.at(idx);
 		}
 
-		static void AddField(IField *field)
+		static bool AddField(types::PpInt id, IField *field)
 		{
 			auto &fields = getInstance()->fields;
 			// Inline statics are weird, we have to check for duplicates
-			bool found = false;
-			for (IField *existing : fields)
+			bool add = fields.find(id) == fields.end();
+			if (add)
 			{
-				if (existing == field)
-				{
-					found = true;
-					break;
-				}
+				fields[id] = field;
 			}
-			if (!found)
-			{
-				fields.push_back(field);
-			}
+
+			return add;
+		}
+
+		static IField *Lookup(types::PpInt id)
+		{
+			return getInstance()->fields[id];
 		}
 
 		static bool Has(Entity entity)
@@ -120,7 +121,7 @@ namespace perfectpixel { namespace ecs {
 	};
 
 	template<typename T> const size_t Component<T>::Id = std::hash(typeid(T).name());
-	template<typename T> Field<Component<T>, Entity> Component<T>::Owner{};
+	template<typename T> Field<Component<T>, Entity> Component<T>::Owner = {FieldTable::NoReflection};
 
 	template <typename T>
 	class HintComponent : public Component<T>, public IComponentStorage

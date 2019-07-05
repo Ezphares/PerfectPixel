@@ -2,6 +2,7 @@
 
 #include <EntityComponentSystem/Component.h>
 #include <EntityComponentSystem/CoreComponentStorage.h>
+#include <EntityComponentSystem/EcsReflection.h>
 
 #include <types/vectors.h>
 
@@ -12,8 +13,10 @@ namespace perfectpixel { namespace ecs {
 		, public FlatComponentStorage<TransformComponent>
 	{
 	public:
-		inline static Field<TransformComponent, types::Vector3> Position;
-		inline static Field<TransformComponent, types::Vector3> Velocity;
+		_Field(TransformComponent, types::Vector3, Position);
+		_Field(TransformComponent, types::Vector3, Velocity);
+		//inline static Field<TransformComponent, types::Vector3> Position;
+		//inline static Field<TransformComponent, types::Vector3> Velocity;
 	};
 
 } }

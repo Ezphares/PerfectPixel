@@ -1,0 +1,7 @@
+#pragma once
+
+#ifdef PP_FULL_REFLECTION
+#define PP_FULL_REFLECTION_ENABLED 1
+#else
+#define PP_FULL_REFLECTION_ENABLED 0
+#endif

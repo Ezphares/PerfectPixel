@@ -30,6 +30,7 @@ namespace perfectpixel { namespace physics {
 			{
 				types::PpFloat velocityMagnitude = types::Infinity;
 
+				/*
 				for (Force &force : PhysicsComponent::ActiveForces(entity))
 				{
 					types::Vector3 forceVector = force.m_vector;
@@ -56,6 +57,7 @@ namespace perfectpixel { namespace physics {
 
 					acceleration += forceVector;
 				}
+				*/
 			}
 
 			types::PpFloat eulerDeltaT = deltaT / static_cast<types::PpFloat>(EULER_STEPS);

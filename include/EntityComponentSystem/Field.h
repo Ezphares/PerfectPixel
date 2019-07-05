@@ -1,26 +1,67 @@
 #pragma once
 
 #include <EntityComponentSystem/Entity.h>
+#include <EntityComponentSystem/EcsReflection.h>
+
+#include <types/defines.h>
+#include <types/numbers.h>
+#include <types/Hash.h>
 
 #include <vector>
+
+#define PPFIELDTYPE(Owner, T) ::perfectpixel::ecs::Field<Owner, T>
+#if PP_FULL_REFLECTION_ENABLED
+#define _Field(Owner, T, Name) inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T) \
+(DEQUALIFY(Owner), PPID(DEQUALIFY(Owner)), #Name, PPID(Name), DEQUALIFY(T), PPID(DEQUALIFY(T)));
+#else
+#define _Field(Owner, T, Name) inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T)(PPID(DEQUALIFY(Owner)), PPID(Name), PPID(DEQUALIFY(T)));
+#endif
 
 namespace perfectpixel { namespace ecs {
 
 	class IField
 	{
 	public:
-		virtual void reset(uint32_t index) = 0;
+		virtual void reset(uint32_t index = 0) = 0;
 	};
 
 	template <typename Owner, typename T>
 	class Field : public IField
 	{
 	public:
-		Field()
+		Field(FieldTable::ReflectionHint)
 			: m_data()
 		{
-			Owner::AddField(this);
 		}
+
+		Field(
+			types::PpInt ownerId,
+			types::PpInt selfId,
+			types::PpInt typeId)
+			: m_data()
+		{
+			if (Owner::AddField(selfId, this))
+			{
+				FieldTable::getInstance()->add<Owner>(ownerId, selfId, typeId);
+			}
+		}
+
+#if PP_FULL_REFLECTION_ENABLED
+		Field(
+			const std::string &ownerName,
+			types::PpInt ownerId,
+			const std::string &selfName,
+			types::PpInt selfId,
+			const std::string &typeName, 
+			types::PpInt typeId)
+			: m_data()
+		{
+			if (Owner::AddField(selfId, this))
+			{
+				FieldTable::getInstance()->add<Owner>(ownerName, ownerId, selfName, selfId, typeName, typeId);
+			}
+		}
+#endif
 
 		T at(uint32_t idx)
 		{

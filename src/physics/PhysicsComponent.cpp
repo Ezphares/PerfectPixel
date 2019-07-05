@@ -11,6 +11,7 @@ namespace perfectpixel { namespace physics {
 		SimulationType(entity) = PhysicsComponent::KINEMATIC;
 	}
 
+	/*
 	void PhysicsComponent::ActivateForce(ecs::Entity entity, const Force &force)
 	{
 		for (Force &currentForce : ActiveForces(entity))
@@ -35,5 +36,5 @@ namespace perfectpixel { namespace physics {
 			}
 		}
 	}
-
+	*/
 } }

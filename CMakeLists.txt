@@ -7,6 +7,7 @@ set (PerfectPixel_VERSION_MINOR 1)
 set (CMAKE_CXX_STANDARD 17)
 
 add_definitions(-DPP_CLEANUP_CALLBACKS)
+add_definitions(-DPP_FULL_REFLECTION)
 
 # PACKAGES
 find_package(ZLIB)
