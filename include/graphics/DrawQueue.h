@@ -2,9 +2,9 @@
 
 #include <graphics/IFont.h>
 
-#include <types/vectors.h>
-#include <types/Singleton.h>
-#include <types/PpException.h>
+#include <Bedrock/vectors.h>
+#include <Bedrock/Singleton.h>
+#include <Bedrock/PpException.h>
 
 #include <vector>
 
@@ -24,13 +24,13 @@ namespace perfectpixel { namespace graphics {
 
 	struct UITextDrawQueueElement : public DrawQueueElement
 	{
-		types::Vector3 m_position;
-		types::PpFloat m_fontSize;
+		bedrock::Vector3 m_position;
+		bedrock::PpFloat m_fontSize;
 		std::string m_text;
 		IFont *m_font;
 	};
 
-	class DrawQueueElementFactory : public types::Singleton<DrawQueueElementFactory>
+	class DrawQueueElementFactory : public bedrock::Singleton<DrawQueueElementFactory>
 	{
 	public:
 		DrawQueueElement *allocate(DrawQueueElementType type)
@@ -45,7 +45,7 @@ namespace perfectpixel { namespace graphics {
 				result = new UITextDrawQueueElement();
 				break;
 			default:
-				throw types::PpException("No allocator for selected DQET");
+				throw bedrock::PpException("No allocator for selected DQET");
 			}
 
 			result->m_type = type;
@@ -61,7 +61,7 @@ namespace perfectpixel { namespace graphics {
 				break;
 
 			default:
-				throw types::PpException("No allocator for selected DQET");
+				throw bedrock::PpException("No allocator for selected DQET");
 			}
 		}
 	};

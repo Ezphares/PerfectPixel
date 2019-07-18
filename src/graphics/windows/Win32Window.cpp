@@ -2,7 +2,7 @@
 
 #include <graphics/windows/Win32Window.h>
 
-#include <types/PpException.h>
+#include <Bedrock/PpException.h>
 
 namespace perfectpixel {
 namespace graphics {
@@ -53,7 +53,7 @@ void Win32Window::initialize(const WindowSettings &trySettings)
 
 	if (!RegisterClassEx(&m_wc))
 	{
-		throw types::PpException("Could not register window class");
+		throw bedrock::PpException("Could not register window class");
 	}
 
 	if (settings.type == WindowSettings::FULLSCREEN)
@@ -130,7 +130,7 @@ void Win32Window::initialize(const WindowSettings &trySettings)
 
 	if (!m_hwnd)
 	{
-		throw types::PpException("Could not create window");
+		throw bedrock::PpException("Could not create window");
 	}
 	
 	m_handleLookup[m_hwnd] = this;
@@ -207,7 +207,7 @@ void Win32Window::setSplash(const PNG &png)
 	m_brush = CreatePatternBrush(m_splash);
 }
 
-void Win32Window::setKeyCallback(types::KeyCallback callback)
+void Win32Window::setKeyCallback(bedrock::KeyCallback callback)
 {
 	m_keyCallback = callback;
 }
@@ -243,7 +243,7 @@ LRESULT CALLBACK Win32Window::WndProc(HWND hwnd, UINT message, WPARAM wParam, LP
 	case WM_KEYDOWN:
 		if (self && self->m_keyCallback)
 		{
-			self->m_keyCallback(static_cast<types::KeyCode>(wParam), types::PP_KEYDOWN);
+			self->m_keyCallback(static_cast<bedrock::KeyCode>(wParam), bedrock::PP_KEYDOWN);
 			return 0;
 		}
 		break;
@@ -251,7 +251,7 @@ LRESULT CALLBACK Win32Window::WndProc(HWND hwnd, UINT message, WPARAM wParam, LP
 	case WM_KEYUP:
 		if (self && self->m_keyCallback)
 		{
-			self->m_keyCallback(static_cast<types::KeyCode>(wParam), types::PP_KEYUP);
+			self->m_keyCallback(static_cast<bedrock::KeyCode>(wParam), bedrock::PP_KEYUP);
 			return 0;
 		}
 		break;

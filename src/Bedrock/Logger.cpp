@@ -1,4 +1,4 @@
-#include <types/Logger.h>
+#include <Bedrock/Logger.h>
 #include <ctime>
 #include <iomanip>
 
@@ -11,7 +11,7 @@ const char * basename(const char *path)
 #endif // _WIN32
 
 namespace perfectpixel {
-	namespace types {
+	namespace bedrock {
 
 		std::ofstream Logger::m_logStream{};
 		std::map<int, std::string> Logger::m_logLevels{ {LEVEL_INFO, "info"}, {LEVEL_WARN, "WARN"}, {LEVEL_ERROR, " ERR"} };

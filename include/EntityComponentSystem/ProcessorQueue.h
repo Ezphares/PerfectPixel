@@ -2,7 +2,7 @@
 
 #include <EntityComponentSystem/Processor.h>
 
-#include <types/numbers.h>
+#include <Bedrock/numbers.h>
 
 #include <vector>
 #include <map>
@@ -13,20 +13,20 @@ namespace perfectpixel {
 	class ProcessorQueue
 	{
 	public:
-		static const types::PpInt USER_PROCESSOR_DEFAULT_PRIORITY;
+		static const bedrock::PpInt USER_PROCESSOR_DEFAULT_PRIORITY;
 
 	public:
 		ProcessorQueue();
 		virtual ~ProcessorQueue();
 
-		void processAll(types::PpFloat deltaT);
-		void renderAll(types::PpFloat deltaT);
+		void processAll(bedrock::PpFloat deltaT);
+		void renderAll(bedrock::PpFloat deltaT);
 
-		void registerProcessor(Processor *processor, types::PpInt priority, bool managed);
+		void registerProcessor(Processor *processor, bedrock::PpInt priority, bool managed);
 
 	private:
-		std::map<types::PpInt, std::vector<Processor*>> m_processors;
-		std::vector<types::PpInt> m_priorities;
+		std::map<bedrock::PpInt, std::vector<Processor*>> m_processors;
+		std::vector<bedrock::PpInt> m_priorities;
 		std::vector<Processor *> m_managedProcessors;
 	};
 

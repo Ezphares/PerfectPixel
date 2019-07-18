@@ -1,6 +1,6 @@
 #include <graphics/PNG.h>
 
-#include <types/PpException.h>
+#include <Bedrock/PpException.h>
 
 namespace perfectpixel {
 namespace graphics {
@@ -27,7 +27,7 @@ namespace graphics {
 		fopen_s(&result.m_fp, filename.c_str(), "rb");
 		if (result.m_fp == NULL)
 		{
-			throw types::PpException("Could not open file [" + filename + "]");
+			throw bedrock::PpException("Could not open file [" + filename + "]");
 		}
 
 		// PNG header check
@@ -35,19 +35,19 @@ namespace graphics {
 		fread(header, 1, 8, result.m_fp);
 		if (png_sig_cmp(header, 0, 8))
 		{
-			throw types::PpException("Could not parse PNG header");
+			throw bedrock::PpException("Could not parse PNG header");
 		}
 
 		PngReadStruct readStruct = PngReadStruct();
 
 		if (!readStruct.m_ok)
 		{
-			throw types::PpException("Could not create PNG metadata structures");
+			throw bedrock::PpException("Could not create PNG metadata structures");
 		}
 
 		if (setjmp(png_jmpbuf(readStruct.m_png)))
 		{
-			throw types::PpException("Could not set jump");// FIXME exception
+			throw bedrock::PpException("Could not set jump");// FIXME exception
 		}
 
 		png_init_io(readStruct.m_png, result.m_fp);

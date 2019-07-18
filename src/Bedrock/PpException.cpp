@@ -1,8 +1,8 @@
-#include <types/PpException.h>
+#include <Bedrock/PpException.h>
 
 
 namespace perfectpixel {
-	namespace types {
+	namespace bedrock {
 
 		PpException::PpException(const std::string &error)
 			: std::runtime_error(error)

@@ -1,9 +1,9 @@
-#include <types/vectors.h>
+#include <Bedrock/vectors.h>
 
 #include <cmath>
 
 namespace perfectpixel {
-namespace types {
+namespace bedrock {
 
 	namespace
 	{

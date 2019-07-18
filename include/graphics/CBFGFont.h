@@ -34,15 +34,15 @@ namespace perfectpixel {
 			~CBFGFont();
 
 		public:
-			virtual void writeBuffer(types::Vector3 position, types::PpFloat size, const std::string &text, std::vector<TextVertex> *out_vertices);
+			virtual void writeBuffer(bedrock::Vector3 position, bedrock::PpFloat size, const std::string &text, std::vector<TextVertex> *out_vertices);
 			virtual Texture &getTexture();
-			virtual types::PpFloat getWidth(types::PpFloat size, const std::string &text);
+			virtual bedrock::PpFloat getWidth(bedrock::PpFloat size, const std::string &text);
 
 		private:
 			Texture m_texture;
 			CBFGFontHeader m_header;
 			std::array<unsigned char, 256> m_width;
-			types::Vector2 m_uvStride;
+			bedrock::Vector2 m_uvStride;
 		};
 
 	}

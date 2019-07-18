@@ -5,7 +5,8 @@
 #include <graphics/Texture.h>
 #include <EntityComponentSystem/TransformComponent.h>
 #include <EntityComponentSystem/Component.h>
-#include <types/vectors.h>
+#include <Bedrock/vectors.h>
+#include <Bedrock/TypeReflection.h>
 #include <physics/PhysicsComponent.h>
 #include <physics/ColliderComponent.h>
 
@@ -21,8 +22,8 @@ class BatComponent
 	, public LinearScanComponentStorage
 {
 public:
-	_Field(BatComponent, types::PpFloat, MaxSpeed);
-	_Field(BatComponent, types::PpFloat, CurrentDirection);
+	_Field(BatComponent, bedrock::PpFloat, MaxSpeed);
+	_Field(BatComponent, bedrock::PpFloat, CurrentDirection);
 };
 
 class PlayerComponent
@@ -30,7 +31,7 @@ class PlayerComponent
 	, public MapComponentStorage
 {
 public:
-	_Field(PlayerComponent, types::PpInt, InputAxis);
+	_Field(PlayerComponent, bedrock::PpInt, InputAxis);
 };
 
 class AIComponent
@@ -46,16 +47,16 @@ class BallComponent
 	, public MapComponentStorage
 {
 public:
-	_Field(BallComponent, types::PpFloat, DeltaXPrev);
-	_Field(BallComponent, types::PpInt, Score1);
-	_Field(BallComponent, types::PpInt, Score2);
+	_Field(BallComponent, bedrock::PpFloat, DeltaXPrev);
+	_Field(BallComponent, bedrock::PpInt, Score1);
+	_Field(BallComponent, bedrock::PpInt, Score2);
 
 	static void Reset(Entity entity)
 	{
-		types::Vector3 &position = TransformComponent::Position(entity);
+		bedrock::Vector3 &position = TransformComponent::Position(entity);
 		position = { 0, 0, position.z() };
 
-		types::Vector3 &velocity = TransformComponent::Velocity(entity);
+		bedrock::Vector3 &velocity = TransformComponent::Velocity(entity);
 
 		velocity.x() = velocity.x() > 0 ? -40.0f : 40.0f;
 		velocity.y() = velocity.y() > 0 ? 35.0f : -35.0f;
@@ -69,7 +70,7 @@ class ScoreUIComponent
 {
 public:
 	_Field(ScoreUIComponent, Entity, BallToTrack);
-	_Field(ScoreUIComponent, types::PpInt, PlayerIndex);
+	_Field(ScoreUIComponent, bedrock::PpInt, PlayerIndex);
 };
 
 class BatProcessor : public Processor
@@ -89,12 +90,12 @@ public:
 		}
 	}
 
-	virtual void onUpdate(const std::vector<Entity> &entities, types::PpFloat deltaT)
+	virtual void onUpdate(const std::vector<Entity> &entities, bedrock::PpFloat deltaT)
 	{
 	    for (auto entity : entities)
 		{
 			TransformComponent::Velocity(entity) = 
-				types::Vector3::UP *
+				bedrock::Vector3::UP *
 				BatComponent::MaxSpeed(entity) * 
 				BatComponent::CurrentDirection(entity);
 		}
@@ -109,7 +110,7 @@ public:
 		: Processor(PlayerQuery::build())
 	{}
 
-	virtual void onUpdate(const std::vector<Entity> &entities, types::PpFloat deltaT)
+	virtual void onUpdate(const std::vector<Entity> &entities, bedrock::PpFloat deltaT)
 	{
 		for (auto entity : entities)
 		{
@@ -131,7 +132,7 @@ public:
 		: Processor(AIQuery::build())
 	{}
 
-	virtual void onUpdate(const std::vector<Entity> &entities, types::PpFloat deltaT)
+	virtual void onUpdate(const std::vector<Entity> &entities, bedrock::PpFloat deltaT)
 	{
 		for (auto entity : entities)
 		{
@@ -159,7 +160,7 @@ public:
 		}
 	}
 
-	virtual void onUpdate(const std::vector<Entity> &entities, types::PpFloat deltaT)
+	virtual void onUpdate(const std::vector<Entity> &entities, bedrock::PpFloat deltaT)
 	{
 		for (auto entity : entities)
 		{
@@ -181,7 +182,7 @@ public:
 				BallComponent::Reset(entity);
 			}
 
-			types::Vector3 &velocity = TransformComponent::Velocity(entity);
+			bedrock::Vector3 &velocity = TransformComponent::Velocity(entity);
 			// Speed up after batting
 			if (BallComponent::DeltaXPrev(entity) > 0.0f != velocity.x() > 0.0f)
 			{
@@ -199,7 +200,7 @@ class ScoreUIProcessor : public Processor
 public:
 	ScoreUIProcessor() : Processor(ScoreUIQuery::build()) {};
 
-	virtual void onUpdate(const std::vector<Entity> &entities, types::PpFloat deltaT)
+	virtual void onUpdate(const std::vector<Entity> &entities, bedrock::PpFloat deltaT)
 	{
 		for (auto entity : entities)
 		{
@@ -228,14 +229,14 @@ class Pong : public core::Game
 		mainWindow.title = "Pong";
 	}
 
-	void createBat(types::PpFloat x, graphics::Sprite *spr, bool isAi)
+	void createBat(bedrock::PpFloat x, graphics::Sprite *spr, bool isAi)
 	{
 		Entity e{ EntityManager::getInstance()->create() };
 
 		BatComponent::Register(e);
 
 		TransformComponent::Register(e);
-		TransformComponent::Position(e) =types:: Vector3::RIGHT * x;
+		TransformComponent::Position(e) =bedrock:: Vector3::RIGHT * x;
 
 		graphics::SpriteComponent sprite{ e, spr,{ 4, 16 },{ -2,  -8 }, 1 };
 		m_graphicsManager.registerSprite(e, sprite);
@@ -246,7 +247,7 @@ class Pong : public core::Game
 		physics::PhysicsComponent::SimulationType(e) = physics::PhysicsComponent::FULL;
 
 		physics::ColliderComponent::Register(e);
-		physics::ColliderComponent::SetMaskRectangle(e, types::AARectangle({ 4, 16 }));
+		physics::ColliderComponent::SetMaskRectangle(e, bedrock::AARectangle({ 4, 16 }));
 
 		if (!isAi)
 		{
@@ -294,6 +295,7 @@ class Pong : public core::Game
 
 	virtual void gameStart()
 	{
+
 		ecs::Entity
 			eTopWall{ EntityManager::getInstance()->create() },
 			eBottomWall{ EntityManager::getInstance()->create() };
@@ -306,8 +308,8 @@ class Pong : public core::Game
 		TransformComponent::Register(eBottomWall);
 
 
-		TransformComponent::Position(eTopWall) = types::Vector3::UP * 58.0f;
-		TransformComponent::Position(eBottomWall) = types::Vector3::DOWN * 58.0f;
+		TransformComponent::Position(eTopWall) = bedrock::Vector3::UP * 58.0f;
+		TransformComponent::Position(eBottomWall) = bedrock::Vector3::DOWN * 58.0f;
 
 		graphics::Texture *tex = new  graphics::Texture(graphics::PNG::fromFile("pong-all.png") );
 
@@ -340,13 +342,13 @@ class Pong : public core::Game
 		m_graphicsManager.registerSprite(eBottomWall, sprComBottom);
 
 		physics::ColliderComponent::Register(m_ball);
-		physics::ColliderComponent::SetMaskRectangle(m_ball, types::AARectangle({ 4, 4 }));
+		physics::ColliderComponent::SetMaskRectangle(m_ball, bedrock::AARectangle({ 4, 4 }));
 
 		physics::ColliderComponent::Register(eTopWall);
-		physics::ColliderComponent::SetMaskRectangle(eTopWall, types::AARectangle({ 160, 4 }));
+		physics::ColliderComponent::SetMaskRectangle(eTopWall, bedrock::AARectangle({ 160, 4 }));
 
 		physics::ColliderComponent::Register(eBottomWall);
-		physics::ColliderComponent::SetMaskRectangle(eBottomWall, types::AARectangle({ 160, 4 }));
+		physics::ColliderComponent::SetMaskRectangle(eBottomWall, bedrock::AARectangle({ 160, 4 }));
 
 		physics::PhysicsComponent::Register(m_ball);
 		physics::PhysicsComponent::Bounciness(m_ball) = 1.0f;
@@ -363,12 +365,12 @@ class Pong : public core::Game
 		createBat(78, sprPlayer2, true);
 
 
-		for (types::PpInt i = 0; i < 2; ++i)
+		for (bedrock::PpInt i = 0; i < 2; ++i)
 		{
 			ecs::Entity ui{ EntityManager::getInstance()->create() };
 
 			TransformComponent::Register(ui);
-			TransformComponent::Position(ui) = types::Vector3(i == 0 ? -40.0f : 40.0f, -60.0f, -1.0f);
+			TransformComponent::Position(ui) = bedrock::Vector3(i == 0 ? -40.0f : 40.0f, -60.0f, -1.0f);
 
 			graphics::UITextComponent::Register(ui);
 			graphics::UITextComponent::Text(ui) = "0";
@@ -386,6 +388,7 @@ class Pong : public core::Game
 		{
 			MessageBoxA(0, (char*)glGetString(GL_VERSION), "OPENGL VERSION", 0);
 		}
+
 	}
 
 	virtual void splashScreenUpdate(bool &closeSplash)

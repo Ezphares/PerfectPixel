@@ -1,6 +1,6 @@
 #pragma once
 
-namespace perfectpixel { namespace types {
+namespace perfectpixel { namespace bedrock {
 
 	template <typename T>
 	class Singleton

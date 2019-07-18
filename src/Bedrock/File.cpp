@@ -1,11 +1,11 @@
-#include <types/File.h>
+#include <Bedrock/File.h>
 
-#include <types/PpException.h>
+#include <Bedrock/PpException.h>
 
 #include <fstream>
 
 namespace perfectpixel {
-	namespace types {
+	namespace bedrock {
 
 		File::File(const std::string &filename, std::ios_base::openmode mode)
 			: m_buffer(NULL)
@@ -24,7 +24,7 @@ namespace perfectpixel {
 				m_buffer = (char*)malloc(static_cast<size_t>(length + 1));
 				if (m_buffer == NULL)
 				{
-					throw types::PpException("Could not allocate file buffer");
+					throw bedrock::PpException("Could not allocate file buffer");
 				}
 
 				stream.read(m_buffer, length);

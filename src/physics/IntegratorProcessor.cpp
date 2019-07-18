@@ -9,7 +9,7 @@
 namespace perfectpixel { namespace physics {
 
 	namespace {
-		const types::PpInt EULER_STEPS = 1;
+		const bedrock::PpInt EULER_STEPS = 1;
 	}
 
 	typedef ecs::QueryHelper<ecs::With<ecs::TransformComponent>> IntegratorQuery;
@@ -19,21 +19,21 @@ namespace perfectpixel { namespace physics {
 	{
 	}
 
-	void perfectpixel::physics::IntegratorProcessor::onUpdate(const std::vector<ecs::Entity> &entities, types::PpFloat deltaT)
+	void perfectpixel::physics::IntegratorProcessor::onUpdate(const std::vector<ecs::Entity> &entities, bedrock::PpFloat deltaT)
 	{
 		for (ecs::Entity entity : entities)
 		{
-			types::Vector3 &velocity = ecs::TransformComponent::Velocity(entity);
-			types::Vector3 acceleration = types::Vector3();
+			bedrock::Vector3 &velocity = ecs::TransformComponent::Velocity(entity);
+			bedrock::Vector3 acceleration = bedrock::Vector3();
 
 			if (PhysicsComponent::Has(entity))
 			{
-				types::PpFloat velocityMagnitude = types::Infinity;
+				bedrock::PpFloat velocityMagnitude = bedrock::Infinity;
 
-				/*
+				
 				for (Force &force : PhysicsComponent::ActiveForces(entity))
 				{
-					types::Vector3 forceVector = force.m_vector;
+					bedrock::Vector3 forceVector = force.m_vector;
 
 					if (force.m_relativeDirection)
 					{
@@ -42,7 +42,7 @@ namespace perfectpixel { namespace physics {
 					
 					if (force.m_relativeMagnitude)
 					{
-						if (velocityMagnitude == types::Infinity)
+						if (velocityMagnitude == bedrock::Infinity)
 						{
 							velocityMagnitude = velocity.magnitude();
 						}
@@ -57,11 +57,11 @@ namespace perfectpixel { namespace physics {
 
 					acceleration += forceVector;
 				}
-				*/
+				
 			}
 
-			types::PpFloat eulerDeltaT = deltaT / static_cast<types::PpFloat>(EULER_STEPS);
-			for (types::PpInt i = 0; i < EULER_STEPS; ++i)
+			bedrock::PpFloat eulerDeltaT = deltaT / static_cast<bedrock::PpFloat>(EULER_STEPS);
+			for (bedrock::PpInt i = 0; i < EULER_STEPS; ++i)
 			{
 				velocity += acceleration * eulerDeltaT;
 				ecs::TransformComponent::Position(entity) += ecs::TransformComponent::Velocity(entity) * eulerDeltaT;

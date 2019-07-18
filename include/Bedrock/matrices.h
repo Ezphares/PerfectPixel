@@ -1,12 +1,12 @@
 #pragma once
 
-#include <types/vectors.h>
+#include <Bedrock/vectors.h>
 
 #include <type_traits>
 #include <array>
 
 namespace perfectpixel {
-	namespace types {
+	namespace bedrock {
 
 		template<unsigned W, unsigned H>
 		struct Matrix

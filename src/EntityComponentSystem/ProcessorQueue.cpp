@@ -17,9 +17,9 @@ namespace perfectpixel { namespace ecs {
 		}
 	}
 
-void ProcessorQueue::processAll(types::PpFloat deltaT)
+void ProcessorQueue::processAll(bedrock::PpFloat deltaT)
 {
-	for (types::PpInt priority : m_priorities)
+	for (bedrock::PpInt priority : m_priorities)
 	{
 		for (Processor *processor : m_processors[priority])
 		{
@@ -27,7 +27,7 @@ void ProcessorQueue::processAll(types::PpFloat deltaT)
 		}
 	}
 
-	for (types::PpInt priority : m_priorities)
+	for (bedrock::PpInt priority : m_priorities)
 	{
 		for (Processor *processor : m_processors[priority])
 		{
@@ -35,7 +35,7 @@ void ProcessorQueue::processAll(types::PpFloat deltaT)
 		}
 	}
 
-	for (types::PpInt priority : m_priorities)
+	for (bedrock::PpInt priority : m_priorities)
 	{
 		for (Processor *processor : m_processors[priority])
 		{
@@ -43,7 +43,7 @@ void ProcessorQueue::processAll(types::PpFloat deltaT)
 		}
 	}
 
-	for (types::PpInt priority : m_priorities)
+	for (bedrock::PpInt priority : m_priorities)
 	{
 		for (Processor *processor : m_processors[priority])
 		{
@@ -51,7 +51,7 @@ void ProcessorQueue::processAll(types::PpFloat deltaT)
 		}
 	}
 
-	for (types::PpInt priority : m_priorities)
+	for (bedrock::PpInt priority : m_priorities)
 	{
 		for (Processor *processor : m_processors[priority])
 		{
@@ -61,9 +61,9 @@ void ProcessorQueue::processAll(types::PpFloat deltaT)
 
 }
 
-void ProcessorQueue::renderAll(types::PpFloat deltaT)
+void ProcessorQueue::renderAll(bedrock::PpFloat deltaT)
 {
-	for (types::PpInt priority : m_priorities)
+	for (bedrock::PpInt priority : m_priorities)
 	{
 		for (Processor *processor : m_processors[priority])
 		{
@@ -72,12 +72,12 @@ void ProcessorQueue::renderAll(types::PpFloat deltaT)
 	}
 }
 
-void ProcessorQueue::registerProcessor(Processor *processor, types::PpInt priority, bool managed)
+void ProcessorQueue::registerProcessor(Processor *processor, bedrock::PpInt priority, bool managed)
 {
 	auto it = m_processors.find(priority);
 	if (it == m_processors.end())
 	{
-		it = m_processors.insert(std::pair<types::PpInt, std::vector<Processor*>>(priority, std::vector<Processor*>())).first;
+		it = m_processors.insert(std::pair<bedrock::PpInt, std::vector<Processor*>>(priority, std::vector<Processor*>())).first;
 		m_priorities.push_back(priority);
 		std::sort(m_priorities.begin(), m_priorities.end());
 	}

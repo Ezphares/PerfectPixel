@@ -1,6 +1,6 @@
 #pragma once
 
-#include <types/vectors.h>
+#include <Bedrock/vectors.h>
 
 namespace perfectpixel {
 	namespace graphics {
@@ -14,8 +14,8 @@ namespace perfectpixel {
 				SCALE_ENLARGE_Y
 			};
 			
-			types::Vector2 m_center;
-			types::Vector2 m_size;
+			bedrock::Vector2 m_center;
+			bedrock::Vector2 m_size;
 			ScaleMode m_scaleMode;
 		};
 		

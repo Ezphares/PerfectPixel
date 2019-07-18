@@ -1,9 +1,8 @@
 #pragma once
 
 #include <EntityComponentSystem/Entity.h>
-
-#include <types/BitSet.h>
-#include <types/Singleton.h>
+#include <Bedrock/BitSet.h>
+#include <Bedrock/Singleton.h>
 
 #include <functional>
 
@@ -13,7 +12,7 @@
 namespace perfectpixel {
 	namespace ecs {
 
-		class EntityManager : public types::Singleton<EntityManager>
+		class EntityManager : public bedrock::Singleton<EntityManager>
 		{
 		public:
 			typedef std::function<void(Entity)> EntityFunc;
@@ -30,8 +29,8 @@ namespace perfectpixel {
 
 			Entity at(std::uint32_t index);
 
-			void expandMask(types::BitSet bits, std::vector<Entity> *out_entities, EntityFunc callback);
-			types::BitSet all() const;
+			void expandMask(bedrock::BitSet bits, std::vector<Entity> *out_entities, EntityFunc callback);
+			bedrock::BitSet all() const;
 
 			void addKillCallback(EntityFunc callback);
 

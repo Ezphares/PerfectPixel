@@ -13,7 +13,7 @@
 
 #include <EntityComponentSystem/EntityManager.h>
 #include <EntityComponentSystem/PositionCallback.h>
-#include <types/vectors.h>
+#include <Bedrock/vectors.h>
 
 #include <map>
 
@@ -26,7 +26,7 @@ namespace graphics {
 			Quad m_worldCoord, m_texCoord;
 			RenderHints m_hints;
 			Texture *m_texture;
-			types::PpFloat m_depth;
+			bedrock::PpFloat m_depth;
 		};
 
 		struct SpriteRenderState
@@ -48,10 +48,10 @@ namespace graphics {
 		void drawAll(double deltaT);
 		void postProcess();
 
-		types::PpFloat calculateRatio(types::PpInt width, types::PpInt height);
-		void setWindowRatio(types::PpFloat ratio);
+		bedrock::PpFloat calculateRatio(bedrock::PpInt width, bedrock::PpInt height);
+		void setWindowRatio(bedrock::PpFloat ratio);
 		void setMainCamera(const CameraSettings &camera);
-		void setWindowSize(types::Point2 size);
+		void setWindowSize(bedrock::Point2 size);
 
 		void registerSprite(ecs::Entity entity, const SpriteComponent &spriteComponent);
 		bool hasSprite(ecs::Entity entity) const;
@@ -68,7 +68,7 @@ namespace graphics {
 
 		void enqueueSpriteDraw(const SpriteDrawInfo &info);
 		void addSpriteToBuffer(const SpriteDrawInfo &info, SpriteBuffer *buffer);
-		void addSpriteVertexToBuffer(const types::Vector3 &pos, const types::Vector2 &uv, SpriteBuffer *buffer);
+		void addSpriteVertexToBuffer(const bedrock::Vector3 &pos, const bedrock::Vector2 &uv, SpriteBuffer *buffer);
 
 		void drawSpriteList(const SpriteDrawList &list, SpriteRenderState *in_out_state, bool forceCurrentRenderstate = false);
 		void flushSpriteBuffer(SpriteBuffer *buffer);
@@ -102,8 +102,8 @@ namespace graphics {
 		std::map<GLuint, SpriteDrawList> m_hardAlpha;
 		SpriteDrawList m_softAlpha;
 
-		types::Point2 m_mainWindowSize;
-		types::PpFloat m_windowRatio;
+		bedrock::Point2 m_mainWindowSize;
+		bedrock::PpFloat m_windowRatio;
 		CameraSettings m_mainCamera;
 
 		std::vector<ecs::Entity> m_cleanup;

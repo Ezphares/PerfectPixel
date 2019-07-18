@@ -5,7 +5,7 @@
 #include <EntityComponentSystem/Component.h>
 #include <EntityComponentSystem/CoreComponentStorage.h>
 
-#include <types/numbers.h>
+#include <Bedrock/numbers.h>
 
 #include <string>
 
@@ -17,7 +17,7 @@ namespace perfectpixel { namespace graphics {
 	{
 	public:
 		_Field(UITextComponent, std::string, Text);
-		_Field(UITextComponent, types::PpInt, Alignment);
+		_Field(UITextComponent, bedrock::PpInt, Alignment);
 	};
 
 } }

@@ -4,7 +4,7 @@
 
 #include <EntityComponentSystem/TransformComponent.h>
 
-#include <types/Logger.h>
+#include <Bedrock/Logger.h>
 
 #include <set>
 
@@ -12,7 +12,7 @@ namespace perfectpixel { namespace physics {
 
 	namespace
 	{
-		types::PpFloat COLLISON_LEEWAY = 0.01f;
+		bedrock::PpFloat COLLISON_LEEWAY = 0.01f;
 		typedef ecs::QueryHelper<
 			ecs::With<ColliderComponent, ecs::TransformComponent>>
 			CollisionQuery;
@@ -29,7 +29,7 @@ namespace perfectpixel { namespace physics {
 
 	}
 
-	void CollisionProcessor::onUpdate(const std::vector<ecs::Entity> &entities, types::PpFloat deltaT)
+	void CollisionProcessor::onUpdate(const std::vector<ecs::Entity> &entities, bedrock::PpFloat deltaT)
 	{
 		for (ecs::Entity entity : entities)
 		{
@@ -44,7 +44,7 @@ namespace perfectpixel { namespace physics {
 		possibleCollisions(entity, cache, toCheck);
 
 		// Store mass as we might change it for resolving chained collisions
-		types::PpFloat storeMass = PhysicsComponent::Has(entity) ? PhysicsComponent::Mass(entity) : 0.0f;
+		bedrock::PpFloat storeMass = PhysicsComponent::Has(entity) ? PhysicsComponent::Mass(entity) : 0.0f;
 
 		for (ecs::Entity other : toCheck)
 		{
@@ -101,16 +101,16 @@ namespace perfectpixel { namespace physics {
 		return false;
 	}
 
-	bool CollisionProcessor::collideRectRect(ecs::Entity first, const types::AARectangle &firstRect, ecs::Entity second, const types::AARectangle &secondRect, CollisionData &out_collision)
+	bool CollisionProcessor::collideRectRect(ecs::Entity first, const bedrock::AARectangle &firstRect, ecs::Entity second, const bedrock::AARectangle &secondRect, CollisionData &out_collision)
 	{
-		types::Vector2
-			&firstPosition = types::Vector2(ecs::TransformComponent::Position(first)),
-			&secondPosition = types::Vector2(ecs::TransformComponent::Position(second));
+		bedrock::Vector2
+			&firstPosition = bedrock::Vector2(ecs::TransformComponent::Position(first)),
+			&secondPosition = bedrock::Vector2(ecs::TransformComponent::Position(second));
 
 
-		types::Vector2 offset = (secondPosition + secondRect.m_center) - (firstPosition + firstRect.m_center);
+		bedrock::Vector2 offset = (secondPosition + secondRect.m_center) - (firstPosition + firstRect.m_center);
 
-		types::Vector2 overlap{
+		bedrock::Vector2 overlap{
 			firstRect.m_halfSize.x() + secondRect.m_halfSize.x() - std::abs(offset.x()),
 			firstRect.m_halfSize.y() + secondRect.m_halfSize.y() - std::abs(offset.y())
 		};
@@ -129,16 +129,16 @@ namespace perfectpixel { namespace physics {
 
 	}
 
-	bool CollisionProcessor::collideCircleCircle(ecs::Entity first, const types::Circle &firstCircle, ecs::Entity second, const types::Circle &secondCircle, CollisionData &out_collision)
+	bool CollisionProcessor::collideCircleCircle(ecs::Entity first, const bedrock::Circle &firstCircle, ecs::Entity second, const bedrock::Circle &secondCircle, CollisionData &out_collision)
 	{
-		types::Vector2
-			&firstPosition = types::Vector2(ecs::TransformComponent::Position(first)),
-			&secondPosition = types::Vector2(ecs::TransformComponent::Position(second));
+		bedrock::Vector2
+			&firstPosition = bedrock::Vector2(ecs::TransformComponent::Position(first)),
+			&secondPosition = bedrock::Vector2(ecs::TransformComponent::Position(second));
 
 
-		types::Vector2 offset = (secondPosition + secondCircle.m_center) - (firstPosition + firstCircle.m_center);
-		types::PpFloat squareDistance = types::Vector2::dot(offset, offset);
-		types::PpFloat sumRadii = firstCircle.m_radius + secondCircle.m_radius;
+		bedrock::Vector2 offset = (secondPosition + secondCircle.m_center) - (firstPosition + firstCircle.m_center);
+		bedrock::PpFloat squareDistance = bedrock::Vector2::dot(offset, offset);
+		bedrock::PpFloat sumRadii = firstCircle.m_radius + secondCircle.m_radius;
 
 
 		if (squareDistance > (sumRadii - COLLISON_LEEWAY) * (sumRadii - COLLISON_LEEWAY))
@@ -164,20 +164,20 @@ namespace perfectpixel { namespace physics {
 			return;
 		}
 
-		types::Vector2 
+		bedrock::Vector2 
 			resolution1{ 0,0 }, 
 			resolution2{ 0,0 };
-		types::Vector2 
+		bedrock::Vector2 
 			bounce1{ ecs::TransformComponent::Velocity(collision.m_first) },
 			bounce2{ ecs::TransformComponent::Velocity(collision.m_second) };
 
-		types::PpFloat bounciness = std::max(PhysicsComponent::Bounciness(collision.m_first), PhysicsComponent::Bounciness(collision.m_second));
+		bedrock::PpFloat bounciness = std::max(PhysicsComponent::Bounciness(collision.m_first), PhysicsComponent::Bounciness(collision.m_second));
 
 		if (collision.m_maskTypeFirst == ColliderComponent::ColliderMaskType::RECTANGLE &&
 			collision.m_maskTypeSecond == ColliderComponent::ColliderMaskType::RECTANGLE)
 		{
-			types::Vector2 overlap = collision.m_data_RectRectOverlap;
-			types::PpFloat newVel1, newVel2;
+			bedrock::Vector2 overlap = collision.m_data_RectRectOverlap;
+			bedrock::PpFloat newVel1, newVel2;
 
 			if (overlap.x() < overlap.y())
 			{
@@ -225,9 +225,9 @@ namespace perfectpixel { namespace physics {
 			collision.m_maskTypeFirst == ColliderComponent::ColliderMaskType::CIRCLE &&
 			collision.m_maskTypeSecond == ColliderComponent::ColliderMaskType::CIRCLE)
 		{
-			types::Vector2 resolutionAxis = (absoluteCenter(collision.m_second) - absoluteCenter(collision.m_first)).normal();
+			bedrock::Vector2 resolutionAxis = (absoluteCenter(collision.m_second) - absoluteCenter(collision.m_first)).normal();
 
-			types::PpFloat
+			bedrock::PpFloat
 				magnitude1,
 				magnitude2;
 
@@ -243,32 +243,32 @@ namespace perfectpixel { namespace physics {
 			// Unsupported collision type
 		}
 
-		ecs::TransformComponent::Position(collision.m_first) += types::Vector3(resolution1);
-		ecs::TransformComponent::Position(collision.m_second) += types::Vector3(resolution2);
+		ecs::TransformComponent::Position(collision.m_first) += bedrock::Vector3(resolution1);
+		ecs::TransformComponent::Position(collision.m_second) += bedrock::Vector3(resolution2);
 
-		ecs::TransformComponent::Velocity(collision.m_first) = types::Vector3(bounce1);
-		ecs::TransformComponent::Velocity(collision.m_second) = types::Vector3(bounce2);
+		ecs::TransformComponent::Velocity(collision.m_first) = bedrock::Vector3(bounce1);
+		ecs::TransformComponent::Velocity(collision.m_second) = bedrock::Vector3(bounce2);
 	}
 
-	void CollisionProcessor::singleAxisReposition(types::PpFloat mass1, types::PpFloat mass2, types::PpFloat overlap, types::PpFloat *out_magnitude1, types::PpFloat *out_magnitude2)
+	void CollisionProcessor::singleAxisReposition(bedrock::PpFloat mass1, bedrock::PpFloat mass2, bedrock::PpFloat overlap, bedrock::PpFloat *out_magnitude1, bedrock::PpFloat *out_magnitude2)
 	{
 		*out_magnitude1 = 0;
 		*out_magnitude2 = 0;
 
 		// Special cases:
 		if ((mass1 == 0 && mass2 == 0) || // Zero mass can never affect others
-			(mass1 == types::Infinity && mass2 == types::Infinity)) // Infinite mass can never be affected
+			(mass1 == bedrock::Infinity && mass2 == bedrock::Infinity)) // Infinite mass can never be affected
 		{
 			return;
 		}
 
 		// Get rid of infinities for math, we can be sure only one of them is infinity given above sanity check
-		if (mass1 == types::Infinity)
+		if (mass1 == bedrock::Infinity)
 		{
 			mass1 = 1;
 			mass2 = 0;
 		}
-		else if (mass2 == types::Infinity)
+		else if (mass2 == bedrock::Infinity)
 		{
 			mass1 = 0;
 			mass2 = 1;
@@ -278,25 +278,25 @@ namespace perfectpixel { namespace physics {
 		*out_magnitude2 = mass1 / (mass1 + mass2) * overlap;
 	}
 
-	void CollisionProcessor::singleAxisBounce(types::PpFloat bounciness, types::PpFloat mass1, types::PpFloat mass2, types::PpFloat velocity1, types::PpFloat velocity2, types::PpFloat *out_newVelocity1, types::PpFloat *out_newVelocity2)
+	void CollisionProcessor::singleAxisBounce(bedrock::PpFloat bounciness, bedrock::PpFloat mass1, bedrock::PpFloat mass2, bedrock::PpFloat velocity1, bedrock::PpFloat velocity2, bedrock::PpFloat *out_newVelocity1, bedrock::PpFloat *out_newVelocity2)
 	{
 		*out_newVelocity1 = velocity1;
 		*out_newVelocity2 = velocity2;
 
 		// Special cases:
 		if ((mass1 == 0 && mass2 == 0) || // Zero mass can never affect others
-			(mass1 == types::Infinity && mass2 == types::Infinity)) // Infinite mass can never be affected
+			(mass1 == bedrock::Infinity && mass2 == bedrock::Infinity)) // Infinite mass can never be affected
 		{
 			return;
 		}
 
 		// Get rid of infinities for math, we can be sure only one of them is infinity given above sanity check
-		if (mass1 == types::Infinity)
+		if (mass1 == bedrock::Infinity)
 		{
 			mass1 = 1;
 			mass2 = 0;
 		}
-		else if (mass2 == types::Infinity)
+		else if (mass2 == bedrock::Infinity)
 		{
 			mass1 = 0;
 			mass2 = 1;
@@ -307,9 +307,9 @@ namespace perfectpixel { namespace physics {
 
 	}
 
-	types::Vector2 CollisionProcessor::absoluteCenter(ecs::Entity entity)
+	bedrock::Vector2 CollisionProcessor::absoluteCenter(ecs::Entity entity)
 	{
-		types::Vector2 result = types::Vector2(ecs::TransformComponent::Position(entity));
+		bedrock::Vector2 result = bedrock::Vector2(ecs::TransformComponent::Position(entity));
 
 		switch (ColliderComponent::MaskType(entity))
 		{

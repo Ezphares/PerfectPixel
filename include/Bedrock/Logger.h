@@ -19,7 +19,7 @@
 const char *basename(const char *path);
 #endif
 
-namespace perfectpixel { namespace types {
+namespace perfectpixel { namespace bedrock {
 
 	class Logger
 	{
@@ -53,7 +53,7 @@ namespace perfectpixel { namespace types {
 
 #define PP_LOG_ACTUAL(FNAME, LINENO, LEVEL, MSGSTREAM) {\
 	std::stringstream msg; \
-	msg << "[" << ::perfectpixel::types::Logger::m_logLevels[LEVEL] << "] (" << basename(FNAME) << ":" << LINENO << ") " << MSGSTREAM;\
-	::perfectpixel::types::Logger::writeLog(msg.str()); }
+	msg << "[" << ::perfectpixel::bedrock::Logger::m_logLevels[LEVEL] << "] (" << basename(FNAME) << ":" << LINENO << ") " << MSGSTREAM;\
+	::perfectpixel::bedrock::Logger::writeLog(msg.str()); }
 
 } }

@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <string>
 
-namespace perfectpixel { namespace types {
+namespace perfectpixel { namespace bedrock {
 
 	static constexpr uint32_t crc_table[256] = {
 		0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f,
@@ -51,6 +51,7 @@ namespace perfectpixel { namespace types {
 		0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d
 	};
 
+	/*
 	template <int size, int idx = 0, class dummy = void>
 	struct PpCrc
 	{
@@ -66,37 +67,50 @@ namespace perfectpixel { namespace types {
 		{
 			return prev ^ 0xffffffff;
 		}
-	};
+	};*/
 
-	inline static constexpr const char *dequalify(const char *str, int size)
+	constexpr inline static int dequalifiedSize(const char *str, int size)
 	{
-		for (int i = size; i > 0; --i)
+		for (int i = 0; i < size; i++)
 		{
-			if (str[i - 1] == ':')
+			int idx = size - i - 1;
+			if (str[idx] == ':')
 			{
-				return &str[i];
+				return i;
 			}
 		}
-		return str;
+		return size;
 	}
 
+	constexpr inline static const char *dequalify(const char *str, int size)
+	{
+		return &str[size - dequalifiedSize(str, size)];
+	}
 
-	inline static unsigned int crc32(const std::string &str)
+	constexpr inline static int crc32(const char *str, int size)
 	{
 		unsigned int result = 0xffffffff;
 
-		for (char c : str)
+		for (int i = 0; i < size; ++i)
 		{
-			result = (result >> 8) ^ crc_table[(result ^ c) & 0xff];
+			result = (result >> 8) ^ crc_table[(result ^ str[i]) & 0xff];
 		}
 
 		return result ^ 0xffffffff;
 	}
 
-#define DEQUALIFY(str) (::perfectpixel::types::dequalify(#str, sizeof(#str) - 1))
-#define CRC32(str) (::perfectpixel::types::PpCrc<sizeof(str) - 1>::crc32(str))
-#define PPID(str) (static_cast<::perfectpixel::types::PpInt>(CRC32(#str)))
+	inline static unsigned int crc32(const std::string &str)
+	{
+		return crc32(str.c_str(), str.size());
+	}
 
-	inline static types::PpInt PpId(const std::string &str){ return static_cast<::perfectpixel::types::PpInt>(::perfectpixel::types::crc32(str)); }
+#define PP_DEQUALIFY(str) (::perfectpixel::bedrock::dequalify(#str, sizeof(#str) - 1))
+#define PP_DEQUALIFIED_SIZE(str) (::perfectpixel::bedrock::dequalifiedSize(#str, sizeof(#str) - 1))
+#define PP_ID(str) (static_cast<::perfectpixel::bedrock::PpInt>(::perfectpixel::bedrock::crc32(#str, sizeof(#str) - 1)))
+#define PP_DQID(str) (static_cast<::perfectpixel::bedrock::PpInt>( \
+	::perfectpixel::bedrock::crc32(::perfectpixel::bedrock::dequalify(#str, sizeof(#str) - 1), \
+	      ::perfectpixel::bedrock::dequalifiedSize(#str, sizeof(#str) - 1))))
+
+inline static bedrock::PpInt PpId(const std::string &str){ return static_cast<::perfectpixel::bedrock::PpInt>(::perfectpixel::bedrock::crc32(str)); }
 
 } }

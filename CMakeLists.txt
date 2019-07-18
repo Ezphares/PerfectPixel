@@ -86,27 +86,28 @@ add_library(Graphics
 	"${Graphics_INCLUDE_FILES}"
 )
 
-set (Types_SRC_DIR "${CMAKE_SOURCE_DIR}/src/types")
-set (Types_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/types")
-file (GLOB Types_INCLUDE_FILES "${Types_INCLUDE_DIR}/*.h")
-add_library(Types 
-	"${Types_SRC_DIR}/vectors.cpp" 
-	"${Types_SRC_DIR}/matrices.cpp" 
-	"${Types_SRC_DIR}/AARectangle.cpp" 
-	"${Types_SRC_DIR}/Circle.cpp" 
-	"${Types_SRC_DIR}/File.cpp" 
-	"${Types_SRC_DIR}/PpException.cpp"
-	"${Types_SRC_DIR}/BitSet.cpp"
-	"${Types_SRC_DIR}/Logger.cpp"
+set (Bedrock_SRC_DIR "${CMAKE_SOURCE_DIR}/src/Bedrock")
+set (Bedrock_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/Bedrock")
+file (GLOB Bedrock_INCLUDE_FILES "${Bedrock_INCLUDE_DIR}/*.h")
+add_library(Bedrock 
+	"${Bedrock_SRC_DIR}/vectors.cpp" 
+	"${Bedrock_SRC_DIR}/matrices.cpp" 
+	"${Bedrock_SRC_DIR}/AARectangle.cpp" 
+	"${Bedrock_SRC_DIR}/Circle.cpp" 
+	"${Bedrock_SRC_DIR}/File.cpp" 
+	"${Bedrock_SRC_DIR}/PpException.cpp"
+	"${Bedrock_SRC_DIR}/BitSet.cpp"
+	"${Bedrock_SRC_DIR}/Logger.cpp"
+	"${Bedrock_SRC_DIR}/TypesSerialization.cpp"
 	
-	"${Types_INCLUDE_FILES}"
+	"${Bedrock_INCLUDE_FILES}"
 )
 
 set (EntityComponentSystem_SRC_DIR "${CMAKE_SOURCE_DIR}/src/EntityComponentSystem")
 set (EntityComponentSystem_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/EntityComponentSystem")
 file (GLOB EntityComponentSystem_INCLUDE_FILES "${EntityComponentSystem_INCLUDE_DIR}/*.h")
-add_library(EntityComponentSystem 
-	"${EntityComponentSystem_SRC_DIR}/Entity.cpp" 
+add_library(EntityComponentSystem  
+	"${EntityComponentSystem_SRC_DIR}/Entity.cpp"
 	"${EntityComponentSystem_SRC_DIR}/EntityManager.cpp" 
 	"${EntityComponentSystem_SRC_DIR}/Query.cpp" 
 	"${EntityComponentSystem_SRC_DIR}/Processor.cpp" 
@@ -115,14 +116,14 @@ add_library(EntityComponentSystem
 	"${EntityComponentSystem_INCLUDE_FILES}"
 )
 
-# set (Serialization_SRC_DIR "${CMAKE_SOURCE_DIR}/src/serialization")
-# set (Serialization_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/serialization")
-# file (GLOB Serialization_INCLUDE_FILES "${Serialization_INCLUDE_DIR}/*.h")
-# add_library(Serialization
-	# "${Serialization_SRC_DIR}/BinarySerializer.cpp"
+set (Serialization_SRC_DIR "${CMAKE_SOURCE_DIR}/src/serialization")
+set (Serialization_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/serialization")
+file (GLOB Serialization_INCLUDE_FILES "${Serialization_INCLUDE_DIR}/*.h")
+add_library(Serialization
+	"${Serialization_SRC_DIR}/BinarySerializer.cpp"
 	
-	# "${Serialization_INCLUDE_FILES}"
-# )
+	"${Serialization_INCLUDE_FILES}"
+)
 
 add_executable(Pong WIN32 "${CMAKE_SOURCE_DIR}/src/main/pong.cpp")
 
@@ -131,8 +132,9 @@ list(APPEND LIBRARIES_INTERNAL
 	Input
 	Physics
 	Graphics
-	Types
+	Bedrock
 	EntityComponentSystem
+	Serialization
 )
 
 list(APPEND LIBRARIES_EXTERNAL PNG::PNG ZLIB::ZLIB GLEW::GLEW)

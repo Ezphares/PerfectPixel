@@ -3,7 +3,7 @@
 #include <EntityComponentSystem/Processor.h>
 #include <EntityComponentSystem/LifecycleComponents.h>
 
-#include <types/Logger.h>
+#include <Bedrock/Logger.h>
 
 #include <iostream>
 #include <sstream>
@@ -31,7 +31,7 @@ namespace perfectpixel {
 			}
 		}
 
-		virtual void onUpdate(const std::vector<Entity> &entities, types::PpFloat deltaT)
+		virtual void onUpdate(const std::vector<Entity> &entities, bedrock::PpFloat deltaT)
 		{
 			for (Entity entity : entities)
 			{

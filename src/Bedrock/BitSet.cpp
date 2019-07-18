@@ -1,7 +1,7 @@
-#include "types/BitSet.h"
+#include <Bedrock/BitSet.h>
 
 namespace perfectpixel {
-	namespace types{
+	namespace bedrock{
 
 
 		BitSet::BitSet(std::size_t initialSize, bool initToOne /*= false*/)

@@ -2,7 +2,7 @@
 
 #include <EntityComponentSystem/QueryHelper.h>
 
-#include <types/numbers.h>
+#include <Bedrock/numbers.h>
 
 namespace perfectpixel { namespace ecs {
 
@@ -25,13 +25,13 @@ namespace perfectpixel { namespace ecs {
 		public:
 			void doQuery(int flags = QF_CORE);
 			void doCreate();
-			void doProcess(types::PpFloat deltaT);
-			void doRender(types::PpFloat deltaT);
+			void doProcess(bedrock::PpFloat deltaT);
+			void doRender(bedrock::PpFloat deltaT);
 			void doDestroy();
 
 			virtual void onCreate(const std::vector<Entity> &entities);
-			virtual void onUpdate(const std::vector<Entity> &entities, types::PpFloat deltaT);
-			virtual void onRender(const std::vector<Entity> &entities, types::PpFloat deltaT);
+			virtual void onUpdate(const std::vector<Entity> &entities, bedrock::PpFloat deltaT);
+			virtual void onRender(const std::vector<Entity> &entities, bedrock::PpFloat deltaT);
 			virtual void onDestroy(const std::vector<Entity> &entities);
 
 		protected:
@@ -40,7 +40,7 @@ namespace perfectpixel { namespace ecs {
 			Query m_queryDestroy;
 			Query m_queryRender;
 
-			types::BitSet m_queryState;
+			bedrock::BitSet m_queryState;
 		}; 
 
 } }

@@ -4,8 +4,9 @@
 
 #include <EntityComponentSystem/QueryHelper.h>
 #include <EntityComponentSystem/Processor.h>
-#include <EntityComponentSystem/Entity.h>
 #include <EntityComponentSystem/TransformComponent.h>
+
+#include <EntityComponentSystem/Entity.h>
 
 #include <set>
 #include <vector>
@@ -26,8 +27,8 @@ namespace perfectpixel { namespace physics {
 			ecs::Entity m_first, m_second;
 			ColliderComponent::ColliderMaskType m_maskTypeFirst, m_maskTypeSecond;
 			union {
-				types::Vector2 m_data_RectRectOverlap;
-				types::PpFloat m_data_CircCircOverlap;
+				bedrock::Vector2 m_data_RectRectOverlap;
+				bedrock::PpFloat m_data_CircCircOverlap;
 			};
 		};
 
@@ -35,28 +36,28 @@ namespace perfectpixel { namespace physics {
 		CollisionProcessor();
 		virtual ~CollisionProcessor();
 
-		virtual void onUpdate(const std::vector<ecs::Entity> &entities, types::PpFloat deltaT);
+		virtual void onUpdate(const std::vector<ecs::Entity> &entities, bedrock::PpFloat deltaT);
 
 	private:
 		void collideSingle(ecs::Entity entity, std::set<ecs::Entity> &cache);
 		void possibleCollisions(const ecs::Entity entity, std::set<ecs::Entity> &cache, std::vector<ecs::Entity> &out_possibleCollisions);
 
 		bool checkCollision(ecs::Entity first, ecs::Entity second, CollisionData &out_collision);
-		bool collideRectRect(ecs::Entity first, const types::AARectangle &firstRect, ecs::Entity second, const types::AARectangle &secondRect, CollisionData &out_collision);
-		bool collideCircleCircle(ecs::Entity first, const types::Circle &firstCircle, ecs::Entity second, const types::Circle &secondCircle, CollisionData &out_collision);
+		bool collideRectRect(ecs::Entity first, const bedrock::AARectangle &firstRect, ecs::Entity second, const bedrock::AARectangle &secondRect, CollisionData &out_collision);
+		bool collideCircleCircle(ecs::Entity first, const bedrock::Circle &firstCircle, ecs::Entity second, const bedrock::Circle &secondCircle, CollisionData &out_collision);
 
 		void resolveCollision(const CollisionData &collision);
-		void singleAxisReposition(types::PpFloat mass1, types::PpFloat mass2, types::PpFloat overlap, types::PpFloat *out_magnitude1, types::PpFloat *out_magnitude2);
+		void singleAxisReposition(bedrock::PpFloat mass1, bedrock::PpFloat mass2, bedrock::PpFloat overlap, bedrock::PpFloat *out_magnitude1, bedrock::PpFloat *out_magnitude2);
 		void singleAxisBounce(
-			types::PpFloat bounciness,
-			types::PpFloat mass1,
-			types::PpFloat mass2,
-			types::PpFloat velocity1,
-			types::PpFloat velocity2,
-			types::PpFloat *out_newVelocity1,
-			types::PpFloat *out_newVelocity2);
+			bedrock::PpFloat bounciness,
+			bedrock::PpFloat mass1,
+			bedrock::PpFloat mass2,
+			bedrock::PpFloat velocity1,
+			bedrock::PpFloat velocity2,
+			bedrock::PpFloat *out_newVelocity1,
+			bedrock::PpFloat *out_newVelocity2);
 
-		types::Vector2 absoluteCenter(ecs::Entity entity);
+		bedrock::Vector2 absoluteCenter(ecs::Entity entity);
 	};
 
 } }

@@ -21,8 +21,8 @@ namespace perfectpixel {
 			std::copy(raw + WIDTH_DATA, raw + IMAGE_DATA, m_width.begin());
 			m_texture = Texture(m_header, &raw[IMAGE_DATA]);
 			m_uvStride = {
-				static_cast<types::PpFloat>(m_header.m_cellWidth) / static_cast<types::PpFloat>(m_header.m_imageWidth),
-				static_cast<types::PpFloat>(m_header.m_cellHeight) / static_cast<types::PpFloat>(m_header.m_imageHeight)
+				static_cast<bedrock::PpFloat>(m_header.m_cellWidth) / static_cast<bedrock::PpFloat>(m_header.m_imageWidth),
+				static_cast<bedrock::PpFloat>(m_header.m_cellHeight) / static_cast<bedrock::PpFloat>(m_header.m_imageHeight)
 			};
 		}
 
@@ -30,18 +30,18 @@ namespace perfectpixel {
 		{
 		}
 
-		void CBFGFont::writeBuffer(types::Vector3 position, types::PpFloat size, const std::string &text, std::vector<TextVertex> *out_vertices)
+		void CBFGFont::writeBuffer(bedrock::Vector3 position, bedrock::PpFloat size, const std::string &text, std::vector<TextVertex> *out_vertices)
 		{
 			out_vertices->reserve(out_vertices->size() + text.size() * 6);
 
-			types::Vector2 cursor{ position };
+			bedrock::Vector2 cursor{ position };
 
 			for (char c : text)
 			{
-				types::PpInt row = (c - m_header.m_base) / (m_header.m_imageWidth / m_header.m_cellWidth);
-				types::PpInt col = (c - m_header.m_base) % (m_header.m_imageWidth / m_header.m_cellWidth);
+				bedrock::PpInt row = (c - m_header.m_base) / (m_header.m_imageWidth / m_header.m_cellWidth);
+				bedrock::PpInt col = (c - m_header.m_base) % (m_header.m_imageWidth / m_header.m_cellWidth);
 
-				types::PpFloat widthFactor = static_cast<types::PpFloat>(m_width[c]) / static_cast<types::PpFloat>(m_header.m_cellWidth);
+				bedrock::PpFloat widthFactor = static_cast<bedrock::PpFloat>(m_width[c]) / static_cast<bedrock::PpFloat>(m_header.m_cellWidth);
 
 				const Quad uvQuad{
 					m_uvStride.x() * col,
@@ -80,14 +80,14 @@ namespace perfectpixel {
 			return m_texture;
 		}
 
-		perfectpixel::types::PpFloat CBFGFont::getWidth(types::PpFloat size, const std::string &text)
+		perfectpixel::bedrock::PpFloat CBFGFont::getWidth(bedrock::PpFloat size, const std::string &text)
 		{
-			types::PpFloat width{ 0 };
+			bedrock::PpFloat width{ 0 };
 			for (auto c : text)
 			{
 				width += m_width[c];
 			}
-			return width * size / (types::PpFloat)m_header.m_cellWidth;
+			return width * size / (bedrock::PpFloat)m_header.m_cellWidth;
 		}
 
 	}

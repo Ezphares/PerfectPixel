@@ -1,15 +1,14 @@
 #pragma once
 
 #include <EntityComponentSystem/Entity.h>
-
-#include <types/vectors.h>
+#include <Bedrock/vectors.h>
 
 #include <functional>
 
 namespace perfectpixel {
 	namespace ecs {
 
-		typedef std::function<types::Vector3(Entity)> PositionCallback;
+		typedef std::function<bedrock::Vector3(Entity)> PositionCallback;
 
 
 	}

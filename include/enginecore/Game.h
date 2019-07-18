@@ -7,7 +7,7 @@
 #include <graphics/GraphicsManager.h>
 #include <input/InputManager.h>
 
-#include <types/numbers.h>
+#include <Bedrock/numbers.h>
 
 #include <string>
 

@@ -1,11 +1,11 @@
 #include <graphics/FrameBuffer.h>
 
-#include <types/PpException.h>
+#include <Bedrock/PpException.h>
 
 namespace perfectpixel {
 	namespace graphics {
 
-		FrameBuffer::FrameBuffer(types::Point2 size)
+		FrameBuffer::FrameBuffer(bedrock::Point2 size)
 			: m_texture(Texture::PLACEHOLDER)
 			, m_id(0)
 			, m_size()
@@ -20,7 +20,7 @@ namespace perfectpixel {
 		{
 		}
 
-		void FrameBuffer::resize(types::Point2 size)
+		void FrameBuffer::resize(bedrock::Point2 size)
 		{
 			if (m_size == size)
 			{
@@ -53,7 +53,7 @@ namespace perfectpixel {
 			GLenum result = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 			if (result != GL_FRAMEBUFFER_COMPLETE)
 			{
-				throw types::PpException("Could not resize frame buffer");
+				throw bedrock::PpException("Could not resize frame buffer");
 			}
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -63,7 +63,7 @@ namespace perfectpixel {
 		{
 			if (m_size.m_x == 0 || m_size.m_y == 0)
 			{
-				throw types::PpException("Cannot bind buffer with 0 component in size");
+				throw bedrock::PpException("Cannot bind buffer with 0 component in size");
 			}
 
 			glBindFramebuffer(GL_FRAMEBUFFER, m_id);

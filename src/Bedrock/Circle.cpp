@@ -1,7 +1,7 @@
-#include <types/Circle.h>
+#include <Bedrock/Circle.h>
 
 namespace perfectpixel {
-	namespace types {
+	namespace bedrock {
 
 		Circle::Circle(PpFloat radius, Vector2 center /*= Vector2()*/)
 			: m_radius(radius)

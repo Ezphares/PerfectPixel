@@ -1,21 +1,36 @@
 #pragma once
 
-#include <EntityComponentSystem/Entity.h>
 #include <EntityComponentSystem/EcsReflection.h>
 
-#include <types/defines.h>
-#include <types/numbers.h>
-#include <types/Hash.h>
+#include <serialization/BinarySerializer.h>
+
+#include <EntityComponentSystem/Entity.h>
+#include <Bedrock/defines.h>
+#include <Bedrock/numbers.h>
+#include <Bedrock/Hash.h>
 
 #include <vector>
 
 #define PPFIELDTYPE(Owner, T) ::perfectpixel::ecs::Field<Owner, T>
+#define PPARRAYFIELDTYPE(Owner, T, C) ::perfectpixel::ecs::ArrayField<Owner, T, C>
+
 #if PP_FULL_REFLECTION_ENABLED
+
 #define _Field(Owner, T, Name) inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T) \
-(DEQUALIFY(Owner), PPID(DEQUALIFY(Owner)), #Name, PPID(Name), DEQUALIFY(T), PPID(DEQUALIFY(T)));
+(PP_DEQUALIFY(Owner), PP_DQID(Owner), #Name, PP_ID(Name), PP_DEQUALIFY(T), PP_DQID(T));
+
+#define _ArrayField(Owner, T, Capacity, Name) inline static PPARRAYFIELDTYPE(Owner, T, Capacity) Name = PPARRAYFIELDTYPE(Owner, T, Capacity) \
+(PP_DEQUALIFY(Owner), PP_DQID(Owner), #Name, PP_ID(Name), PP_DEQUALIFY(T), PP_DQID(T));
+
 #else
-#define _Field(Owner, T, Name) inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T)(PPID(DEQUALIFY(Owner)), PPID(Name), PPID(DEQUALIFY(T)));
+
+#define _Field(Owner, T, Name) inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T)(PP_DQID(Owner), PP_ID(Name), PP_DQID(T));
+
+#define _ArrayField(Owner, T, Capacity, Name) inline static PPFIELDTYPE(Owner, T, Capacity) Name = PPFIELDTYPE(Owner, T, Capacity)(PP_DQID(Owner), PP_ID(Name), PP_DQID(T));
+
 #endif
+
+#define _InternalField(Owner, T, Name) inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T)(::perfectpixel::ecs::FieldTable::NoReflection);
 
 namespace perfectpixel { namespace ecs {
 
@@ -23,6 +38,7 @@ namespace perfectpixel { namespace ecs {
 	{
 	public:
 		virtual void reset(uint32_t index = 0) = 0;
+		virtual void serialize(serialization::BinarySerializer &serializer, uint32_t index) = 0;
 	};
 
 	template <typename Owner, typename T>
@@ -35,9 +51,9 @@ namespace perfectpixel { namespace ecs {
 		}
 
 		Field(
-			types::PpInt ownerId,
-			types::PpInt selfId,
-			types::PpInt typeId)
+			bedrock::PpInt ownerId,
+			bedrock::PpInt selfId,
+			bedrock::PpInt typeId)
 			: m_data()
 		{
 			if (Owner::AddField(selfId, this))
@@ -49,11 +65,11 @@ namespace perfectpixel { namespace ecs {
 #if PP_FULL_REFLECTION_ENABLED
 		Field(
 			const std::string &ownerName,
-			types::PpInt ownerId,
+			bedrock::PpInt ownerId,
 			const std::string &selfName,
-			types::PpInt selfId,
+			bedrock::PpInt selfId,
 			const std::string &typeName, 
-			types::PpInt typeId)
+			bedrock::PpInt typeId)
 			: m_data()
 		{
 			if (Owner::AddField(selfId, this))
@@ -89,13 +105,18 @@ namespace perfectpixel { namespace ecs {
 			return m_data.at(Owner::Index(entity));
 		}
 
-		virtual void reset(uint32_t idx)
+		virtual void reset(uint32_t index)
 		{
-			if (m_data.size() <= idx)
+			if (m_data.size() <= index)
 			{
-				m_data.resize(idx + 1);
+				m_data.resize(index + 1);
 			}
-			m_data[idx] = T();
+			m_data[index] = T();
+		}
+
+		virtual void serialize(serialization::BinarySerializer &serializer, uint32_t index)
+		{
+			serializer << m_data[index];
 		}
 
 	private:
@@ -109,10 +130,39 @@ namespace perfectpixel { namespace ecs {
 		// FIXME Use a better container type
 		typedef std::vector<T> Container;
 
-		ArrayField()
+		ArrayField(FieldTable::ReflectionHint)
+			: m_data
 		{
-			Owner::AddField(this);
 		}
+
+		ArrayField(
+			bedrock::PpInt ownerId,
+			bedrock::PpInt selfId,
+			bedrock::PpInt typeId)
+			: m_data()
+		{
+			if (Owner::AddField(selfId, this))
+			{
+				FieldTable::getInstance()->add<Owner>(ownerId, selfId, typeId);
+			}
+		}
+
+#if PP_FULL_REFLECTION_ENABLED
+		ArrayField(
+			const std::string &ownerName,
+			bedrock::PpInt ownerId,
+			const std::string &selfName,
+			bedrock::PpInt selfId,
+			const std::string &typeName,
+			bedrock::PpInt typeId)
+			: m_data()
+		{
+			if (Owner::AddField(selfId, this))
+			{
+				FieldTable::getInstance()->add<Owner>(ownerName, ownerId, selfName, selfId, typeName, typeId);
+			}
+		}
+#endif
 
 		T at(uint32_t idx)
 		{
@@ -162,6 +212,11 @@ namespace perfectpixel { namespace ecs {
 				m_data.resize(idx + 1);
 			}
 			m_data[idx] = std::vector<T>();
+		}
+
+		virtual void serialize(serialization::BinarySerializer &serializer, uint32_t index)
+		{
+			throw "Not yet implemented";
 		}
 
 	private:

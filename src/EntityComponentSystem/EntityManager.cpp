@@ -33,7 +33,7 @@ Entity EntityManager::create()
 
 bool EntityManager::isAlive(Entity entity)
 {
-	return m_entities[entityIndex(entity)] == entity;
+	return m_entities[entity.index] == entity;
 }
 
 void EntityManager::kill(Entity entity)
@@ -44,8 +44,8 @@ void EntityManager::kill(Entity entity)
 		{
 			callback(entity);
 		}
-		uint32_t index = entityIndex(entity);
-		m_entities[index] = entityCreate(entityGeneration(entity) + 1, index);
+		uint32_t index = entity.index;
+		m_entities[index] = entityCreate(entity.generation + 1, index);
 		m_indexReuse.push(index);
 	}
 }
@@ -54,12 +54,12 @@ Entity EntityManager::at(std::uint32_t index)
 {
 	if (index > m_entities.size())
 	{
-		return -1;
+		return entityCreate(-1, -1);
 	}
 	return m_entities[index];
 }
 
-void EntityManager::expandMask(types::BitSet bits, std::vector<Entity> *out_entities, EntityFunc callback)
+void EntityManager::expandMask(bedrock::BitSet bits, std::vector<Entity> *out_entities, EntityFunc callback)
 {
 	if (out_entities) out_entities->clear();
 
@@ -78,9 +78,9 @@ void EntityManager::expandMask(types::BitSet bits, std::vector<Entity> *out_enti
 	}
 }
 
-types::BitSet EntityManager::all() const
+bedrock::BitSet EntityManager::all() const
 {
-	return types::BitSet(m_entities.size(), true);
+	return bedrock::BitSet(m_entities.size(), true);
 
 }
 

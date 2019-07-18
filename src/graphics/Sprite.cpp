@@ -6,11 +6,11 @@ namespace perfectpixel {
 
 		Sprite::Sprite(
 			Texture *texture,
-			types::Vector2 topLeft,
-			types::Vector2 size,
-			types::PpInt frames /*= 1*/,
-			types::PpInt framesPerRow /*= 0*/,
-			types::Vector2 frameSpacing /*= types::Vector2()*/)
+			bedrock::Vector2 topLeft,
+			bedrock::Vector2 size,
+			bedrock::PpInt frames /*= 1*/,
+			bedrock::PpInt framesPerRow /*= 0*/,
+			bedrock::Vector2 frameSpacing /*= types::Vector2()*/)
 			: m_texture(texture)
 			, m_textureTopLeft(topLeft)
 			, m_textureSize(size)
@@ -25,18 +25,18 @@ namespace perfectpixel {
 		{
 		}
 
-		perfectpixel::types::Vector2 Sprite::getTexCoord(types::PpInt frame /*= 0*/)
+		perfectpixel::bedrock::Vector2 Sprite::getTexCoord(bedrock::PpInt frame /*= 0*/)
 		{
 			frame %= m_frames;
-			types::Vector2 step = m_textureSize + m_frameSpacing;
+			bedrock::Vector2 step = m_textureSize + m_frameSpacing;
 
-			return types::Vector2{
+			return bedrock::Vector2{
 				m_textureTopLeft.x() + (frame % m_framesPerRow) * step.x(),
 				m_textureTopLeft.y() + (frame / m_framesPerRow) * step.y()
 			};
 		}
 
-		perfectpixel::types::Vector2 Sprite::getSize()
+		perfectpixel::bedrock::Vector2 Sprite::getSize()
 		{
 			return m_textureSize;
 		}
@@ -46,7 +46,7 @@ namespace perfectpixel {
 			return m_texture;
 		}
 
-		perfectpixel::types::PpInt Sprite::getFrameNumber()
+		perfectpixel::bedrock::PpInt Sprite::getFrameNumber()
 		{
 			return m_frames;
 		}

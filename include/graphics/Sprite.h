@@ -3,7 +3,7 @@
 #include <graphics/LocalGL.h>
 #include <graphics/Texture.h>
 
-#include <types/vectors.h>
+#include <Bedrock/vectors.h>
 
 namespace perfectpixel {
 namespace graphics {
@@ -15,27 +15,27 @@ namespace graphics {
 	public:
 		Sprite(
 			Texture *texture,
-			types::Vector2 topLeft,
-			types::Vector2 size,
-			types::PpInt frames = 1,
-			types::PpInt framesPerRow = 0,
-			types::Vector2 frameSpacing = types::Vector2());
+			bedrock::Vector2 topLeft,
+			bedrock::Vector2 size,
+			bedrock::PpInt frames = 1,
+			bedrock::PpInt framesPerRow = 0,
+			bedrock::Vector2 frameSpacing = bedrock::Vector2());
 		~Sprite();
 
 	public:
-		types::Vector2 getTexCoord(types::PpInt frame = 0);
-		types::Vector2 getSize();
+		bedrock::Vector2 getTexCoord(bedrock::PpInt frame = 0);
+		bedrock::Vector2 getSize();
 		Texture *getTexture();
-		types::PpInt getFrameNumber();
+		bedrock::PpInt getFrameNumber();
 
 	private:
 		Texture *m_texture;
-		types::Vector2 m_textureTopLeft;
-		types::Vector2 m_textureSize;
+		bedrock::Vector2 m_textureTopLeft;
+		bedrock::Vector2 m_textureSize;
 
-		types::PpInt m_frames;
-		types::PpInt m_framesPerRow;
-		types::Vector2 m_frameSpacing;
+		bedrock::PpInt m_frames;
+		bedrock::PpInt m_framesPerRow;
+		bedrock::Vector2 m_frameSpacing;
 
 	};
 

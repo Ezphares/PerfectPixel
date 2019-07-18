@@ -1,6 +1,6 @@
 #include <graphics/VAO.h>
 
-#include <types/PpException.h>
+#include <Bedrock/PpException.h>
 
 namespace perfectpixel {
 	namespace graphics {
@@ -94,7 +94,7 @@ namespace perfectpixel {
 				return sizeof(GLfloat) * 4;
 			}
 
-			throw types::PpException("Invalid element type");
+			throw bedrock::PpException("Invalid element type");
 		}
 
 		GLsizei VAO::getNumElements(BufferedElement element)
@@ -111,7 +111,7 @@ namespace perfectpixel {
 				return 4;
 			}
 
-			throw types::PpException("Invalid element type");
+			throw bedrock::PpException("Invalid element type");
 		}
 
 	}

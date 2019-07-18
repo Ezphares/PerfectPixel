@@ -7,9 +7,9 @@ namespace perfectpixel {
 SpriteComponent::SpriteComponent(
 	ecs::Entity entity,
 	graphics::Sprite *sprite,
-	types::Vector2 worldSize,
-	types::Vector2 offset,
-	types::PpFloat fps,
+	bedrock::Vector2 worldSize,
+	bedrock::Vector2 offset,
+	bedrock::PpFloat fps,
 	RenderHints renderHints)
 	: m_entity(entity)
 	, m_sprite(sprite)
@@ -37,19 +37,19 @@ perfectpixel::graphics::Sprite * SpriteComponent::getSprite() const
 	return m_sprite;
 }
 
-perfectpixel::types::PpInt SpriteComponent::getFrame() const
+perfectpixel::bedrock::PpInt SpriteComponent::getFrame() const
 {
 	return m_currentFrame;
 }
 
 
 
-perfectpixel::types::Vector2 SpriteComponent::getOffset() const
+perfectpixel::bedrock::Vector2 SpriteComponent::getOffset() const
 {
 	return m_offset;
 }
 
-perfectpixel::types::Vector2 SpriteComponent::getSize() const
+perfectpixel::bedrock::Vector2 SpriteComponent::getSize() const
 {
 	return m_size;
 }
@@ -59,7 +59,7 @@ perfectpixel::graphics::RenderHints SpriteComponent::getHints() const
 	return m_renderHints;
 }
 
-void SpriteComponent::update(types::PpFloat deltaTime)
+void SpriteComponent::update(bedrock::PpFloat deltaTime)
 {
 	m_frameTimeAccumulator += deltaTime;
 	if (m_frameTimeAccumulator > 1 / m_fps)

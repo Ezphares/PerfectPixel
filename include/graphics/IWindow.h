@@ -3,7 +3,7 @@
 #include <graphics/WindowSettings.h>
 #include <graphics/PNG.h>
 
-#include <types/InputCallback.h>
+#include <Bedrock/InputCallback.h>
 
 namespace perfectpixel {
 namespace graphics {
@@ -26,7 +26,7 @@ public:
 	virtual void draw() = 0;
 	virtual void setSplash(const PNG &png) = 0;
 
-	virtual void setKeyCallback(types::KeyCallback callback) = 0;
+	virtual void setKeyCallback(bedrock::KeyCallback callback) = 0;
 	virtual void setFocusCallback(FocusCallback callback) = 0;
 	virtual void setResizeCallback(SizeCallback callback) = 0;
 };

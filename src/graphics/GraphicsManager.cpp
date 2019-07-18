@@ -3,8 +3,8 @@
 #include <graphics/LocalGL.h>
 #include <graphics/CBFGFont.h>
 
-#include <types/File.h>
-#include <types/PpException.h>
+#include <Bedrock/File.h>
+#include <Bedrock/PpException.h>
 
 #include <fstream>
 #include <sstream>
@@ -82,12 +82,12 @@ void GraphicsManager::initialize()
 	m_vaoPostProcess = new VAO(ppLayout);
 
 	std::string
-		vertex_shader = types::File("Sprite_vertex.glsl").str(),
-		fragment_shader_hard = types::File("SpriteHard_fragment.glsl").str(),
-		fragment_shader_soft = types::File("SpriteSoft_fragment.glsl").str(),
-		vertex_shader_pp = types::File("PostProc_vertex.glsl").str(),
-		fragment_shader_pp = types::File("PostProc_fragment.glsl").str(),
-		fragment_shader_text = types::File("Text_fragment.glsl").str();
+		vertex_shader = bedrock::File("Sprite_vertex.glsl").str(),
+		fragment_shader_hard = bedrock::File("SpriteHard_fragment.glsl").str(),
+		fragment_shader_soft = bedrock::File("SpriteSoft_fragment.glsl").str(),
+		vertex_shader_pp = bedrock::File("PostProc_vertex.glsl").str(),
+		fragment_shader_pp = bedrock::File("PostProc_fragment.glsl").str(),
+		fragment_shader_text = bedrock::File("Text_fragment.glsl").str();
 
 	m_programSpriteHardAlpha = new ShaderProgram();
 	m_programSpriteHardAlpha->addShader(GL_VERTEX_SHADER, vertex_shader);
@@ -126,7 +126,7 @@ void GraphicsManager::initialize()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(PP_VERTICES), PP_VERTICES, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	m_font = new CBFGFont(types::File("DengXianLight.bff").str());
+	m_font = new CBFGFont(bedrock::File("DengXianLight.bff").str());
 }
 
 void GraphicsManager::drawAll(double deltaT)
@@ -232,12 +232,12 @@ void GraphicsManager::postProcess()
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-perfectpixel::types::PpFloat GraphicsManager::calculateRatio(types::PpInt width, types::PpInt height)
+perfectpixel::bedrock::PpFloat GraphicsManager::calculateRatio(bedrock::PpInt width, bedrock::PpInt height)
 {
-	return static_cast<types::PpFloat>(width) / static_cast<types::PpFloat>(height);
+	return static_cast<bedrock::PpFloat>(width) / static_cast<bedrock::PpFloat>(height);
 }
 
-void GraphicsManager::setWindowRatio(types::PpFloat ratio)
+void GraphicsManager::setWindowRatio(bedrock::PpFloat ratio)
 {
 	m_windowRatio = ratio;
 	updateCamera();
@@ -249,7 +249,7 @@ void GraphicsManager::setMainCamera(const CameraSettings &camera)
 	updateCamera();
 }
 
-void GraphicsManager::setWindowSize(types::Point2 size)
+void GraphicsManager::setWindowSize(bedrock::Point2 size)
 {
 	m_mainWindowSize = size;
 	setWindowRatio(calculateRatio(size.m_x, size.m_y));
@@ -270,7 +270,7 @@ perfectpixel::graphics::SpriteComponent & GraphicsManager::getSprite(ecs::Entity
 	auto it = m_spriteComponents.find(entity);
 	if (it == m_spriteComponents.end())
 	{
-		throw types::PpException("Attempted to get SpriteComponent for entity without one attached");
+		throw bedrock::PpException("Attempted to get SpriteComponent for entity without one attached");
 	}
 	return it->second;
 }
@@ -312,8 +312,8 @@ void GraphicsManager::drawSpriteComponent(const SpriteComponent &spriteComponent
 		return;
 	}
 
-	const types::Vector3 actualPosition{ m_positionCallback(entity) + types::Vector3(spriteComponent.getOffset()) };
-	const types::Vector2 worldSize{ spriteComponent.getSize() };
+	const bedrock::Vector3 actualPosition{ m_positionCallback(entity) + bedrock::Vector3(spriteComponent.getOffset()) };
+	const bedrock::Vector2 worldSize{ spriteComponent.getSize() };
 
 	SpriteDrawInfo drawInfo;
 
@@ -325,8 +325,8 @@ void GraphicsManager::drawSpriteComponent(const SpriteComponent &spriteComponent
 	};
 
 	Sprite *sprite = spriteComponent.getSprite();
-	const types::Vector2 texturePosition = sprite->getTexCoord(spriteComponent.getFrame());
-	const types::Vector2 textureSize = sprite->getSize();
+	const bedrock::Vector2 texturePosition = sprite->getTexCoord(spriteComponent.getFrame());
+	const bedrock::Vector2 textureSize = sprite->getSize();
 
 	drawInfo.m_texCoord = {
 		texturePosition.x(),
@@ -360,15 +360,15 @@ void GraphicsManager::addSpriteToBuffer(const SpriteDrawInfo &info, SpriteBuffer
 		&pos { info.m_worldCoord },
 		&tex { info.m_texCoord };
 
-	types::PpFloat z{ info.m_depth };
+	bedrock::PpFloat z{ info.m_depth };
 
-	types::Vector3
+	bedrock::Vector3
 		posTopLeft{ pos.m_left, pos.m_top, z },
 		posTopRight{ pos.m_right, pos.m_top, z },
 		posBottomLeft{ pos.m_left, pos.m_bottom, z },
 		posBottomRight{ pos.m_right, pos.m_bottom, z };
 
-	const types::Vector2
+	const bedrock::Vector2
 		texTopLeft{ tex.m_left, tex.m_top },
 		texTopRight{ tex.m_right, tex.m_top },
 		texBottomLeft{ tex.m_left, tex.m_bottom },
@@ -386,7 +386,7 @@ void GraphicsManager::addSpriteToBuffer(const SpriteDrawInfo &info, SpriteBuffer
 
 }
 
-void GraphicsManager::addSpriteVertexToBuffer(const types::Vector3 &pos, const types::Vector2 &uv, SpriteBuffer *buffer)
+void GraphicsManager::addSpriteVertexToBuffer(const bedrock::Vector3 &pos, const bedrock::Vector2 &uv, SpriteBuffer *buffer)
 {
 	SpriteVertex vertex{
 		static_cast<GLfloat>(pos.x()),
@@ -466,16 +466,16 @@ void GraphicsManager::setCompatibleState(const SpriteDrawInfo &info, SpriteRende
 
 void GraphicsManager::updateCamera()
 {
-	types::PpFloat cameraRatio = m_mainCamera.m_size.x() / m_mainCamera.m_size.y();
+	bedrock::PpFloat cameraRatio = m_mainCamera.m_size.x() / m_mainCamera.m_size.y();
 
-	types::Vector2 scale = m_mainCamera.m_size;
+	bedrock::Vector2 scale = m_mainCamera.m_size;
 
 	if (std::abs(m_windowRatio - cameraRatio) > 0.001)
 	{
 		// FIXME update for non-stretch modes
 	}
 
-	types::Vector2 translate{ m_mainCamera.m_center.x() / scale.x(), m_mainCamera.m_center.y() / scale.y()};
+	bedrock::Vector2 translate{ m_mainCamera.m_center.x() / scale.x(), m_mainCamera.m_center.y() / scale.y()};
 
 	GLfloat cameraTransform[16]{
 		2 / scale.x(),		0,					0,	0,
@@ -494,8 +494,8 @@ void GraphicsManager::updateCamera()
 	glUniformMatrix4fv(m_programUiText->getUniformLocation("u_transform"), 1, GL_FALSE, cameraTransform);
 
 	m_frameBuffer->resize({ 
-		static_cast<types::PpInt>(scale.x()),
-		static_cast<types::PpInt>(scale.y())});
+		static_cast<bedrock::PpInt>(scale.x()),
+		static_cast<bedrock::PpInt>(scale.y())});
 }
 
 bool GraphicsManager::compSortSoftalpha(const SpriteDrawInfo &first, const SpriteDrawInfo &second)

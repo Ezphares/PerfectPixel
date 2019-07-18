@@ -1,7 +1,7 @@
-#include <types/AARectangle.h>
+#include <Bedrock/AARectangle.h>
 
 namespace perfectpixel {
-	namespace types {
+	namespace bedrock {
 
 
 

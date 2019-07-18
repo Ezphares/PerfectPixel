@@ -1,9 +1,9 @@
 #pragma once
 
-#include <types/AARectangle.h>
-#include <types/Circle.h>
-
+#include <Bedrock/AARectangle.h>
+#include <Bedrock/Circle.h>
 #include <EntityComponentSystem/Entity.h>
+
 #include <EntityComponentSystem/Component.h>
 #include <EntityComponentSystem/CoreComponentStorage.h>
 
@@ -13,6 +13,9 @@ namespace perfectpixel {
 namespace ecs {
 	class EntityManager;
 }
+namespace serialization {
+	class BinarySerializer;
+}
 namespace physics {
 
 	class ColliderComponent 
@@ -20,7 +23,7 @@ namespace physics {
 		, public ecs::LinearScanComponentStorage
 	{
 	public:
-		enum ColliderMaskType {
+		enum ColliderMaskType : uint32_t {
 			UNSET,
 			RECTANGLE,
 			CIRCLE
@@ -30,18 +33,18 @@ namespace physics {
 			ColliderMask(){}
 			~ColliderMask() {}
 
-			types::AARectangle m_rectangle;
-			types::Circle m_circle;
+			bedrock::AARectangle m_rectangle;
+			bedrock::Circle m_circle;
 		};
 
 	public:
-		static void SetMaskRectangle(ecs::Entity entity, const types::AARectangle &rectangle);
-		static types::AARectangle SetMaskRectangle(ecs::Entity entity);
+		static void SetMaskRectangle(ecs::Entity entity, const bedrock::AARectangle &rectangle);
+		static bedrock::AARectangle SetMaskRectangle(ecs::Entity entity);
 
-		static void SetMaskCircle(ecs::Entity entity, const types::Circle &circle);
-		static const types::Circle GetMaskCircle(ecs::Entity entity);
+		static void SetMaskCircle(ecs::Entity entity, const bedrock::Circle &circle);
+		static const bedrock::Circle GetMaskCircle(ecs::Entity entity);
 
-		static void GetNear(std::vector<ecs::Entity> &toCheck, const types::Vector2 &point);
+		static void GetNear(std::vector<ecs::Entity> &toCheck, const bedrock::Vector2 &point);
 
 	public:
 		_Field(ColliderComponent, ColliderMaskType, MaskType);
@@ -50,3 +53,6 @@ namespace physics {
 	};
 
 } }
+
+perfectpixel::serialization::BinarySerializer &operator<<(perfectpixel::serialization::BinarySerializer &ostream, const perfectpixel::physics::ColliderComponent::ColliderMask &mask);
+perfectpixel::serialization::BinarySerializer &operator>>(perfectpixel::serialization::BinarySerializer &istream, perfectpixel::physics::ColliderComponent::ColliderMask &mask);

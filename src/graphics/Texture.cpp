@@ -2,7 +2,7 @@
 
 #include <graphics/CBFGFont.h>
 
-#include <types/PpException.h>
+#include <Bedrock/PpException.h>
 
 #include <zlib.h>
 #include <png.h>
@@ -18,7 +18,7 @@ Texture::Texture(const PNG &png)
 	glGenTextures(1, &m_textureId);
 	if (&m_textureId == 0)
 	{
-		throw types::PpException("Could not generate texture");
+		throw bedrock::PpException("Could not generate texture");
 	}
 
 	bind();
@@ -40,18 +40,18 @@ Texture::Texture(const PNG &png)
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	m_size = types::Point2(
-		static_cast<types::PpInt>(png.m_w),
-		static_cast<types::PpInt>(png.m_h));
+	m_size = bedrock::Point2(
+		static_cast<bedrock::PpInt>(png.m_w),
+		static_cast<bedrock::PpInt>(png.m_h));
 }
 
-Texture::Texture(const types::Point2 size)
+Texture::Texture(const bedrock::Point2 size)
 	: m_size(size)
 {
 	glGenTextures(1, &m_textureId);
 	if (&m_textureId == 0)
 	{
-		throw types::PpException("Could not generate texture");
+		throw bedrock::PpException("Could not generate texture");
 	}
 
 	bind();
@@ -84,7 +84,7 @@ Texture::Texture(const CBFGFontHeader& header, const char *raw)
 	glGenTextures(1, &m_textureId);
 	if (&m_textureId == 0)
 	{
-		throw types::PpException("Could not generate texture");
+		throw bedrock::PpException("Could not generate texture");
 	}
 
 	bind();
@@ -127,19 +127,19 @@ void Texture::unbind(GLuint unit)
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-perfectpixel::types::Vector2 Texture::pixelToTexture(types::Point2 pixel) const
+perfectpixel::bedrock::Vector2 Texture::pixelToTexture(bedrock::Point2 pixel) const
 {
-	return types::Vector2{
-		static_cast<types::PpFloat>(pixel.m_x) / m_size.m_x,
-		static_cast<types::PpFloat>(pixel.m_y) / m_size.m_y,
+	return bedrock::Vector2{
+		static_cast<bedrock::PpFloat>(pixel.m_x) / m_size.m_x,
+		static_cast<bedrock::PpFloat>(pixel.m_y) / m_size.m_y,
 	};
 }
 
-perfectpixel::types::Point2 Texture::textureToPixel(types::Vector2 pixel) const
+perfectpixel::bedrock::Point2 Texture::textureToPixel(bedrock::Vector2 pixel) const
 {
-	return types::Point2{
-		static_cast<types::PpInt>(pixel.x() * m_size.m_x + 0.001),
-		static_cast<types::PpInt>(pixel.y() * m_size.m_y + 0.001),
+	return bedrock::Point2{
+		static_cast<bedrock::PpInt>(pixel.x() * m_size.m_x + 0.001),
+		static_cast<bedrock::PpInt>(pixel.y() * m_size.m_y + 0.001),
 	};
 }
 

@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 
-namespace perfectpixel { namespace types {
+namespace perfectpixel { namespace bedrock {
 
 class File
 {

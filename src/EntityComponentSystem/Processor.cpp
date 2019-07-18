@@ -55,12 +55,12 @@ namespace perfectpixel { namespace ecs {
 		}
 	}
 
-	void Processor::doProcess(types::PpFloat deltaT)
+	void Processor::doProcess(bedrock::PpFloat deltaT)
 	{
 		onUpdate(m_query.finalize(), deltaT);
 	}
 
-	void Processor::doRender(types::PpFloat deltaT)
+	void Processor::doRender(bedrock::PpFloat deltaT)
 	{
 		onRender(m_queryRender.execute(m_queryState), deltaT);
 	}
@@ -75,11 +75,11 @@ namespace perfectpixel { namespace ecs {
 	}
 
 
-	void Processor::onUpdate(const std::vector<Entity> &entities, types::PpFloat deltaT)
+	void Processor::onUpdate(const std::vector<Entity> &entities, bedrock::PpFloat deltaT)
 	{
 	}
 
-	void Processor::onRender(const std::vector<Entity> &entities, types::PpFloat deltaT)
+	void Processor::onRender(const std::vector<Entity> &entities, bedrock::PpFloat deltaT)
 	{
 	}
 

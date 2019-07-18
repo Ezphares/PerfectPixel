@@ -11,7 +11,7 @@ namespace perfectpixel { namespace ecs {
 	template<typename T, typename... Ts>
 	struct ComponentTypeList<T, Ts...>
 	{
-		static void execute(types::BitSet &mask, IComponentStorage::ComponentStorageFilterType filterType)
+		static void execute(bedrock::BitSet &mask, IComponentStorage::ComponentStorageFilterType filterType)
 		{
 			T::Filter(mask, filterType);
 			ComponentTypeList<Ts...>::execute(mask, filterType);
@@ -21,13 +21,13 @@ namespace perfectpixel { namespace ecs {
 	template<>
 	struct ComponentTypeList<>
 	{
-		static void execute(types::BitSet &mask, IComponentStorage::ComponentStorageFilterType filterType) {};
+		static void execute(bedrock::BitSet &mask, IComponentStorage::ComponentStorageFilterType filterType) {};
 	};
 
 	template<typename... Ts>
 	struct With
 	{
-		static void execute(types::BitSet &mask)
+		static void execute(bedrock::BitSet &mask)
 		{
 			ComponentTypeList<Ts...>::execute(mask, IComponentStorage::WITH);
 		}
@@ -36,7 +36,7 @@ namespace perfectpixel { namespace ecs {
 	template<typename ...Ts>
 	struct Without
 	{
-		static void execute(types::BitSet &mask)
+		static void execute(bedrock::BitSet &mask)
 		{
 			ComponentTypeList<Ts...>::execute(mask, IComponentStorage::WITHOUT);
 		}
@@ -47,7 +47,7 @@ namespace perfectpixel { namespace ecs {
 	{
 		static Query build()
 		{
-			return Query([](types::BitSet &mask)
+			return Query([](bedrock::BitSet &mask)
 			{
 				WithComponents::execute(mask);
 				WithoutComponents::execute(mask);

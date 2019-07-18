@@ -43,7 +43,7 @@ namespace perfectpixel { namespace ecs {
 
 		virtual uint32_t _register(Entity entity, uint32_t currentSize)
 		{
-			uint32_t eidx = entityIndex(entity);
+			uint32_t eidx = entity.index;
 			if (eidx > m_maxEntityIndex)
 			{
 				m_maxEntityIndex = eidx;
@@ -72,12 +72,12 @@ namespace perfectpixel { namespace ecs {
 			return _delete(entity);
 		}
 
-		virtual void _filter(types::BitSet &mask, ComponentStorageFilterType filterType) const
+		virtual void _filter(bedrock::BitSet &mask, ComponentStorageFilterType filterType) const
 		{
-			types::BitSet localMask = types::BitSet(m_maxEntityIndex + 1, filterType == IComponentStorage::WITHOUT);
+			bedrock::BitSet localMask = bedrock::BitSet(m_maxEntityIndex + 1, filterType == IComponentStorage::WITHOUT);
 			for (auto entity : m_entities)
 			{
-				localMask[entityIndex(entity)] = (filterType == IComponentStorage::WITH);
+				localMask[entity.index] = (filterType == IComponentStorage::WITH);
 			}
 
 			mask &= localMask;
@@ -108,18 +108,18 @@ namespace perfectpixel { namespace ecs {
 	public:
 		virtual bool _has(Entity entity) const
 		{
-			uint32_t idx = entityIndex(entity);
+			uint32_t idx = entity.index;
 			return m_mask.size() > idx && m_mask[idx] && T::at(idx) == entity;
 		}
 
 		virtual uint32_t _index(Entity entity) const
 		{
-			return entityIndex(entity);
+			return entity.index;
 		}
 
 		virtual uint32_t _register(Entity entity, uint32_t currentSize)
 		{
-			uint32_t idx = entityIndex(entity);
+			uint32_t idx = entity.index;
 			if (m_mask.size() <= idx)
 			{
 				m_mask.resize(idx + 1);
@@ -130,8 +130,8 @@ namespace perfectpixel { namespace ecs {
 
 		virtual uint32_t _delete(Entity entity)
 		{
-			m_mask[entityIndex(entity)] = false;
-			return entityIndex(entity);
+			m_mask[entity.index] = false;
+			return entity.index;
 		}
 
 		virtual uint32_t _safeDelete(Entity entity)
@@ -139,7 +139,7 @@ namespace perfectpixel { namespace ecs {
 			return _delete(entity);
 		}
 
-		virtual void _filter(types::BitSet &mask, ComponentStorageFilterType filterType) const
+		virtual void _filter(bedrock::BitSet &mask, ComponentStorageFilterType filterType) const
 		{
 			mask &= (filterType == IComponentStorage::WITH) ? m_mask : ~m_mask;
 		}
@@ -157,7 +157,7 @@ namespace perfectpixel { namespace ecs {
 		}
 
 	private:
-		types::BitSet m_mask;
+		bedrock::BitSet m_mask;
 	};
 
 	// Component storage using a map entity->index
@@ -176,7 +176,7 @@ namespace perfectpixel { namespace ecs {
 		virtual uint32_t _index(Entity entity) const { return m_indices.find(entity)->second; }
 		virtual uint32_t _register(Entity entity, uint32_t currentSize)
 		{
-			uint32_t eidx = entityIndex(entity);
+			uint32_t eidx = entity.index;
 			if (eidx > m_maxEntityIndex)
 			{
 				m_maxEntityIndex = eidx;
@@ -210,13 +210,13 @@ namespace perfectpixel { namespace ecs {
 			return _delete(entity);
 		}
 
-		virtual void _filter(types::BitSet &mask, IComponentStorage::ComponentStorageFilterType filterType) const
+		virtual void _filter(bedrock::BitSet &mask, IComponentStorage::ComponentStorageFilterType filterType) const
 		{
-			types::BitSet localMask = types::BitSet(m_maxEntityIndex + 1, filterType == IComponentStorage::WITHOUT);
+			bedrock::BitSet localMask = bedrock::BitSet(m_maxEntityIndex + 1, filterType == IComponentStorage::WITHOUT);
 
 			for (auto it : m_indices)
 			{
-				localMask[entityIndex(it.first)] = (filterType == IComponentStorage::WITH);
+				localMask[it.first.index] = (filterType == IComponentStorage::WITH);
 			}
 
 			mask &= localMask;

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "EntityComponentSystem/Component.h"
-#include "EntityComponentSystem/Entity.h"
 
-#include "types/BitSet.h"
+#include <EntityComponentSystem/Entity.h>
+#include <Bedrock/BitSet.h>
 
 namespace perfectpixel{ namespace ecs {
 
@@ -21,7 +21,7 @@ namespace perfectpixel{ namespace ecs {
 		virtual uint32_t _register(Entity entity, uint32_t currentSize) = 0;
 		virtual uint32_t _delete(Entity entity) = 0;
 		virtual uint32_t _safeDelete(Entity entity) = 0;
-		virtual void _filter(types::BitSet &mask, ComponentStorageFilterType filterType) const = 0;
+		virtual void _filter(bedrock::BitSet &mask, ComponentStorageFilterType filterType) const = 0;
 		virtual void _clean() = 0;
 	};
 	

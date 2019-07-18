@@ -3,7 +3,7 @@
 #include <vector>
 
 namespace perfectpixel {
-	namespace types {
+	namespace bedrock {
 
 		class BitSet
 		{

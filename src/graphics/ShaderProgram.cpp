@@ -1,6 +1,6 @@
 #include <graphics/ShaderProgram.h>
 
-#include <types/PpException.h>
+#include <Bedrock/PpException.h>
 
 #include <vector>
 
@@ -46,7 +46,7 @@ void ShaderProgram::link()
 			glGetProgramInfoLog(m_id, length, &length, &log[0]);
 
 
-			throw types::PpException("Failed to link program");
+			throw bedrock::PpException("Failed to link program");
 		}
 
 

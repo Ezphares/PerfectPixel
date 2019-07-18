@@ -26,7 +26,7 @@ public:
 	virtual WindowDimensions getDimensions();
 	virtual bool isClosed();
 	virtual void setSplash(const PNG &png);
-	virtual void setKeyCallback(types::KeyCallback callback);
+	virtual void setKeyCallback(bedrock::KeyCallback callback);
 	virtual void setFocusCallback(FocusCallback callback);
 	virtual void setResizeCallback(SizeCallback callback);
 
@@ -50,7 +50,7 @@ private:
 	HINSTANCE m_hInstance;
 	std::string m_wndClassName;
 
-	types::KeyCallback m_keyCallback;
+	bedrock::KeyCallback m_keyCallback;
 	FocusCallback m_focusCallback;
 	SizeCallback m_sizeCallback;
 

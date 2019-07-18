@@ -8,11 +8,11 @@ namespace perfectpixel {
 		class FrameBuffer
 		{
 		public:
-			FrameBuffer(types::Point2 size);
+			FrameBuffer(bedrock::Point2 size);
 			~FrameBuffer();
 
 		public:
-			void resize(types::Point2 size);
+			void resize(bedrock::Point2 size);
 
 			void bind();
 			Texture &getTexture();
@@ -22,7 +22,7 @@ namespace perfectpixel {
 			GLuint m_id;
 			GLuint m_depthBuffer;
 
-			types::Point2 m_size;
+			bedrock::Point2 m_size;
 
 
 		};

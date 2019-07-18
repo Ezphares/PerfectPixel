@@ -4,15 +4,15 @@
 #include <EntityComponentSystem/IComponentStorage.h>
 #include <EntityComponentSystem/EntityManager.h>
 
-#include <types/Singleton.h>
-#include <types/Bitset.h>
+#include <Bedrock/Singleton.h>
+#include <Bedrock/Bitset.h>
 
 #include <map>
 
 namespace perfectpixel { namespace ecs {
 
 	template <typename T>
-	class Component : public types::Singleton<T>
+	class Component : public bedrock::Singleton<T>
 	{
 	protected:
 		Component()
@@ -25,7 +25,7 @@ namespace perfectpixel { namespace ecs {
 	private:
 		uint32_t objects;
 		uint32_t lastIndex;
-		std::map<types::PpInt, IField*> fields;
+		std::map<bedrock::PpInt, IField*> fields;
 
 	protected:
 		static Field<Component<T>, Entity> Owner;
@@ -47,7 +47,7 @@ namespace perfectpixel { namespace ecs {
 			return Owner.at(idx);
 		}
 
-		static bool AddField(types::PpInt id, IField *field)
+		static bool AddField(bedrock::PpInt id, IField *field)
 		{
 			auto &fields = getInstance()->fields;
 			// Inline statics are weird, we have to check for duplicates
@@ -60,7 +60,7 @@ namespace perfectpixel { namespace ecs {
 			return add;
 		}
 
-		static IField *Lookup(types::PpInt id)
+		static IField *Lookup(bedrock::PpInt id)
 		{
 			return getInstance()->fields[id];
 		}
@@ -103,7 +103,7 @@ namespace perfectpixel { namespace ecs {
 			if (getInstance()->_has(entity)) Delete(entity);
 		}
 
-		static void Filter(types::BitSet &mask, IComponentStorage::ComponentStorageFilterType filterType)
+		static void Filter(bedrock::BitSet &mask, IComponentStorage::ComponentStorageFilterType filterType)
 		{
 			getInstance()->_filter(mask, filterType);
 		}
@@ -120,7 +120,6 @@ namespace perfectpixel { namespace ecs {
 		}
 	};
 
-	template<typename T> const size_t Component<T>::Id = std::hash(typeid(T).name());
 	template<typename T> Field<Component<T>, Entity> Component<T>::Owner = {FieldTable::NoReflection};
 
 	template <typename T>
@@ -129,18 +128,18 @@ namespace perfectpixel { namespace ecs {
 	public:
 		virtual bool _has(Entity entity) const
 		{
-			uint32_t idx = entityIndex(entity);
+			uint32_t idx = entity.index;
 			return m_mask.size() > idx && m_mask[idx];
 		}
 
 		virtual uint32_t _index(Entity entity) const 
 		{
-			return entityIndex(entity);
+			return entity.index;
 		}
 
 		virtual uint32_t _register(Entity entity, uint32_t currentSize)
 		{
-			uint32_t idx = entityIndex(entity);
+			uint32_t idx = entity.index;
 			if (m_mask.size() <= idx)
 			{
 				m_mask.resize(idx + 1);
@@ -151,7 +150,7 @@ namespace perfectpixel { namespace ecs {
 		
 		virtual uint32_t _delete(Entity entity)
 		{
-			m_mask[entityIndex(entity)] = false;
+			m_mask[entity.index] = false;
 			return 0;
 		}
 
@@ -160,7 +159,7 @@ namespace perfectpixel { namespace ecs {
 			return _delete(entity);
 		}
 
-		virtual void _filter(types::BitSet &mask, ComponentStorageFilterType filterType) const
+		virtual void _filter(bedrock::BitSet &mask, ComponentStorageFilterType filterType) const
 		{
 			mask &= (filterType == IComponentStorage::WITH) ? m_mask : ~m_mask;
 		}
@@ -169,7 +168,7 @@ namespace perfectpixel { namespace ecs {
 		{}
 
 	private:
-		types::BitSet m_mask;
+		bedrock::BitSet m_mask;
 	};
 
 } }

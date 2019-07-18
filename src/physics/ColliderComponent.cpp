@@ -2,47 +2,59 @@
 
 #include <EntityComponentSystem/EntityManager.h>
 
-#include <types/PpException.h>
+#include <Bedrock/PpException.h>
 
 namespace perfectpixel {
 	namespace physics {
 
-		void ColliderComponent::SetMaskRectangle(ecs::Entity entity, const types::AARectangle &rectangle)
+		void ColliderComponent::SetMaskRectangle(ecs::Entity entity, const bedrock::AARectangle &rectangle)
 		{
 			ColliderComponent::MaskType(entity) = RECTANGLE;
 			ColliderComponent::Mask(entity).m_rectangle = rectangle;
 		}
 
-		types::AARectangle ColliderComponent::SetMaskRectangle(ecs::Entity entity)
+		bedrock::AARectangle ColliderComponent::SetMaskRectangle(ecs::Entity entity)
 		{
 			if (ColliderComponent::MaskType(entity) != RECTANGLE)
 			{
-				types::PpException("Invalid mask type");
+				bedrock::PpException("Invalid mask type");
 			}
 			return ColliderComponent::Mask(entity).m_rectangle;
 		}
 
-		void ColliderComponent::SetMaskCircle(ecs::Entity entity, const types::Circle &circle)
+		void ColliderComponent::SetMaskCircle(ecs::Entity entity, const bedrock::Circle &circle)
 		{
 			ColliderComponent::MaskType(entity) = CIRCLE;
 			ColliderComponent::Mask(entity).m_circle = circle;
 		}
 
-		const perfectpixel::types::Circle ColliderComponent::GetMaskCircle(ecs::Entity entity)
+		const perfectpixel::bedrock::Circle ColliderComponent::GetMaskCircle(ecs::Entity entity)
 		{
 			if (ColliderComponent::MaskType(entity) != CIRCLE)
 			{
-				types::PpException("Invalid mask type");
+				bedrock::PpException("Invalid mask type");
 			}
 			return ColliderComponent::Mask(entity).m_circle;
 		}
 
-		void ColliderComponent::GetNear(std::vector<ecs::Entity> &toCheck, const types::Vector2 &point)
+		void ColliderComponent::GetNear(std::vector<ecs::Entity> &toCheck, const bedrock::Vector2 &point)
 		{
-			types::BitSet mask = ecs::EntityManager::getInstance()->all();
+			bedrock::BitSet mask = ecs::EntityManager::getInstance()->all();
 			Filter(mask, IComponentStorage::WITH);
 			ecs::EntityManager::getInstance()->expandMask(mask, &toCheck, nullptr);
 		}
 
 	}
+}
+
+perfectpixel::serialization::BinarySerializer & operator<<(perfectpixel::serialization::BinarySerializer &ostream, const perfectpixel::physics::ColliderComponent::ColliderMask &mask)
+{
+	memcpy(ostream.require(sizeof(perfectpixel::physics::ColliderComponent::ColliderMask)), &mask, sizeof(perfectpixel::physics::ColliderComponent::ColliderMask));
+	return ostream;
+}
+
+perfectpixel::serialization::BinarySerializer & operator>>(perfectpixel::serialization::BinarySerializer &istream, perfectpixel::physics::ColliderComponent::ColliderMask &mask)
+{
+	memcpy(&mask, istream.get(sizeof(perfectpixel::physics::ColliderComponent::ColliderMask)), sizeof(perfectpixel::physics::ColliderComponent::ColliderMask));
+	return istream;
 }

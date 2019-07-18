@@ -4,7 +4,7 @@
 #include <string>
 
 namespace perfectpixel {
-	namespace types{
+	namespace bedrock{
 
 class PpException : public std::runtime_error
 {

@@ -2,7 +2,7 @@
 
 #include <EntityComponentSystem/Component.h>
 
-#include <types/BitSet.h>
+#include <Bedrock/BitSet.h>
 
 #include <vector>
 
@@ -12,23 +12,23 @@ namespace perfectpixel {
 		class Query
 		{
 		public:
-			typedef void(*QueryFunction)(types::BitSet &);
+			typedef void(*QueryFunction)(bedrock::BitSet &);
 
 			Query(QueryFunction func);
 
 			void executeMaskOnly();
-			void executeMaskOnly(const types::BitSet &start);
+			void executeMaskOnly(const bedrock::BitSet &start);
 			std::vector<Entity> execute(EntityManager::EntityFunc callback = 0);
-			std::vector<Entity> execute(const types::BitSet &start, EntityManager::EntityFunc callback = 0);
+			std::vector<Entity> execute(const bedrock::BitSet &start, EntityManager::EntityFunc callback = 0);
 			std::vector<Entity> finalize(EntityManager::EntityFunc callback = 0);
 
-			const types::BitSet &getLastResult() const;
+			const bedrock::BitSet &getLastResult() const;
 
 		private:
 			void applyMask();
 
 		private:
-			types::BitSet m_lastResult;
+			bedrock::BitSet m_lastResult;
 			QueryFunction m_queryFunction;
 		};
 	}

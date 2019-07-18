@@ -23,7 +23,7 @@ namespace perfectpixel
 			executeMaskOnly(EntityManager::getInstance()->all());
 		}
 
-		void Query::executeMaskOnly(const types::BitSet &start)
+		void Query::executeMaskOnly(const bedrock::BitSet &start)
 		{
 			m_lastResult = start;
 			applyMask();
@@ -35,7 +35,7 @@ namespace perfectpixel
 			return finalize(callback);
 		}
 
-		std::vector<Entity> Query::execute(const types::BitSet &start, EntityManager::EntityFunc callback)
+		std::vector<Entity> Query::execute(const bedrock::BitSet &start, EntityManager::EntityFunc callback)
 		{
 			executeMaskOnly(start);
 			return finalize(callback);		
@@ -48,7 +48,7 @@ namespace perfectpixel
 			return result;
 		}
 
-		const perfectpixel::types::BitSet & Query::getLastResult() const
+		const perfectpixel::bedrock::BitSet & Query::getLastResult() const
 		{
 			return m_lastResult;
 		}

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <types/numbers.h>
-#include <types/Singleton.h>
-#include <types/Hash.h>
+#include <Bedrock/numbers.h>
+#include <Bedrock/Singleton.h>
+#include <Bedrock/Hash.h>
 
 #include <map>
 
@@ -10,9 +10,10 @@ namespace perfectpixel { namespace ecs {
 
 	class IField;
 
-	typedef IField*(*FieldLookup)(types::PpInt);
+	typedef IField*(*FieldLookup)(bedrock::PpInt);
+	typedef bool(*HasLookup)(bedrock::PpInt);
 
-	class FieldTable : public types::Singleton<FieldTable>
+	class FieldTable : public bedrock::Singleton<FieldTable>
 	{
 	public:
 		struct ReflectionHint {};
@@ -21,34 +22,48 @@ namespace perfectpixel { namespace ecs {
 		template<typename ComponentType>
 		void add(
 			const std::string &componentName, 
-			types::PpInt componentId,
+			bedrock::PpInt componentId,
 			const std::string &fieldName,
-			types::PpInt fieldId,
+			bedrock::PpInt fieldId,
 			const std::string &typeName,
-			types::PpInt typeId)
+			bedrock::PpInt typeId)
 		{
-			std::string rawType = dequalify(typeName);
-			add<ComponentType>(componentId, fieldId, types::PpId(dequalify(rawType)));
+			add<ComponentType>(componentId, fieldId, typeId);
+#if PP_FULL_REFLECTION_ENABLED
+			m_reverseHash[componentId] = componentName;
+			m_reverseHash[fieldId] = fieldName;
+			m_reverseHash[typeId] = typeName;
+#endif /* PP_FULL_REFLECTION_ENABLED */
 		}
 
 		template<typename ComponentType>
 		void add(
-			types::PpInt componentId,
-			types::PpInt fieldId,
-			types::PpInt typeId)
+			bedrock::PpInt componentId,
+			bedrock::PpInt fieldId,
+			bedrock::PpInt typeId)
 		{
-			m_componentLUT[componentId] = &ComponentType::Lookup;
-			m_typeLUT[std::pair(PPID(componentName), PPID(fieldName))] = typeId;
+			m_componentFieldLUT[componentId] = &ComponentType::Lookup;
+			m_typeLUT[std::pair(PP_ID(componentName), PP_ID(fieldName))] = typeId;
 		}
 
-		IField *find(const std::string &componentName, const std::string &fieldName)
+		bedrock::PpInt componentFieldTypeID(bedrock::PpInt componentId, bedrock::PpInt fieldId)
 		{
-			return m_componentLUT[types::PpId(componentName)](types::PpId(fieldName));
+			return m_typeLUT[std::pair(componentId, fieldId)];
 		}
 
-		types::PpInt getType(const std::string &componentName, const std::string &fieldName)
+		IField *getComponentFieldByID(bedrock::PpInt componentId, bedrock::PpInt fieldId)
 		{
-			return m_typeLUT[std::pair(types::PpId(componentName), types::PpId(fieldName))];
+			return componentFieldLookupByID(componentId)(fieldId);
+		}
+
+		FieldLookup componentFieldLookupByID(bedrock::PpInt componentId)
+		{
+			return m_componentFieldLUT[componentId];
+		}
+
+		HasLookup hasComponentByID(bedrock::PpInt componentId)
+		{
+			return m_hasComponentLUT[componentId];
 		}
 
 		std::string dequalify(const std::string &typeName)
@@ -62,8 +77,12 @@ namespace perfectpixel { namespace ecs {
 		}
 
 	private:
-		std::map<types::PpInt, FieldLookup> m_componentLUT;
-		std::map<std::pair<types::PpInt, types::PpInt>, types::PpInt> m_typeLUT;
+		std::map<bedrock::PpInt, FieldLookup> m_componentFieldLUT;
+		std::map<bedrock::PpInt, HasLookup> m_hasComponentLUT;
+		std::map<std::pair<bedrock::PpInt, bedrock::PpInt>, bedrock::PpInt> m_typeLUT;
+#if PP_FULL_REFLECTION_ENABLED
+		std::map<bedrock::PpInt, std::string> m_reverseHash;
+#endif /* PP_FULL_REFLECTION_ENABLED */
 	};
 
 } }

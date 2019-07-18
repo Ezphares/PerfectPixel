@@ -3,7 +3,7 @@
 #include <functional>
 
 namespace perfectpixel {
-	namespace types {
+	namespace bedrock {
 
 		typedef uint32_t KeyCode;
 

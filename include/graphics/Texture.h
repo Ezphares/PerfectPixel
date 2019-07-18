@@ -3,7 +3,7 @@
 #include <graphics/LocalGL.h>
 #include <graphics/PNG.h>
 
-#include <types/vectors.h>
+#include <Bedrock/vectors.h>
 
 #include <string>
 
@@ -23,7 +23,7 @@ public:
 public:
 	Texture(const PlaceHolder &);
 	Texture(const PNG &png);
-	Texture(const types::Point2 size);
+	Texture(const bedrock::Point2 size);
 	Texture(const CBFGFontHeader& header, const char *raw);
 
 	~Texture();
@@ -31,8 +31,8 @@ public:
 public:
 	void bind(GLuint unit = 1);
 	static void unbind(GLuint unit = 1);
-	types::Vector2 pixelToTexture(types::Point2 pixel) const;
-	types::Point2 textureToPixel(types::Vector2 pixel) const;
+	bedrock::Vector2 pixelToTexture(bedrock::Point2 pixel) const;
+	bedrock::Point2 textureToPixel(bedrock::Vector2 pixel) const;
 
 	GLuint getId() const;
 
@@ -40,7 +40,7 @@ public:
 
 private:
 	GLuint m_textureId;
-	types::Point2 m_size;
+	bedrock::Point2 m_size;
 
 };
 

@@ -3,7 +3,7 @@
 #include "types/vectors.h"
 
 namespace perfectpixel {
-	namespace types {
+	namespace bedrock {
 
 		struct Quaternion : public Vector4
 		{

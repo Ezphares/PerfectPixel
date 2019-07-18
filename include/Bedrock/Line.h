@@ -1,8 +1,8 @@
 #pragma once
-#include <types/vectors.h>
+#include <Bedrock/vectors.h>
 
 namespace perfectpixel {
-	namespace types {
+	namespace bedrock {
 
 		class Line
 		{

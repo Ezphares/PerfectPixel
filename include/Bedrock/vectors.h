@@ -1,12 +1,18 @@
 #pragma once
 
-#include <types/numbers.h>
+#include <Bedrock/numbers.h>
 
 #include <type_traits>
 #include <array>
 
 namespace perfectpixel {
-namespace types {
+
+	namespace serialization
+	{
+		class BinarySerializer;
+	}
+
+namespace bedrock {
 
 struct Angle;
 struct Vector4;
@@ -232,6 +238,27 @@ inline bool operator==(const Point2 &l, const Point2 &r) { return l.m_x == r.m_x
 
 }
 }
+
+template<unsigned D>
+perfectpixel::serialization::BinarySerializer &operator<<(perfectpixel::serialization::BinarySerializer &ostream, const perfectpixel::bedrock::Vector<D> &vec)
+{
+	for (unsigned i = 0; i < D; ++i)
+	{
+		ostream << vec.m_data[i];
+	}
+	return ostream;
+}
+
+template<unsigned D>
+perfectpixel::serialization::BinarySerializer &operator>>(perfectpixel::serialization::BinarySerializer &istream, perfectpixel::bedrock::Vector <D> &vec)
+{
+	for (unsigned i = 0; i < D; ++i)
+	{
+		istream >> vec.m_data[i];
+	}
+	return istream;
+}
+
 
 
 
