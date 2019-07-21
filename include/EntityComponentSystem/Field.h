@@ -10,6 +10,7 @@
 #include <Bedrock/Hash.h>
 
 #include <vector>
+#include <type_traits>
 
 #define PPFIELDTYPE(Owner, T) ::perfectpixel::ecs::Field<Owner, T>
 #define PPARRAYFIELDTYPE(Owner, T, C) ::perfectpixel::ecs::ArrayField<Owner, T, C>
@@ -39,11 +40,13 @@ namespace perfectpixel { namespace ecs {
 	public:
 		virtual void reset(uint32_t index = 0) = 0;
 		virtual void serialize(serialization::ISerializer &serializer, uint32_t index) = 0;
+		virtual void deserialize(serialization::ISerializer &serializer, uint32_t index) = 0;
 	};
 
 	template <typename Owner, typename T>
 	class Field : public IField
 	{
+
 	public:
 		Field(FieldTable::ReflectionHint)
 			: m_data()
@@ -117,6 +120,28 @@ namespace perfectpixel { namespace ecs {
 		virtual void serialize(serialization::ISerializer &serializer, uint32_t index)
 		{
 			serializer << m_data[index];
+		}
+
+		virtual void deserialize(serialization::ISerializer &serializer, uint32_t index)
+		{
+			_deserialize<T>(serializer, index);
+		}
+
+		// For overloading reasons we have to split the deserialization into enums and everything else
+		template <typename X,
+			typename std::enable_if_t<!std::is_enum<X>::value>* = nullptr>
+		void _deserialize(serialization::ISerializer &serializer, uint32_t index)
+		{
+			serializer >> m_data[index];
+		}
+
+		template <typename X,
+			typename std::enable_if_t<std::is_enum<X>::value>* = nullptr>
+			void _deserialize(serialization::ISerializer &serializer, uint32_t index)
+		{
+			std::underlying_type<T>::type temp;
+			serializer >> temp;
+			m_data[index] = static_cast<T>(temp);
 		}
 
 	private:
@@ -215,6 +240,11 @@ namespace perfectpixel { namespace ecs {
 		}
 
 		virtual void serialize(serialization::ISerializer &serializer, uint32_t index)
+		{
+			throw "Not yet implemented";
+		}
+
+		virtual void deserialize(serialization::ISerializer &serializer, uint32_t index)
 		{
 			throw "Not yet implemented";
 		}

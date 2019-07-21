@@ -118,6 +118,40 @@ namespace perfectpixel { namespace ecs {
 		{
 			getInstance()->_clean();
 		}
+
+		static void Serialize(serialization::ISerializer &serializer, Entity entity)
+		{
+			if (Has(entity))
+			{
+				serializer.writeMapStart();
+
+				auto fields = getInstance()->fields;
+				uint32_t idx = Index(entity);
+
+				for (auto it = fields.begin(); it != fields.end() ++i)
+				{
+					serializer.writeInt32(it->first);
+					it->second->serialize(serializer);
+				}
+
+				serializer.writeMapEnd();
+			}
+		}
+
+		static void Deserialize(serialization::ISerializer &serializer, Entity entity)
+		{
+			Register(entity);
+			uint32_t idx = Index(entity);
+
+			auto fields = getInstance()->fields;
+			int32_t k;
+
+			while (serializer.readMapKey(&k))
+			{
+				fields[k]->deserialize(serializer, idx);
+			}
+			
+		}
 	};
 
 	template<typename T> Field<Component<T>, Entity> Component<T>::Owner = {FieldTable::NoReflection};

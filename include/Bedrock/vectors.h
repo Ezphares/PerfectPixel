@@ -262,9 +262,9 @@ perfectpixel::serialization::ISerializer &operator>>(perfectpixel::serialization
 {
 	uint32_t datasize = istream.readArrayStart();
 
-	for (unsigned i = 0; i < std::min(D, datasize); ++i)
+	for (unsigned i = 0; i < D; ++i)
 	{
-		istream.readFloat(vec.m_data[i]);
+		istream.readFloat(&vec.m_data[i]);
 	}
 
 	istream.readArrayEnd();

@@ -37,3 +37,9 @@ std::ostream & operator<<(std::ostream &stream, const perfectpixel::ecs::Entity 
 	stream << *((uint32_t*)&entity);
 	return stream;
 }
+
+perfectpixel::serialization::ISerializer & operator>>(perfectpixel::serialization::ISerializer &serializer, const perfectpixel::ecs::Entity &entity)
+{
+	serializer.readMappedUInt32((uint32_t*)&entity);
+	return serializer;
+}

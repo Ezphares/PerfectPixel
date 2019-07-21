@@ -13,6 +13,10 @@ namespace perfectpixel {
 			virtual void writeUInt32(uint32_t val);
 			virtual void writeMappedUInt32(uint32_t val);
 			virtual void writeText(const std::string &val);
+			virtual void writeName(int32_t &val);
+#if PP_FULL_REFLECTION_ENABLED
+			virtual void writeName(std::string *val);
+#endif // PP_FULL_REFLECTION_ENABLED
 			virtual void writeBinary(const void *p, uint32_t size);
 			virtual void writeArrayStart();
 			virtual void writeArrayEnd();
@@ -24,11 +28,14 @@ namespace perfectpixel {
 			virtual void readUInt32(uint32_t *val);
 			virtual void readMappedUInt32(uint32_t *val);
 			virtual void readText(std::string *val);
+			virtual void readName(int32_t &val);
+#if PP_FULL_REFLECTION_ENABLED
+			virtual void readName(std::string *val);
+#endif // PP_FULL_REFLECTION_ENABLED
 			virtual uint32_t readBinary(void *p, uint32_t maxSize);
 			virtual bool readMapKey(int32_t *val);
 			virtual uint32_t readArrayStart();
 			virtual void readArrayEnd();
-
 			virtual void mapUInt32(uint32_t memory, uint32_t serialized = 0.0f);
 		};
 } }

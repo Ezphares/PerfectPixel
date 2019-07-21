@@ -54,3 +54,7 @@ std::ostream &operator<<(std::ostream &stream, const perfectpixel::ecs::Entity &
 perfectpixel::serialization::ISerializer &operator<<(
 	perfectpixel::serialization::ISerializer &serializer,
 	const perfectpixel::ecs::Entity &entity);
+
+perfectpixel::serialization::ISerializer &operator>>(
+	perfectpixel::serialization::ISerializer &serializer,
+	const perfectpixel::ecs::Entity &entity);
