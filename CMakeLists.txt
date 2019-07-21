@@ -1,4 +1,5 @@
 cmake_minimum_required (VERSION 3.0)
+
 project (PerfectPixel)
 
 set (PerfectPixel_VERSION_MAJOR 0)
@@ -8,6 +9,16 @@ set (CMAKE_CXX_STANDARD 17)
 
 add_definitions(-DPP_CLEANUP_CALLBACKS)
 add_definitions(-DPP_FULL_REFLECTION)
+
+# SUBMODULE yaml-cpp 
+option(YAML_CPP_BUILD_TESTS "Enable testing" ON)
+set(YAML_CPP_BUILD_TESTS OFF)
+option(YAML_CPP_BUILD_TOOLS "Enable parse tools" ON)
+set(YAML_CPP_BUILD_TOOLS OFF)
+option(YAML_CPP_INSTALL "Enable generation of install target" ON)
+set(YAML_CPP_INSTALL OFF)
+add_subdirectory("${CMAKE_SOURCE_DIR}/depends/yaml-cpp")
+
 
 # PACKAGES
 find_package(ZLIB)
@@ -33,6 +44,7 @@ endif()
 	
 # INCLUDE PATHS
 include_directories("${CMAKE_SOURCE_DIR}/include")
+include_directories("${CMAKE_SOURCE_DIR}/depends/yaml-cpp/include")
 
 # LIBRARIES
 set (Core_SRC_DIR "${CMAKE_SOURCE_DIR}/src/enginecore")
@@ -122,11 +134,14 @@ file (GLOB Serialization_INCLUDE_FILES "${Serialization_INCLUDE_DIR}/*.h")
 add_library(Serialization
 	"${Serialization_SRC_DIR}/BinarySerializer.cpp"
 	"${Serialization_SRC_DIR}/ISerializer.cpp"
+	"${Serialization_SRC_DIR}/YAMLSerializer.cpp"
 	
 	"${Serialization_INCLUDE_FILES}"
 )
 
+
 add_executable(Pong WIN32 "${CMAKE_SOURCE_DIR}/src/main/pong.cpp")
+add_dependencies(Pong yaml-cpp)
 
 list(APPEND LIBRARIES_INTERNAL  
 	Core
@@ -138,7 +153,7 @@ list(APPEND LIBRARIES_INTERNAL
 	Serialization
 )
 
-list(APPEND LIBRARIES_EXTERNAL PNG::PNG ZLIB::ZLIB GLEW::GLEW)
+list(APPEND LIBRARIES_EXTERNAL PNG::PNG ZLIB::ZLIB GLEW::GLEW yaml-cpp)
 list(APPEND LIBRARIES_SYSTEM opengl32)
 
 target_link_libraries(Pong ${LIBRARIES_INTERNAL})

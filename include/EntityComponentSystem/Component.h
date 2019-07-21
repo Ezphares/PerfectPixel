@@ -85,6 +85,8 @@ namespace perfectpixel { namespace ecs {
 				instance->lastIndex++;
 			}
 
+			Owner.reset(idx);
+			Owner._set(idx, entity);
 			instance->initialize(idx);
 			instance->objects++;
 		}
@@ -128,10 +130,14 @@ namespace perfectpixel { namespace ecs {
 				auto fields = getInstance()->fields;
 				uint32_t idx = Index(entity);
 
-				for (auto it = fields.begin(); it != fields.end() ++i)
+				for (auto it = fields.begin(); it != fields.end(); ++it)
 				{
-					serializer.writeInt32(it->first);
-					it->second->serialize(serializer);
+#if PP_FULL_REFLECTION_ENABLED
+					serializer.writeMapKey(FieldTable::getInstance()->reverse(it->first));
+#else
+					serializer.writeMapKey(it->first);
+#endif
+					it->second->serialize(serializer, idx);
 				}
 
 				serializer.writeMapEnd();

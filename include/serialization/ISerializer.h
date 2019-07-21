@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Bedrock/defines.h>
+
 #include <string>
 
 namespace perfectpixel {
@@ -8,35 +10,37 @@ namespace perfectpixel {
 		class ISerializer
 		{
 		public:
-			virtual void writeFloat(float val);
-			virtual void writeInt32(int32_t val);
-			virtual void writeUInt32(uint32_t val);
-			virtual void writeMappedUInt32(uint32_t val);
-			virtual void writeText(const std::string &val);
-			virtual void writeName(int32_t &val);
+			virtual void writeFloat(float val) = 0;
+			virtual void writeInt32(int32_t val) = 0;
+			virtual void writeUInt32(uint32_t val) = 0;
+			virtual void writeMappedUInt32(uint32_t val) = 0;
+			virtual void writeText(const std::string &val) = 0;
+			virtual void writeName(int32_t val) = 0;
+			virtual void writeMapKey(int32_t val) = 0;
 #if PP_FULL_REFLECTION_ENABLED
-			virtual void writeName(std::string *val);
+			virtual void writeName(const std::string &val) = 0;
+			virtual void writeMapKey(const std::string &val) = 0;
 #endif // PP_FULL_REFLECTION_ENABLED
-			virtual void writeBinary(const void *p, uint32_t size);
-			virtual void writeArrayStart();
-			virtual void writeArrayEnd();
-			virtual void writeMapStart();
-			virtual void writeMapEnd();
+			virtual void writeBinary(const void *p, uint32_t size) = 0;
+			virtual void writeArrayStart(bool simple  = false) = 0;
+			virtual void writeArrayEnd() = 0;
+			virtual void writeMapStart() = 0;
+			virtual void writeMapEnd() = 0;
 
-			virtual void readFloat(float *val);
-			virtual void readInt32(int32_t *val);
-			virtual void readUInt32(uint32_t *val);
-			virtual void readMappedUInt32(uint32_t *val);
-			virtual void readText(std::string *val);
-			virtual void readName(int32_t &val);
+			virtual void readFloat(float *val) = 0;
+			virtual void readInt32(int32_t *val) = 0;
+			virtual void readUInt32(uint32_t *val) = 0;
+			virtual void readMappedUInt32(uint32_t *val) = 0;
+			virtual void readText(std::string *val) = 0;
+			virtual void readName(int32_t &val) = 0;
 #if PP_FULL_REFLECTION_ENABLED
-			virtual void readName(std::string *val);
+			virtual void readName(std::string *val) = 0;
 #endif // PP_FULL_REFLECTION_ENABLED
-			virtual uint32_t readBinary(void *p, uint32_t maxSize);
-			virtual bool readMapKey(int32_t *val);
-			virtual uint32_t readArrayStart();
-			virtual void readArrayEnd();
-			virtual void mapUInt32(uint32_t memory, uint32_t serialized = 0.0f);
+			virtual uint32_t readBinary(void *p, uint32_t maxSize) = 0;
+			virtual bool readMapKey(int32_t *val) = 0;
+			virtual uint32_t readArrayStart() = 0;
+			virtual void readArrayEnd() = 0;
+			virtual void mapUInt32(uint32_t memory, uint32_t serialized = -1) = 0;
 		};
 } }
 

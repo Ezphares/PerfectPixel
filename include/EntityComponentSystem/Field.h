@@ -18,7 +18,7 @@
 #if PP_FULL_REFLECTION_ENABLED
 
 #define _Field(Owner, T, Name) inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T) \
-(PP_DEQUALIFY(Owner), PP_DQID(Owner), #Name, PP_ID(Name), bedrock::typeName<T>(), bedrock::typeID<T>());
+(PP_DEQUALIFY(Owner), PP_DQID(Owner), #Name, PP_ID(Name), ""/*bedrock::typeName<T>()*/, 0 /*bedrock::typeID<T>()*/);
 
 #define _ArrayField(Owner, T, Capacity, Name) inline static PPARRAYFIELDTYPE(Owner, T, Capacity) Name = PPARRAYFIELDTYPE(Owner, T, Capacity) \
 (PP_DEQUALIFY(Owner), PP_DQID(Owner), #Name, PP_ID(Name), PP_DEQUALIFY(T), PP_DQID(T));
@@ -85,6 +85,11 @@ namespace perfectpixel { namespace ecs {
 		T at(uint32_t idx)
 		{
 			return m_data[idx];
+		}
+
+		void _set(uint32_t idx, const T &val)
+		{
+			m_data[idx] = val;
 		}
 
 		T Get(Entity entity) const
@@ -241,7 +246,9 @@ namespace perfectpixel { namespace ecs {
 
 		virtual void serialize(serialization::ISerializer &serializer, uint32_t index)
 		{
-			throw "Not yet implemented";
+			serializer.writeArrayStart();
+			//TODO
+			serializer.writeArrayEnd();
 		}
 
 		virtual void deserialize(serialization::ISerializer &serializer, uint32_t index)

@@ -246,7 +246,7 @@ inline bool operator==(const Point2 &l, const Point2 &r) { return l.m_x == r.m_x
 template<unsigned D>
 perfectpixel::serialization::ISerializer &operator<<(perfectpixel::serialization::ISerializer &ostream, const perfectpixel::bedrock::Vector<D> &vec)
 {
-	ostream.writeArrayStart();
+	ostream.writeArrayStart(true);
 
 	for (unsigned i = 0; i < D; ++i)
 	{

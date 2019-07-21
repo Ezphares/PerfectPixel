@@ -45,5 +45,7 @@ namespace perfectpixel { namespace bedrock {
 
 } }
 
+PP_TYPE_REFLECTION(uint32_t, uint32_t);
 PP_TYPE_REFLECTION(int32_t, int32_t);
 PP_TYPE_REFLECTION(float, float);
+PP_TYPE_REFLECTION(std::string, string);

@@ -9,6 +9,7 @@
 #include <Bedrock/TypeReflection.h>
 #include <physics/PhysicsComponent.h>
 #include <physics/ColliderComponent.h>
+#include <serialization/YAMLSerializer.h>
 
 #include <chrono>
 #include <thread>
@@ -364,6 +365,9 @@ class Pong : public core::Game
 		createBat(-78, sprPlayer1, false);
 		createBat(78, sprPlayer2, true);
 
+		serialization::YAMLSerializer yaml;
+		ecs::FieldTable::getInstance()->serialize(yaml, m_ball);
+		yaml.dump();
 
 		for (int32_t i = 0; i < 2; ++i)
 		{
