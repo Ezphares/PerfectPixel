@@ -9,7 +9,7 @@
 namespace perfectpixel { namespace physics {
 
 	namespace {
-		const bedrock::PpInt EULER_STEPS = 1;
+		const int32_t EULER_STEPS = 1;
 	}
 
 	typedef ecs::QueryHelper<ecs::With<ecs::TransformComponent>> IntegratorQuery;
@@ -19,7 +19,7 @@ namespace perfectpixel { namespace physics {
 	{
 	}
 
-	void perfectpixel::physics::IntegratorProcessor::onUpdate(const std::vector<ecs::Entity> &entities, bedrock::PpFloat deltaT)
+	void perfectpixel::physics::IntegratorProcessor::onUpdate(const std::vector<ecs::Entity> &entities, float deltaT)
 	{
 		for (ecs::Entity entity : entities)
 		{
@@ -28,7 +28,7 @@ namespace perfectpixel { namespace physics {
 
 			if (PhysicsComponent::Has(entity))
 			{
-				bedrock::PpFloat velocityMagnitude = bedrock::Infinity;
+				float velocityMagnitude = bedrock::Infinity;
 
 				
 				for (Force &force : PhysicsComponent::ActiveForces(entity))
@@ -60,8 +60,8 @@ namespace perfectpixel { namespace physics {
 				
 			}
 
-			bedrock::PpFloat eulerDeltaT = deltaT / static_cast<bedrock::PpFloat>(EULER_STEPS);
-			for (bedrock::PpInt i = 0; i < EULER_STEPS; ++i)
+			float eulerDeltaT = deltaT / static_cast<float>(EULER_STEPS);
+			for (int32_t i = 0; i < EULER_STEPS; ++i)
 			{
 				velocity += acceleration * eulerDeltaT;
 				ecs::TransformComponent::Position(entity) += ecs::TransformComponent::Velocity(entity) * eulerDeltaT;

@@ -25,13 +25,13 @@ namespace perfectpixel { namespace ecs {
 		public:
 			void doQuery(int flags = QF_CORE);
 			void doCreate();
-			void doProcess(bedrock::PpFloat deltaT);
-			void doRender(bedrock::PpFloat deltaT);
+			void doProcess(float deltaT);
+			void doRender(float deltaT);
 			void doDestroy();
 
 			virtual void onCreate(const std::vector<Entity> &entities);
-			virtual void onUpdate(const std::vector<Entity> &entities, bedrock::PpFloat deltaT);
-			virtual void onRender(const std::vector<Entity> &entities, bedrock::PpFloat deltaT);
+			virtual void onUpdate(const std::vector<Entity> &entities, float deltaT);
+			virtual void onRender(const std::vector<Entity> &entities, float deltaT);
 			virtual void onDestroy(const std::vector<Entity> &entities);
 
 		protected:

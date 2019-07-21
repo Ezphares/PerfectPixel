@@ -7,13 +7,13 @@ namespace perfectpixel {
 		class Line
 		{
 		public:
-			Line(Vector2 direction, Vector2 referencePoint, PpFloat halfLength = Infinity);
+			Line(Vector2 direction, Vector2 referencePoint, float halfLength = Infinity);
 			~Line();
 
 		public:
 			Vector2 m_directionVector;
 			Vector2 m_referencePoint;
-			PpFloat m_halfLength;
+			float m_halfLength;
 		};
 
 	}

@@ -10,8 +10,8 @@ namespace perfectpixel { namespace ecs {
 
 	class IField;
 
-	typedef IField*(*FieldLookup)(bedrock::PpInt);
-	typedef bool(*HasLookup)(bedrock::PpInt);
+	typedef IField*(*FieldLookup)(int32_t);
+	typedef bool(*HasLookup)(int32_t);
 
 	class FieldTable : public bedrock::Singleton<FieldTable>
 	{
@@ -22,11 +22,11 @@ namespace perfectpixel { namespace ecs {
 		template<typename ComponentType>
 		void add(
 			const std::string &componentName, 
-			bedrock::PpInt componentId,
+			int32_t componentId,
 			const std::string &fieldName,
-			bedrock::PpInt fieldId,
+			int32_t fieldId,
 			const std::string &typeName,
-			bedrock::PpInt typeId)
+			int32_t typeId)
 		{
 			add<ComponentType>(componentId, fieldId, typeId);
 #if PP_FULL_REFLECTION_ENABLED
@@ -38,30 +38,30 @@ namespace perfectpixel { namespace ecs {
 
 		template<typename ComponentType>
 		void add(
-			bedrock::PpInt componentId,
-			bedrock::PpInt fieldId,
-			bedrock::PpInt typeId)
+			int32_t componentId,
+			int32_t fieldId,
+			int32_t typeId)
 		{
 			m_componentFieldLUT[componentId] = &ComponentType::Lookup;
 			m_typeLUT[std::pair(PP_ID(componentName), PP_ID(fieldName))] = typeId;
 		}
 
-		bedrock::PpInt componentFieldTypeID(bedrock::PpInt componentId, bedrock::PpInt fieldId)
+		int32_t componentFieldTypeID(int32_t componentId, int32_t fieldId)
 		{
 			return m_typeLUT[std::pair(componentId, fieldId)];
 		}
 
-		IField *getComponentFieldByID(bedrock::PpInt componentId, bedrock::PpInt fieldId)
+		IField *getComponentFieldByID(int32_t componentId, int32_t fieldId)
 		{
 			return componentFieldLookupByID(componentId)(fieldId);
 		}
 
-		FieldLookup componentFieldLookupByID(bedrock::PpInt componentId)
+		FieldLookup componentFieldLookupByID(int32_t componentId)
 		{
 			return m_componentFieldLUT[componentId];
 		}
 
-		HasLookup hasComponentByID(bedrock::PpInt componentId)
+		HasLookup hasComponentByID(int32_t componentId)
 		{
 			return m_hasComponentLUT[componentId];
 		}
@@ -77,11 +77,11 @@ namespace perfectpixel { namespace ecs {
 		}
 
 	private:
-		std::map<bedrock::PpInt, FieldLookup> m_componentFieldLUT;
-		std::map<bedrock::PpInt, HasLookup> m_hasComponentLUT;
-		std::map<std::pair<bedrock::PpInt, bedrock::PpInt>, bedrock::PpInt> m_typeLUT;
+		std::map<int32_t, FieldLookup> m_componentFieldLUT;
+		std::map<int32_t, HasLookup> m_hasComponentLUT;
+		std::map<std::pair<int32_t, int32_t>, int32_t> m_typeLUT;
 #if PP_FULL_REFLECTION_ENABLED
-		std::map<bedrock::PpInt, std::string> m_reverseHash;
+		std::map<int32_t, std::string> m_reverseHash;
 #endif /* PP_FULL_REFLECTION_ENABLED */
 	};
 

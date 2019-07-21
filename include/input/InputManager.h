@@ -23,10 +23,10 @@ namespace perfectpixel {
 			bedrock::KeyCallback getKeyCallback();
 			void handleInput(bedrock::KeyCode keyCode, bedrock::KeyEvent keyEvent);
 
-			bedrock::PpInt registerButton(const std::string &name);
-			bedrock::PpInt registerAxis(const std::string &name);
-			bedrock::PpInt lookupButton(const std::string &name) const;
-			bedrock::PpInt lookupAxis(const std::string &name) const;
+			int32_t registerButton(const std::string &name);
+			int32_t registerAxis(const std::string &name);
+			int32_t lookupButton(const std::string &name) const;
+			int32_t lookupAxis(const std::string &name) const;
 
 			void bindButton(const std::string &name, bedrock::KeyCode keyCode);
 
@@ -38,30 +38,30 @@ namespace perfectpixel {
 			void clearState();
 
 			bool isButtonDown(const std::string &name);
-			bool isButtonDown(bedrock::PpInt id);
+			bool isButtonDown(int32_t id);
 			bool wasButtonDownPrevious(const std::string &name);
-			bool wasButtonDownPrevious(bedrock::PpInt id);
+			bool wasButtonDownPrevious(int32_t id);
 			bool wasButtonPressed(const std::string &name);
-			bool wasButtonPressed(bedrock::PpInt id);
+			bool wasButtonPressed(int32_t id);
 			bool wasButtonReleased(const std::string &name);
-			bool wasButtonReleased(bedrock::PpInt id);
+			bool wasButtonReleased(int32_t id);
 
-			bedrock::PpFloat getAxisState(const std::string &name);
-			bedrock::PpFloat getAxisState(bedrock::PpInt id);
+			float getAxisState(const std::string &name);
+			float getAxisState(int32_t id);
 
 		private:
 			std::vector<std::string> m_buttons;
 			std::vector<std::string> m_axes;
 
-			std::map<bedrock::KeyCode, bedrock::PpInt> m_buttonBindings;
+			std::map<bedrock::KeyCode, int32_t> m_buttonBindings;
 
-			std::map<bedrock::PpInt, bool> m_buttonState;
-			std::map<bedrock::PpInt, bool> m_buttonStatePrev;
+			std::map<int32_t, bool> m_buttonState;
+			std::map<int32_t, bool> m_buttonStatePrev;
 			
-			std::map<bedrock::PpInt, bedrock::PpFloat> m_axisState;
-			std::map<bedrock::PpInt, bedrock::PpFloat> m_axisStatePrev;
+			std::map<int32_t, float> m_axisState;
+			std::map<int32_t, float> m_axisStatePrev;
 
-			std::map<std::pair<bedrock::PpInt, bedrock::PpInt>, bedrock::PpInt> m_buttonAxisBindings;
+			std::map<std::pair<int32_t, int32_t>, int32_t> m_buttonAxisBindings;
 		};
 		
 	}

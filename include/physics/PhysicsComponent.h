@@ -21,14 +21,14 @@ namespace perfectpixel { namespace physics {
 			FULL
 		};
 
-		_Field(PhysicsComponent, bedrock::PpFloat, Mass);
-		_Field(PhysicsComponent, bedrock::PpFloat, Bounciness);
+		_Field(PhysicsComponent, float, Mass);
+		_Field(PhysicsComponent, float, Bounciness);
 		_Field(PhysicsComponent, PhysicsSimulationType, SimulationType);
 		_ArrayField(PhysicsComponent, physics::Force, 8u, ActiveForces);
 
 		static void MakeStaticCollider(ecs::Entity entity);
 		static void ActivateForce(ecs::Entity entity, const Force &force);
-		static void DeactivateForce(ecs::Entity entity, bedrock::PpInt forceId);
+		static void DeactivateForce(ecs::Entity entity, int32_t forceId);
 	};
 
 } }

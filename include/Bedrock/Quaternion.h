@@ -1,13 +1,13 @@
 #pragma once
 
-#include "types/vectors.h"
+#include <Bedrock/vectors.h>
 
 namespace perfectpixel {
 	namespace bedrock {
 
 		struct Quaternion : public Vector4
 		{
-			Quaternion(const Vector3 &vec, PpFloat w) : Vector4({ vec.x(), vec.y(), vec.z(), w }) {};
+			Quaternion(const Vector3 &vec, float w) : Vector4({ vec.x(), vec.y(), vec.z(), w }) {};
 
 			static Quaternion rotate(const Vector3 &axis, Angle angle);
 
@@ -22,7 +22,5 @@ namespace perfectpixel {
 
 		/// Rotate a vector3 by this quaternion
 		Vector3 operator*(const Quaternion &quaternion, const Vector3 &vec);
-
-
 	}
 }

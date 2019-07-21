@@ -8,8 +8,8 @@ namespace perfectpixel {
 			Texture *texture,
 			bedrock::Vector2 topLeft,
 			bedrock::Vector2 size,
-			bedrock::PpInt frames /*= 1*/,
-			bedrock::PpInt framesPerRow /*= 0*/,
+			int32_t frames /*= 1*/,
+			int32_t framesPerRow /*= 0*/,
 			bedrock::Vector2 frameSpacing /*= types::Vector2()*/)
 			: m_texture(texture)
 			, m_textureTopLeft(topLeft)
@@ -25,7 +25,7 @@ namespace perfectpixel {
 		{
 		}
 
-		perfectpixel::bedrock::Vector2 Sprite::getTexCoord(bedrock::PpInt frame /*= 0*/)
+		perfectpixel::bedrock::Vector2 Sprite::getTexCoord(int32_t frame /*= 0*/)
 		{
 			frame %= m_frames;
 			bedrock::Vector2 step = m_textureSize + m_frameSpacing;
@@ -46,7 +46,7 @@ namespace perfectpixel {
 			return m_texture;
 		}
 
-		perfectpixel::bedrock::PpInt Sprite::getFrameNumber()
+		int32_t Sprite::getFrameNumber()
 		{
 			return m_frames;
 		}

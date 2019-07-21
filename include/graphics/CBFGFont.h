@@ -34,9 +34,9 @@ namespace perfectpixel {
 			~CBFGFont();
 
 		public:
-			virtual void writeBuffer(bedrock::Vector3 position, bedrock::PpFloat size, const std::string &text, std::vector<TextVertex> *out_vertices);
+			virtual void writeBuffer(bedrock::Vector3 position, float size, const std::string &text, std::vector<TextVertex> *out_vertices);
 			virtual Texture &getTexture();
-			virtual bedrock::PpFloat getWidth(bedrock::PpFloat size, const std::string &text);
+			virtual float getWidth(float size, const std::string &text);
 
 		private:
 			Texture m_texture;

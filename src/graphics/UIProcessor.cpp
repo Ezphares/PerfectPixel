@@ -5,7 +5,7 @@
 
 namespace perfectpixel { namespace graphics {
 	
-	void UIProcessor::onRender(const std::vector<ecs::Entity> &entities, bedrock::PpFloat deltaT)
+	void UIProcessor::onRender(const std::vector<ecs::Entity> &entities, float deltaT)
 	{
 		if (!m_font) m_font = m_gm->getDefaultFont();
 
@@ -21,8 +21,8 @@ namespace perfectpixel { namespace graphics {
 				element->m_text = UITextComponent::Text(entity);
 				element->m_fontSize = 20.0f;
 
-				bedrock::PpFloat width = element->m_font->getWidth(element->m_fontSize, element->m_text);
-				bedrock::PpInt alignment = UITextComponent::Alignment(entity);
+				float width = element->m_font->getWidth(element->m_fontSize, element->m_text);
+				int32_t alignment = UITextComponent::Alignment(entity);
 				if ((alignment & UIUtil::UITA_CENTER) > 0)
 				{
 					element->m_position.x() -= width * 0.5f;

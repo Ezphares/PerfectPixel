@@ -17,24 +17,24 @@ namespace graphics {
 			Texture *texture,
 			bedrock::Vector2 topLeft,
 			bedrock::Vector2 size,
-			bedrock::PpInt frames = 1,
-			bedrock::PpInt framesPerRow = 0,
+			int32_t frames = 1,
+			int32_t framesPerRow = 0,
 			bedrock::Vector2 frameSpacing = bedrock::Vector2());
 		~Sprite();
 
 	public:
-		bedrock::Vector2 getTexCoord(bedrock::PpInt frame = 0);
+		bedrock::Vector2 getTexCoord(int32_t frame = 0);
 		bedrock::Vector2 getSize();
 		Texture *getTexture();
-		bedrock::PpInt getFrameNumber();
+		int32_t getFrameNumber();
 
 	private:
 		Texture *m_texture;
 		bedrock::Vector2 m_textureTopLeft;
 		bedrock::Vector2 m_textureSize;
 
-		bedrock::PpInt m_frames;
-		bedrock::PpInt m_framesPerRow;
+		int32_t m_frames;
+		int32_t m_framesPerRow;
 		bedrock::Vector2 m_frameSpacing;
 
 	};

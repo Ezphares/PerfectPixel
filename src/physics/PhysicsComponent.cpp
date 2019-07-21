@@ -25,7 +25,7 @@ namespace perfectpixel { namespace physics {
 		ActiveForces(entity).push_back(force);
 	}
 
-	void PhysicsComponent::DeactivateForce(ecs::Entity entity, types::PpInt forceId)
+	void PhysicsComponent::DeactivateForce(ecs::Entity entity, types::int32_t forceId)
 	{
 		for (auto it = ActiveForces(entity).begin(); it != ActiveForces(entity).end(); ++it)
 		{

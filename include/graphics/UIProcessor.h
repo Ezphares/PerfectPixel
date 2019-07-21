@@ -19,7 +19,7 @@ namespace perfectpixel { namespace graphics {
 	public:
 		UIProcessor() : Processor(UIQuery::build()) {}
 
-		virtual void onRender(const std::vector<ecs::Entity> &entities, bedrock::PpFloat deltaT);
+		virtual void onRender(const std::vector<ecs::Entity> &entities, float deltaT);
 
 		static IFont *m_font;
 		static GraphicsManager *m_gm; 

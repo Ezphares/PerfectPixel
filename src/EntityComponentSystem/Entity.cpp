@@ -26,9 +26,9 @@ namespace perfectpixel {
 	}
 }
 
-perfectpixel::serialization::BinarySerializer & operator<<(perfectpixel::serialization::BinarySerializer &serializer, const perfectpixel::ecs::Entity &entity)
+perfectpixel::serialization::ISerializer & operator<<(perfectpixel::serialization::ISerializer &serializer, const perfectpixel::ecs::Entity &entity)
 {
-	serializer << *((uint32_t*)&entity);
+	serializer.writeMappedUInt32(*((uint32_t*)&entity));
 	return serializer;
 }
 

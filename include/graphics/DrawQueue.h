@@ -25,7 +25,7 @@ namespace perfectpixel { namespace graphics {
 	struct UITextDrawQueueElement : public DrawQueueElement
 	{
 		bedrock::Vector3 m_position;
-		bedrock::PpFloat m_fontSize;
+		float m_fontSize;
 		std::string m_text;
 		IFont *m_font;
 	};

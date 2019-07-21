@@ -1,17 +1,21 @@
 #pragma once
 
 #include <Bedrock/numbers.h>
+#include <Bedrock/TypeReflection.h>
+
+#include <serialization/ISerializer.h>
 
 #include <type_traits>
 #include <array>
 
-namespace perfectpixel {
+namespace perfectpixel { 
 
 	namespace serialization
 	{
-		class BinarySerializer;
+		class ISerializer;
 	}
-
+	
+	
 namespace bedrock {
 
 struct Angle;
@@ -23,14 +27,14 @@ struct Point2;
 
 struct Angle
 {
-	static Angle degrees(PpFloat degrees);
-	static Angle radians(PpFloat radians);
+	static Angle degrees(float degrees);
+	static Angle radians(float radians);
 
-	PpFloat radians();
-	PpFloat degrees();
+	float radians();
+	float degrees();
 
 private:
-	PpFloat m_rad;
+	float m_rad;
 };
 
 template<unsigned D>
@@ -45,16 +49,16 @@ struct Vector
 		}
 	}
 
-	Vector(std::array<PpFloat, D> values)
+	Vector(std::array<float, D> values)
 	{
 		m_data = values;
 	}
 
-	std::array<PpFloat, D> m_data;
+	std::array<float, D> m_data;
 
-	static PpFloat dot(const Vector<D> &l, const Vector<D> &r)
+	static float dot(const Vector<D> &l, const Vector<D> &r)
 	{
-		PpFloat accumulator{ 0.0f };
+		float accumulator{ 0.0f };
 		for (unsigned i = 0; i < D; i++)
 		{
 			accumulator += l.m_data[i] * r.m_data[i];
@@ -65,7 +69,7 @@ struct Vector
 	template <typename T = typename std::enable_if<D==3, Vector<3>>::type>
 	static T cross(const Vector<D> &l, const Vector<D> &r)
 	{
-		return T(std::array<PpFloat, 3>
+		return T(std::array<float, 3>
 		{
 			l.m_data[1] * r.m_data[2] - l.m_data[2] * r.m_data[1],
 			l.m_data[2] * r.m_data[0] - l.m_data[0] * r.m_data[2],
@@ -73,13 +77,13 @@ struct Vector
 		});
 	}
 
-	template <typename T = typename std::enable_if<D == 3, PpFloat>::type>
+	template <typename T = typename std::enable_if<D == 3, float>::type>
 	static T triple(const Vector<D> &a, const Vector<D> &b, const Vector<D> &c)
 	{
 		return dot(a, cross(b, c));
 	}
 
-	PpFloat magnitude() const
+	float magnitude() const
 	{
 		return sqrtf(dot(*this, *this));
 	}
@@ -121,14 +125,14 @@ struct Vector
 		return *this;
 	}
 
-	Vector<D> operator* (PpFloat scalar) const
+	Vector<D> operator* (float scalar) const
 	{
 		Vector<D> result = *this;
 		result *= scalar;
 		return result;
 	}
 
-	Vector<D> &operator*= (PpFloat scalar)
+	Vector<D> &operator*= (float scalar)
 	{
 		for (unsigned i = 0; i < D; i++)
 		{
@@ -137,14 +141,14 @@ struct Vector
 		return *this;
 	}
 
-	Vector<D> operator/ (PpFloat scalar) const
+	Vector<D> operator/ (float scalar) const
 	{
 		Vector<D> result = *this;
 		result /= scalar;
 		return result;
 	}
 
-	Vector<D> &operator/= (PpFloat scalar)
+	Vector<D> &operator/= (float scalar)
 	{
 		for (unsigned i = 0; i < D; i++)
 		{
@@ -170,13 +174,13 @@ struct Vector2 : public Vector<2>
 {
 	/* implicit */ Vector2(const Vector<2> &convert) : Vector<2>(convert) {}
 	Vector2() : Vector<2>() {}
-	Vector2(PpFloat x, PpFloat y) : Vector<2>( std::array<PpFloat, 2>{ x,y }) {}
+	Vector2(float x, float y) : Vector<2>( std::array<float, 2>{ x,y }) {}
 	explicit Vector2(const Vector3 &discard);
 
-	inline const PpFloat x() const { return m_data[0]; }
-	inline PpFloat &x() { return m_data[0]; }
-	inline const PpFloat y() const { return m_data[1]; }
-	inline PpFloat &y() { return m_data[1]; }
+	inline const float x() const { return m_data[0]; }
+	inline float &x() { return m_data[0]; }
+	inline const float y() const { return m_data[1]; }
+	inline float &y() { return m_data[1]; }
 
 	const static Vector2 DOWN;
 	const static Vector2 UP;
@@ -187,16 +191,16 @@ struct Vector2 : public Vector<2>
 struct Vector3 : public Vector<3> {
 	/* implicit */ Vector3(const Vector<3> &convert) : Vector<3>(convert) {}
 	Vector3() : Vector<3>() {}
-	Vector3(PpFloat x, PpFloat y, PpFloat z) : Vector<3>(std::array<PpFloat, 3>{ x, y, z }) {}
+	Vector3(float x, float y, float z) : Vector<3>(std::array<float, 3>{ x, y, z }) {}
 	explicit Vector3(const Vector2 &expand);
 	explicit Vector3(const Vector4 &discard, bool wDivide = true);
 
-	inline const PpFloat x() const { return m_data[0]; }
-	inline PpFloat &x() { return m_data[0]; }
-	inline const PpFloat y() const { return m_data[1]; }
-	inline PpFloat &y() { return m_data[1]; }
-	inline const PpFloat z() const { return m_data[2]; }
-	inline PpFloat &z() { return m_data[2]; }
+	inline const float x() const { return m_data[0]; }
+	inline float &x() { return m_data[0]; }
+	inline const float y() const { return m_data[1]; }
+	inline float &y() { return m_data[1]; }
+	inline const float z() const { return m_data[2]; }
+	inline float &z() { return m_data[2]; }
 
 	const static Vector3 DOWN;
 	const static Vector3 UP;
@@ -208,29 +212,29 @@ struct Vector3 : public Vector<3> {
 
 struct Vector4 : public Vector<4> {
 	Vector4() : Vector<4>() {}
-	Vector4(PpFloat x, PpFloat y, PpFloat z, PpFloat w) : Vector<4>(std::array<PpFloat, 4>{ x, y, z, w }) {}
+	Vector4(float x, float y, float z, float w) : Vector<4>(std::array<float, 4>{ x, y, z, w }) {}
 
-	inline const PpFloat x() const { return m_data[0]; }
-	inline PpFloat &x() { return m_data[0]; }
-	inline const PpFloat y() const { return m_data[1]; }
-	inline PpFloat &y() { return m_data[1]; }
-	inline const PpFloat z() const { return m_data[2]; }
-	inline PpFloat &z() { return m_data[2]; }
-	inline const PpFloat w() const { return m_data[3]; }
-	inline PpFloat &w() { return m_data[3]; }
+	inline const float x() const { return m_data[0]; }
+	inline float &x() { return m_data[0]; }
+	inline const float y() const { return m_data[1]; }
+	inline float &y() { return m_data[1]; }
+	inline const float z() const { return m_data[2]; }
+	inline float &z() { return m_data[2]; }
+	inline const float w() const { return m_data[3]; }
+	inline float &w() { return m_data[3]; }
 };
 
 struct Point3 {
-	PpInt m_x, m_y, m_z;
+	int32_t m_x, m_y, m_z;
 
-	Point3(PpInt x = 0, PpInt y = 0, PpInt z = 0);
+	Point3(int32_t x = 0, int32_t y = 0, int32_t z = 0);
 	Point3(const Point2 &point2);
 };
 
 struct Point2 {
-	PpInt m_x, m_y;
+	int32_t m_x, m_y;
 
-	Point2(PpInt x = 0, PpInt y = 0);
+	Point2(int32_t x = 0, int32_t y = 0);
 	Point2(const Point3 &point3);
 };
 
@@ -240,25 +244,34 @@ inline bool operator==(const Point2 &l, const Point2 &r) { return l.m_x == r.m_x
 }
 
 template<unsigned D>
-perfectpixel::serialization::BinarySerializer &operator<<(perfectpixel::serialization::BinarySerializer &ostream, const perfectpixel::bedrock::Vector<D> &vec)
+perfectpixel::serialization::ISerializer &operator<<(perfectpixel::serialization::ISerializer &ostream, const perfectpixel::bedrock::Vector<D> &vec)
 {
+	ostream.writeArrayStart();
+
 	for (unsigned i = 0; i < D; ++i)
 	{
-		ostream << vec.m_data[i];
+		ostream.writeFloat(vec.m_data[i]);
 	}
+
+	ostream.writeArrayEnd();
 	return ostream;
 }
 
 template<unsigned D>
-perfectpixel::serialization::BinarySerializer &operator>>(perfectpixel::serialization::BinarySerializer &istream, perfectpixel::bedrock::Vector <D> &vec)
+perfectpixel::serialization::ISerializer &operator>>(perfectpixel::serialization::ISerializer &istream, perfectpixel::bedrock::Vector <D> &vec)
 {
-	for (unsigned i = 0; i < D; ++i)
+	uint32_t datasize = istream.readArrayStart();
+
+	for (unsigned i = 0; i < std::min(D, datasize); ++i)
 	{
-		istream >> vec.m_data[i];
+		istream.readFloat(vec.m_data[i]);
 	}
+
+	istream.readArrayEnd();
+
 	return istream;
 }
 
-
-
-
+PP_TYPE_REFLECTION(::perfectpixel::bedrock::Vector2, Vector2);
+PP_TYPE_REFLECTION(::perfectpixel::bedrock::Vector3, Vector3);
+PP_TYPE_REFLECTION(::perfectpixel::bedrock::Vector4, Vector4);

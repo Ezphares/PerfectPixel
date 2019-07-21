@@ -18,7 +18,7 @@ namespace perfectpixel {
 
 				bedrock::Vector2 worldSize,
 				bedrock::Vector2 offset,
-				bedrock::PpFloat fps,
+				float fps,
 
 				RenderHints renderHints = RenderHints::RH_NONE
 			);
@@ -28,25 +28,25 @@ namespace perfectpixel {
 			ecs::Entity getEntity() const;
 
 			Sprite *getSprite() const;
-			bedrock::PpInt getFrame() const;
+			int32_t getFrame() const;
 
 			bedrock::Vector2 getOffset() const;
 			bedrock::Vector2 getSize() const;
 
 			RenderHints getHints() const;
 
-			void update(bedrock::PpFloat deltaTime);
+			void update(float deltaTime);
 
 		private:
 			ecs::Entity m_entity;
 			graphics::Sprite *m_sprite;
 			bedrock::Vector2 m_size;
 			bedrock::Vector2 m_offset;
-			bedrock::PpFloat m_fps;
+			float m_fps;
 			RenderHints m_renderHints;
 
-			bedrock::PpFloat m_frameTimeAccumulator;
-			bedrock::PpInt m_currentFrame;
+			float m_frameTimeAccumulator;
+			int32_t m_currentFrame;
 		};
 	}
 }

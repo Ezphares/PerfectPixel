@@ -41,8 +41,8 @@ Texture::Texture(const PNG &png)
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	m_size = bedrock::Point2(
-		static_cast<bedrock::PpInt>(png.m_w),
-		static_cast<bedrock::PpInt>(png.m_h));
+		static_cast<int32_t>(png.m_w),
+		static_cast<int32_t>(png.m_h));
 }
 
 Texture::Texture(const bedrock::Point2 size)
@@ -130,16 +130,16 @@ void Texture::unbind(GLuint unit)
 perfectpixel::bedrock::Vector2 Texture::pixelToTexture(bedrock::Point2 pixel) const
 {
 	return bedrock::Vector2{
-		static_cast<bedrock::PpFloat>(pixel.m_x) / m_size.m_x,
-		static_cast<bedrock::PpFloat>(pixel.m_y) / m_size.m_y,
+		static_cast<float>(pixel.m_x) / m_size.m_x,
+		static_cast<float>(pixel.m_y) / m_size.m_y,
 	};
 }
 
 perfectpixel::bedrock::Point2 Texture::textureToPixel(bedrock::Vector2 pixel) const
 {
 	return bedrock::Point2{
-		static_cast<bedrock::PpInt>(pixel.x() * m_size.m_x + 0.001),
-		static_cast<bedrock::PpInt>(pixel.y() * m_size.m_y + 0.001),
+		static_cast<int32_t>(pixel.x() * m_size.m_x + 0.001),
+		static_cast<int32_t>(pixel.y() * m_size.m_y + 0.001),
 	};
 }
 

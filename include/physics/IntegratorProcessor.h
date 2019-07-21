@@ -10,7 +10,7 @@ namespace perfectpixel { namespace physics {
 	public:
 		IntegratorProcessor();
 
-		virtual void onUpdate(const std::vector<ecs::Entity> &entities, bedrock::PpFloat deltaT);
+		virtual void onUpdate(const std::vector<ecs::Entity> &entities, float deltaT);
 	};
 
 }}

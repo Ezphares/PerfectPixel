@@ -37,7 +37,7 @@ namespace perfectpixel {
 			auto binding = m_buttonBindings.find(keyCode);
 			if (binding != m_buttonBindings.end())
 			{
-				bedrock::PpInt id = binding->second;
+				int32_t id = binding->second;
 
 				bool
 					target = keyEvent == bedrock::KeyEvent::PP_KEYDOWN,
@@ -53,21 +53,21 @@ namespace perfectpixel {
 				// Button axis updates
 				for (auto &it : m_buttonAxisBindings)
 				{
-					const std::pair<bedrock::PpInt, bedrock::PpInt> &axisButtons = it.first;
+					const std::pair<int32_t, int32_t> &axisButtons = it.first;
 					if (id == axisButtons.first || id == axisButtons.second)
 					{
 						m_axisState[it.second] =
-							static_cast<bedrock::PpFloat>(isButtonDown(axisButtons.second)) -
-							static_cast<bedrock::PpFloat>(isButtonDown(axisButtons.first));
+							static_cast<float>(isButtonDown(axisButtons.second)) -
+							static_cast<float>(isButtonDown(axisButtons.first));
 					}
 				}
 			}
 		}
 
-		perfectpixel::bedrock::PpInt InputManager::registerButton(const std::string &name)
+		int32_t InputManager::registerButton(const std::string &name)
 		{
 			// FIXME check already existing
-			bedrock::PpInt id = m_buttons.size();
+			int32_t id = m_buttons.size();
 
 			m_buttons.push_back(name);
 
@@ -77,10 +77,10 @@ namespace perfectpixel {
 			return id;
 		}
 
-		perfectpixel::bedrock::PpInt InputManager::registerAxis(const std::string &name)
+		int32_t InputManager::registerAxis(const std::string &name)
 		{
 			// FIXME check already existing
-			bedrock::PpInt id = m_axes.size();
+			int32_t id = m_axes.size();
 
 			m_axes.push_back(name);
 
@@ -90,9 +90,9 @@ namespace perfectpixel {
 			return id;
 		}
 
-		perfectpixel::bedrock::PpInt InputManager::lookupButton(const std::string &name) const
+		int32_t InputManager::lookupButton(const std::string &name) const
 		{
-			for (bedrock::PpInt i = 0; i < static_cast<bedrock::PpInt>(m_buttons.size()); ++i)
+			for (int32_t i = 0; i < static_cast<int32_t>(m_buttons.size()); ++i)
 			{
 				if (m_buttons[i] == name)
 				{
@@ -102,9 +102,9 @@ namespace perfectpixel {
 			throw bedrock::PpException("Unrecognized button");
 		}
 
-		perfectpixel::bedrock::PpInt InputManager::lookupAxis(const std::string &name) const
+		int32_t InputManager::lookupAxis(const std::string &name) const
 		{
-			for (bedrock::PpInt i = 0; i < static_cast<bedrock::PpInt>(m_axes.size()); ++i)
+			for (int32_t i = 0; i < static_cast<int32_t>(m_axes.size()); ++i)
 			{
 				if (m_axes[i] == name)
 				{
@@ -117,9 +117,9 @@ namespace perfectpixel {
 
 		void InputManager::bindButton(const std::string &name, bedrock::KeyCode keyCode)
 		{
-			bedrock::PpInt buttonId = lookupButton(name);
+			int32_t buttonId = lookupButton(name);
 
-			for (bedrock::PpInt i = 0; i < static_cast<bedrock::PpInt>(m_buttons.size()); ++i)
+			for (int32_t i = 0; i < static_cast<int32_t>(m_buttons.size()); ++i)
 			{
 				if (m_buttons[i] == name)
 				{
@@ -147,11 +147,11 @@ namespace perfectpixel {
 
 		void InputManager::bindAxisToButtons(const std::string &axisName, const std::string &negativeButton, const std::string &positiveButton)
 		{
-			bedrock::PpInt axisId = lookupAxis(axisName);
-			bedrock::PpInt negativeId = lookupButton(negativeButton);
-			bedrock::PpInt positiveId = lookupButton(positiveButton);
+			int32_t axisId = lookupAxis(axisName);
+			int32_t negativeId = lookupButton(negativeButton);
+			int32_t positiveId = lookupButton(positiveButton);
 
-			std::pair<bedrock::PpInt, bedrock::PpInt> axisButtons{ negativeId, positiveId };
+			std::pair<int32_t, int32_t> axisButtons{ negativeId, positiveId };
 			m_buttonAxisBindings[axisButtons] = axisId;
 		}
 
@@ -175,9 +175,9 @@ namespace perfectpixel {
 			return m_buttonState[lookupButton(name)];
 		}
 
-		bool InputManager::isButtonDown(bedrock::PpInt id)
+		bool InputManager::isButtonDown(int32_t id)
 		{
-			if (id >= static_cast<bedrock::PpInt>(m_buttons.size()))
+			if (id >= static_cast<int32_t>(m_buttons.size()))
 			{
 				throw bedrock::PpException("Unregistered button ID");
 			}
@@ -190,9 +190,9 @@ namespace perfectpixel {
 			return m_buttonStatePrev[lookupButton(name)];
 		}
 
-		bool InputManager::wasButtonDownPrevious(bedrock::PpInt id)
+		bool InputManager::wasButtonDownPrevious(int32_t id)
 		{
-			if (id >= static_cast<bedrock::PpInt>(m_buttons.size()))
+			if (id >= static_cast<int32_t>(m_buttons.size()))
 			{
 				throw bedrock::PpException("Unregistered button ID");
 			}
@@ -205,7 +205,7 @@ namespace perfectpixel {
 			return (isButtonDown(name) && !wasButtonDownPrevious(name));
 		}
 
-		bool InputManager::wasButtonPressed(bedrock::PpInt id)
+		bool InputManager::wasButtonPressed(int32_t id)
 		{
 			return (isButtonDown(id) && !wasButtonDownPrevious(id));
 		}
@@ -215,17 +215,17 @@ namespace perfectpixel {
 			return (wasButtonDownPrevious(name) && !isButtonDown(name));
 		}
 
-		bool InputManager::wasButtonReleased(bedrock::PpInt id)
+		bool InputManager::wasButtonReleased(int32_t id)
 		{
 			return (wasButtonDownPrevious(id) && !isButtonDown(id));
 		}
 
-		perfectpixel::bedrock::PpFloat InputManager::getAxisState(const std::string &name)
+		float InputManager::getAxisState(const std::string &name)
 		{
 			return m_axisState[lookupAxis(name)];
 		}
 
-		perfectpixel::bedrock::PpFloat InputManager::getAxisState(bedrock::PpInt id)
+		float InputManager::getAxisState(int32_t id)
 		{
 			return m_axisState[id];
 		}

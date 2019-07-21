@@ -25,7 +25,7 @@ namespace perfectpixel { namespace ecs {
 	private:
 		uint32_t objects;
 		uint32_t lastIndex;
-		std::map<bedrock::PpInt, IField*> fields;
+		std::map<int32_t, IField*> fields;
 
 	protected:
 		static Field<Component<T>, Entity> Owner;
@@ -47,7 +47,7 @@ namespace perfectpixel { namespace ecs {
 			return Owner.at(idx);
 		}
 
-		static bool AddField(bedrock::PpInt id, IField *field)
+		static bool AddField(int32_t id, IField *field)
 		{
 			auto &fields = getInstance()->fields;
 			// Inline statics are weird, we have to check for duplicates
@@ -60,7 +60,7 @@ namespace perfectpixel { namespace ecs {
 			return add;
 		}
 
-		static IField *Lookup(bedrock::PpInt id)
+		static IField *Lookup(int32_t id)
 		{
 			return getInstance()->fields[id];
 		}

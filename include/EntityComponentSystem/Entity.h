@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Bedrock/TypeReflection.h>
+
 #include <cstdint>
 #include <ostream>
 
@@ -7,7 +9,7 @@ namespace perfectpixel {
 
 	namespace serialization 
 	{
-		class BinarySerializer;
+		class ISerializer;
 	}
 namespace ecs {
 
@@ -45,8 +47,10 @@ namespace ecs {
 }
 }
 
+PP_TYPE_REFLECTION(::perfectpixel::ecs::Entity, Entity);
+
 std::ostream &operator<<(std::ostream &stream, const perfectpixel::ecs::Entity &entity);
 
-perfectpixel::serialization::BinarySerializer &operator<<(
-	perfectpixel::serialization::BinarySerializer &serializer, 
+perfectpixel::serialization::ISerializer &operator<<(
+	perfectpixel::serialization::ISerializer &serializer,
 	const perfectpixel::ecs::Entity &entity);

@@ -17,7 +17,7 @@ namespace perfectpixel {
 			template <typename T>
 			using EnableIfSquare = typename std::enable_if<W == H, T>::type;
 
-			Matrix(std::array<PpFloat, W*H> data)
+			Matrix(std::array<float, W*H> data)
 				: m_data(data)
 			{}
 
@@ -30,21 +30,21 @@ namespace perfectpixel {
 				}
 			}
 
-			PpFloat &m(unsigned x, unsigned y)
+			float &m(unsigned x, unsigned y)
 			{
 				return m_data[x * H + y];
 			}
 
-			const PpFloat m(unsigned x, unsigned y) const
+			const float m(unsigned x, unsigned y) const
 			{
 				return m_data[x * H + y];
 			}
 
-			std::array<PpFloat, W*H> m_data;
+			std::array<float, W*H> m_data;
 
 			Vector<H> column(unsigned index) const
 			{
-				std::array<PpFloat, H> result;
+				std::array<float, H> result;
 				for (unsigned i = 0; i < W; i++)
 				{
 					result[i] = m_data[index * H + i];
@@ -54,7 +54,7 @@ namespace perfectpixel {
 
 			Vector<W> row(unsigned index) const
 			{
-				std::array<PpFloat, W> result;
+				std::array<float, W> result;
 				for (unsigned i = 0; i < W; i++)
 				{
 					result[i] = m_data[i * H + index];
@@ -133,14 +133,14 @@ namespace perfectpixel {
 			template <unsigned D>
 			struct ImplDeterminant
 			{
-				static PpFloat get(const Matrix<D, D> &mat)
+				static float get(const Matrix<D, D> &mat)
 				{
-					PpFloat accumulator{ 0.0f };
+					float accumulator{ 0.0f };
 					bool add = true;
 
 					for (unsigned i = 0; i < D; i++)
 					{
-						PpFloat recurse = mat.m(i, 0) * ImplDeterminant<D - 1>::get(mat.minor(i, 0));
+						float recurse = mat.m(i, 0) * ImplDeterminant<D - 1>::get(mat.minor(i, 0));
 
 						accumulator += add ? recurse : -recurse;
 
@@ -154,13 +154,13 @@ namespace perfectpixel {
 			template <>
 			struct ImplDeterminant<2>
 			{
-				static PpFloat get(const Matrix<2, 2> &mat)
+				static float get(const Matrix<2, 2> &mat)
 				{
 					return mat.m_data[0] * mat.m_data[3] - mat.m_data[1] * mat.m_data[2];
 				}
 			};
 
-			template<typename T = PpFloat>
+			template<typename T = float>
 			EnableIfSquare<T> determinant()
 			{
 				return ImplDeterminant<H>::get(*this);
@@ -172,7 +172,7 @@ namespace perfectpixel {
 		struct Matrix2x2 : public Matrix<2, 2>
 		{
 			/*implicit*/ Matrix2x2(const Matrix<2, 2> &convert) : Matrix<2, 2>(convert) {}
-			explicit Matrix2x2(const std::array<PpFloat, 4> data) : Matrix<2, 2>(data) {}
+			explicit Matrix2x2(const std::array<float, 4> data) : Matrix<2, 2>(data) {}
 
 			static const Matrix2x2 IDENTITY;
 
@@ -182,7 +182,7 @@ namespace perfectpixel {
 		struct Matrix3x3 : public Matrix<3, 3>
 		{
 			/*implicit*/ Matrix3x3(const Matrix<3, 3> &convert) : Matrix<3, 3>(convert) {}
-			explicit Matrix3x3(const std::array<PpFloat, 9> data) : Matrix<3, 3>(data) {}
+			explicit Matrix3x3(const std::array<float, 9> data) : Matrix<3, 3>(data) {}
 
 			static const Matrix3x3 IDENTITY;
 		};
@@ -190,7 +190,7 @@ namespace perfectpixel {
 		struct Matrix4x4 : public Matrix<4, 4>
 		{
 			/*implicit*/ Matrix4x4(const Matrix<4, 4> &convert) : Matrix<4, 4>(convert) {}
-			explicit Matrix4x4(const std::array<PpFloat, 16> data) : Matrix<4, 4>(data) {}
+			explicit Matrix4x4(const std::array<float, 16> data) : Matrix<4, 4>(data) {}
 
 			static const Matrix4x4 IDENTITY;
 		};

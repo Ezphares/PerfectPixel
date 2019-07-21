@@ -5,7 +5,7 @@
 namespace perfectpixel {
 	namespace graphics{
 		struct Quad {
-			bedrock::PpFloat
+			float
 				m_left,
 				m_top,
 				m_right,

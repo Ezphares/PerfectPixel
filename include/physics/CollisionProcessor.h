@@ -28,7 +28,7 @@ namespace perfectpixel { namespace physics {
 			ColliderComponent::ColliderMaskType m_maskTypeFirst, m_maskTypeSecond;
 			union {
 				bedrock::Vector2 m_data_RectRectOverlap;
-				bedrock::PpFloat m_data_CircCircOverlap;
+				float m_data_CircCircOverlap;
 			};
 		};
 
@@ -36,7 +36,7 @@ namespace perfectpixel { namespace physics {
 		CollisionProcessor();
 		virtual ~CollisionProcessor();
 
-		virtual void onUpdate(const std::vector<ecs::Entity> &entities, bedrock::PpFloat deltaT);
+		virtual void onUpdate(const std::vector<ecs::Entity> &entities, float deltaT);
 
 	private:
 		void collideSingle(ecs::Entity entity, std::set<ecs::Entity> &cache);
@@ -47,15 +47,15 @@ namespace perfectpixel { namespace physics {
 		bool collideCircleCircle(ecs::Entity first, const bedrock::Circle &firstCircle, ecs::Entity second, const bedrock::Circle &secondCircle, CollisionData &out_collision);
 
 		void resolveCollision(const CollisionData &collision);
-		void singleAxisReposition(bedrock::PpFloat mass1, bedrock::PpFloat mass2, bedrock::PpFloat overlap, bedrock::PpFloat *out_magnitude1, bedrock::PpFloat *out_magnitude2);
+		void singleAxisReposition(float mass1, float mass2, float overlap, float *out_magnitude1, float *out_magnitude2);
 		void singleAxisBounce(
-			bedrock::PpFloat bounciness,
-			bedrock::PpFloat mass1,
-			bedrock::PpFloat mass2,
-			bedrock::PpFloat velocity1,
-			bedrock::PpFloat velocity2,
-			bedrock::PpFloat *out_newVelocity1,
-			bedrock::PpFloat *out_newVelocity2);
+			float bounciness,
+			float mass1,
+			float mass2,
+			float velocity1,
+			float velocity2,
+			float *out_newVelocity1,
+			float *out_newVelocity2);
 
 		bedrock::Vector2 absoluteCenter(ecs::Entity entity);
 	};

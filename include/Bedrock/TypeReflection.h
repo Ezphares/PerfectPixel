@@ -3,12 +3,13 @@
 #include <typeinfo>
 #include <sstream>
 
+#include <Bedrock/Hash.h>
 #include <Bedrock/PpException.h>
 #include <Bedrock/numbers.h>
 #include <Bedrock/defines.h>
 
 #if PP_FULL_REFLECTION_ENABLED
-#define PP_TYPENAME_IMPL(T, TSHORT) template <> std::string typeName<T>() { return #TSHORT; }
+#define PP_TYPENAME_IMPL(T, TSHORT) template <> inline std::string typeName<T>() { return #TSHORT; }
 #else
 #define PP_TYPENAME_IMPL(T, TSHORT)
 #endif // PP_FULL_REFLECTION_ENABLED
@@ -16,14 +17,14 @@
 
 #define PP_TYPE_REFLECTION(T, TSHORT) \
 namespace perfectpixel { namespace bedrock { \
-template <> perfectpixel::bedrock::PpInt typeID<T>() { return PP_ID(TSHORT); } \
+template <> inline int32_t typeID<T>() { return PP_ID(TSHORT); } \
 PP_TYPENAME_IMPL(T, TSHORT) \
 } }
 
 namespace perfectpixel { namespace bedrock {
 
 	template <typename T>
-	PpInt typeID()
+	int32_t typeID()
 	{
 		std::stringstream err;
 		err << "No TypeID registered for requested type [" << typeid(T).name() << "]";
@@ -44,5 +45,5 @@ namespace perfectpixel { namespace bedrock {
 
 } }
 
-PP_TYPE_REFLECTION(perfectpixel::bedrock::PpInt, PpInt);
-PP_TYPE_REFLECTION(perfectpixel::bedrock::PpFloat, PpFloat);
+PP_TYPE_REFLECTION(int32_t, int32_t);
+PP_TYPE_REFLECTION(float, float);

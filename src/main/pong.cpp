@@ -22,8 +22,8 @@ class BatComponent
 	, public LinearScanComponentStorage
 {
 public:
-	_Field(BatComponent, bedrock::PpFloat, MaxSpeed);
-	_Field(BatComponent, bedrock::PpFloat, CurrentDirection);
+	_Field(BatComponent, float, MaxSpeed);
+	_Field(BatComponent, float, CurrentDirection);
 };
 
 class PlayerComponent
@@ -31,7 +31,7 @@ class PlayerComponent
 	, public MapComponentStorage
 {
 public:
-	_Field(PlayerComponent, bedrock::PpInt, InputAxis);
+	_Field(PlayerComponent, int32_t, InputAxis);
 };
 
 class AIComponent
@@ -47,9 +47,9 @@ class BallComponent
 	, public MapComponentStorage
 {
 public:
-	_Field(BallComponent, bedrock::PpFloat, DeltaXPrev);
-	_Field(BallComponent, bedrock::PpInt, Score1);
-	_Field(BallComponent, bedrock::PpInt, Score2);
+	_Field(BallComponent, float, DeltaXPrev);
+	_Field(BallComponent, int32_t, Score1);
+	_Field(BallComponent, int32_t, Score2);
 
 	static void Reset(Entity entity)
 	{
@@ -70,7 +70,7 @@ class ScoreUIComponent
 {
 public:
 	_Field(ScoreUIComponent, Entity, BallToTrack);
-	_Field(ScoreUIComponent, bedrock::PpInt, PlayerIndex);
+	_Field(ScoreUIComponent, int32_t, PlayerIndex);
 };
 
 class BatProcessor : public Processor
@@ -90,7 +90,7 @@ public:
 		}
 	}
 
-	virtual void onUpdate(const std::vector<Entity> &entities, bedrock::PpFloat deltaT)
+	virtual void onUpdate(const std::vector<Entity> &entities, float deltaT)
 	{
 	    for (auto entity : entities)
 		{
@@ -110,7 +110,7 @@ public:
 		: Processor(PlayerQuery::build())
 	{}
 
-	virtual void onUpdate(const std::vector<Entity> &entities, bedrock::PpFloat deltaT)
+	virtual void onUpdate(const std::vector<Entity> &entities, float deltaT)
 	{
 		for (auto entity : entities)
 		{
@@ -132,7 +132,7 @@ public:
 		: Processor(AIQuery::build())
 	{}
 
-	virtual void onUpdate(const std::vector<Entity> &entities, bedrock::PpFloat deltaT)
+	virtual void onUpdate(const std::vector<Entity> &entities, float deltaT)
 	{
 		for (auto entity : entities)
 		{
@@ -160,7 +160,7 @@ public:
 		}
 	}
 
-	virtual void onUpdate(const std::vector<Entity> &entities, bedrock::PpFloat deltaT)
+	virtual void onUpdate(const std::vector<Entity> &entities, float deltaT)
 	{
 		for (auto entity : entities)
 		{
@@ -200,7 +200,7 @@ class ScoreUIProcessor : public Processor
 public:
 	ScoreUIProcessor() : Processor(ScoreUIQuery::build()) {};
 
-	virtual void onUpdate(const std::vector<Entity> &entities, bedrock::PpFloat deltaT)
+	virtual void onUpdate(const std::vector<Entity> &entities, float deltaT)
 	{
 		for (auto entity : entities)
 		{
@@ -229,7 +229,7 @@ class Pong : public core::Game
 		mainWindow.title = "Pong";
 	}
 
-	void createBat(bedrock::PpFloat x, graphics::Sprite *spr, bool isAi)
+	void createBat(float x, graphics::Sprite *spr, bool isAi)
 	{
 		Entity e{ EntityManager::getInstance()->create() };
 
@@ -365,7 +365,7 @@ class Pong : public core::Game
 		createBat(78, sprPlayer2, true);
 
 
-		for (bedrock::PpInt i = 0; i < 2; ++i)
+		for (int32_t i = 0; i < 2; ++i)
 		{
 			ecs::Entity ui{ EntityManager::getInstance()->create() };
 

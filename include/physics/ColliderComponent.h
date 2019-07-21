@@ -54,5 +54,5 @@ namespace physics {
 
 } }
 
-perfectpixel::serialization::BinarySerializer &operator<<(perfectpixel::serialization::BinarySerializer &ostream, const perfectpixel::physics::ColliderComponent::ColliderMask &mask);
-perfectpixel::serialization::BinarySerializer &operator>>(perfectpixel::serialization::BinarySerializer &istream, perfectpixel::physics::ColliderComponent::ColliderMask &mask);
+perfectpixel::serialization::ISerializer &operator<<(perfectpixel::serialization::ISerializer &ostream, const perfectpixel::physics::ColliderComponent::ColliderMask &mask);
+perfectpixel::serialization::ISerializer &operator>>(perfectpixel::serialization::ISerializer &istream, perfectpixel::physics::ColliderComponent::ColliderMask &mask);

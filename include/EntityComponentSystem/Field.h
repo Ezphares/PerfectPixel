@@ -17,7 +17,7 @@
 #if PP_FULL_REFLECTION_ENABLED
 
 #define _Field(Owner, T, Name) inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T) \
-(PP_DEQUALIFY(Owner), PP_DQID(Owner), #Name, PP_ID(Name), PP_DEQUALIFY(T), PP_DQID(T));
+(PP_DEQUALIFY(Owner), PP_DQID(Owner), #Name, PP_ID(Name), bedrock::typeName<T>(), bedrock::typeID<T>());
 
 #define _ArrayField(Owner, T, Capacity, Name) inline static PPARRAYFIELDTYPE(Owner, T, Capacity) Name = PPARRAYFIELDTYPE(Owner, T, Capacity) \
 (PP_DEQUALIFY(Owner), PP_DQID(Owner), #Name, PP_ID(Name), PP_DEQUALIFY(T), PP_DQID(T));
@@ -38,7 +38,7 @@ namespace perfectpixel { namespace ecs {
 	{
 	public:
 		virtual void reset(uint32_t index = 0) = 0;
-		virtual void serialize(serialization::BinarySerializer &serializer, uint32_t index) = 0;
+		virtual void serialize(serialization::ISerializer &serializer, uint32_t index) = 0;
 	};
 
 	template <typename Owner, typename T>
@@ -51,9 +51,9 @@ namespace perfectpixel { namespace ecs {
 		}
 
 		Field(
-			bedrock::PpInt ownerId,
-			bedrock::PpInt selfId,
-			bedrock::PpInt typeId)
+			int32_t ownerId,
+			int32_t selfId,
+			int32_t typeId)
 			: m_data()
 		{
 			if (Owner::AddField(selfId, this))
@@ -65,11 +65,11 @@ namespace perfectpixel { namespace ecs {
 #if PP_FULL_REFLECTION_ENABLED
 		Field(
 			const std::string &ownerName,
-			bedrock::PpInt ownerId,
+			int32_t ownerId,
 			const std::string &selfName,
-			bedrock::PpInt selfId,
+			int32_t selfId,
 			const std::string &typeName, 
-			bedrock::PpInt typeId)
+			int32_t typeId)
 			: m_data()
 		{
 			if (Owner::AddField(selfId, this))
@@ -114,7 +114,7 @@ namespace perfectpixel { namespace ecs {
 			m_data[index] = T();
 		}
 
-		virtual void serialize(serialization::BinarySerializer &serializer, uint32_t index)
+		virtual void serialize(serialization::ISerializer &serializer, uint32_t index)
 		{
 			serializer << m_data[index];
 		}
@@ -136,9 +136,9 @@ namespace perfectpixel { namespace ecs {
 		}
 
 		ArrayField(
-			bedrock::PpInt ownerId,
-			bedrock::PpInt selfId,
-			bedrock::PpInt typeId)
+			int32_t ownerId,
+			int32_t selfId,
+			int32_t typeId)
 			: m_data()
 		{
 			if (Owner::AddField(selfId, this))
@@ -150,11 +150,11 @@ namespace perfectpixel { namespace ecs {
 #if PP_FULL_REFLECTION_ENABLED
 		ArrayField(
 			const std::string &ownerName,
-			bedrock::PpInt ownerId,
+			int32_t ownerId,
 			const std::string &selfName,
-			bedrock::PpInt selfId,
+			int32_t selfId,
 			const std::string &typeName,
-			bedrock::PpInt typeId)
+			int32_t typeId)
 			: m_data()
 		{
 			if (Owner::AddField(selfId, this))
@@ -214,7 +214,7 @@ namespace perfectpixel { namespace ecs {
 			m_data[idx] = std::vector<T>();
 		}
 
-		virtual void serialize(serialization::BinarySerializer &serializer, uint32_t index)
+		virtual void serialize(serialization::ISerializer &serializer, uint32_t index)
 		{
 			throw "Not yet implemented";
 		}

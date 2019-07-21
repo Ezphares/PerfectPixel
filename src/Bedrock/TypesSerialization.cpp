@@ -24,7 +24,7 @@ namespace {
 		fnorm = fnorm - 1.0;
 
 		// calculate the binary form (non-float) of the significand data
-		significand = fnorm * ((1LL << significandbits) + 0.5f);
+		significand = (long long)(fnorm * ((1LL << significandbits) + 0.5f));
 
 		// get the biased exponent
 		exp = shift + ((1 << (expbits - 1)) - 1); // shift + bias
@@ -43,7 +43,7 @@ namespace {
 		if (i == 0) return 0.0;
 
 		// pull the significand
-		result = (i&((1LL << significandbits) - 1)); // mask
+		result = (long double)(i&((1LL << significandbits) - 1)); // mask
 		result /= (1LL << significandbits); // convert back to float
 		result += 1.0f; // add the one back on
 
@@ -60,28 +60,28 @@ namespace {
 	}
 }
 
-perfectpixel::serialization::BinarySerializer & operator<<(perfectpixel::serialization::BinarySerializer &ostream, const perfectpixel::bedrock::PpFloat &num)
+perfectpixel::serialization::BinarySerializer & operator<<(perfectpixel::serialization::BinarySerializer &ostream, const float &num)
 {
 	// Assume IEEE754
-	uint32_t packed = pack754(num, 32, 8);
+	uint32_t packed = static_cast<uint32_t>(pack754(num, 32, 8));
 	memcpy(ostream.require(4), &packed, 4);
 	return ostream;
 }
 
-perfectpixel::serialization::BinarySerializer & operator>>(perfectpixel::serialization::BinarySerializer &istream, perfectpixel::bedrock::PpFloat &num)
+perfectpixel::serialization::BinarySerializer & operator>>(perfectpixel::serialization::BinarySerializer &istream, float &num)
 {
 	uint32_t packed;
 	memcpy(&packed, istream.get(4), 4);
-	num = unpack754(packed, 32, 8);
+	num = static_cast<float>(unpack754(packed, 32, 8));
 	return istream;
 }
 
-perfectpixel::serialization::BinarySerializer &operator<<(perfectpixel::serialization::BinarySerializer &ostream, const perfectpixel::bedrock::PpInt &num)
+perfectpixel::serialization::BinarySerializer &operator<<(perfectpixel::serialization::BinarySerializer &ostream, const int32_t &num)
 {
 	memcpy(ostream.require(4), &num, 4);
 	return ostream;
 }
-perfectpixel::serialization::BinarySerializer &operator>>(perfectpixel::serialization::BinarySerializer &istream, perfectpixel::bedrock::PpInt &num)
+perfectpixel::serialization::BinarySerializer &operator>>(perfectpixel::serialization::BinarySerializer &istream, int32_t &num)
 {
 	memcpy(&num, istream.require(4), 4);
 	return istream;

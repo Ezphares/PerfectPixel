@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Bedrock/numbers.h>
+
 #include <cstdint>
 #include <string>
 
@@ -106,11 +108,11 @@ namespace perfectpixel { namespace bedrock {
 
 #define PP_DEQUALIFY(str) (::perfectpixel::bedrock::dequalify(#str, sizeof(#str) - 1))
 #define PP_DEQUALIFIED_SIZE(str) (::perfectpixel::bedrock::dequalifiedSize(#str, sizeof(#str) - 1))
-#define PP_ID(str) (static_cast<::perfectpixel::bedrock::PpInt>(::perfectpixel::bedrock::crc32(#str, sizeof(#str) - 1)))
-#define PP_DQID(str) (static_cast<::perfectpixel::bedrock::PpInt>( \
+#define PP_ID(str) (static_cast<int32_t>(::perfectpixel::bedrock::crc32(#str, sizeof(#str) - 1)))
+#define PP_DQID(str) (static_cast<int32_t>( \
 	::perfectpixel::bedrock::crc32(::perfectpixel::bedrock::dequalify(#str, sizeof(#str) - 1), \
 	      ::perfectpixel::bedrock::dequalifiedSize(#str, sizeof(#str) - 1))))
 
-inline static bedrock::PpInt PpId(const std::string &str){ return static_cast<::perfectpixel::bedrock::PpInt>(::perfectpixel::bedrock::crc32(str)); }
+inline static int32_t PpId(const std::string &str){ return static_cast<int32_t>(::perfectpixel::bedrock::crc32(str)); }
 
 } }

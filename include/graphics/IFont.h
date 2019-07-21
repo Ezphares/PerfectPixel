@@ -16,9 +16,9 @@ namespace perfectpixel {
 		public:
 			virtual ~IFont() {};
 
-			virtual void writeBuffer(bedrock::Vector3 position, bedrock::PpFloat size, const std::string &text, std::vector<TextVertex> *out_vertices) = 0;
+			virtual void writeBuffer(bedrock::Vector3 position, float size, const std::string &text, std::vector<TextVertex> *out_vertices) = 0;
 			virtual Texture &getTexture() = 0;
-			virtual bedrock::PpFloat getWidth(bedrock::PpFloat size, const std::string &text) = 0;
+			virtual float getWidth(float size, const std::string &text) = 0;
 		};
 	}
 }

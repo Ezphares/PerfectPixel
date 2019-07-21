@@ -232,12 +232,12 @@ void GraphicsManager::postProcess()
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-perfectpixel::bedrock::PpFloat GraphicsManager::calculateRatio(bedrock::PpInt width, bedrock::PpInt height)
+float GraphicsManager::calculateRatio(int32_t width, int32_t height)
 {
-	return static_cast<bedrock::PpFloat>(width) / static_cast<bedrock::PpFloat>(height);
+	return static_cast<float>(width) / static_cast<float>(height);
 }
 
-void GraphicsManager::setWindowRatio(bedrock::PpFloat ratio)
+void GraphicsManager::setWindowRatio(float ratio)
 {
 	m_windowRatio = ratio;
 	updateCamera();
@@ -360,7 +360,7 @@ void GraphicsManager::addSpriteToBuffer(const SpriteDrawInfo &info, SpriteBuffer
 		&pos { info.m_worldCoord },
 		&tex { info.m_texCoord };
 
-	bedrock::PpFloat z{ info.m_depth };
+	float z{ info.m_depth };
 
 	bedrock::Vector3
 		posTopLeft{ pos.m_left, pos.m_top, z },
@@ -466,7 +466,7 @@ void GraphicsManager::setCompatibleState(const SpriteDrawInfo &info, SpriteRende
 
 void GraphicsManager::updateCamera()
 {
-	bedrock::PpFloat cameraRatio = m_mainCamera.m_size.x() / m_mainCamera.m_size.y();
+	float cameraRatio = m_mainCamera.m_size.x() / m_mainCamera.m_size.y();
 
 	bedrock::Vector2 scale = m_mainCamera.m_size;
 
@@ -494,8 +494,8 @@ void GraphicsManager::updateCamera()
 	glUniformMatrix4fv(m_programUiText->getUniformLocation("u_transform"), 1, GL_FALSE, cameraTransform);
 
 	m_frameBuffer->resize({ 
-		static_cast<bedrock::PpInt>(scale.x()),
-		static_cast<bedrock::PpInt>(scale.y())});
+		static_cast<int32_t>(scale.x()),
+		static_cast<int32_t>(scale.y())});
 }
 
 bool GraphicsManager::compSortSoftalpha(const SpriteDrawInfo &first, const SpriteDrawInfo &second)

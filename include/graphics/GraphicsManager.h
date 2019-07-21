@@ -26,7 +26,7 @@ namespace graphics {
 			Quad m_worldCoord, m_texCoord;
 			RenderHints m_hints;
 			Texture *m_texture;
-			bedrock::PpFloat m_depth;
+			float m_depth;
 		};
 
 		struct SpriteRenderState
@@ -48,8 +48,8 @@ namespace graphics {
 		void drawAll(double deltaT);
 		void postProcess();
 
-		bedrock::PpFloat calculateRatio(bedrock::PpInt width, bedrock::PpInt height);
-		void setWindowRatio(bedrock::PpFloat ratio);
+		float calculateRatio(int32_t width, int32_t height);
+		void setWindowRatio(float ratio);
 		void setMainCamera(const CameraSettings &camera);
 		void setWindowSize(bedrock::Point2 size);
 
@@ -103,7 +103,7 @@ namespace graphics {
 		SpriteDrawList m_softAlpha;
 
 		bedrock::Point2 m_mainWindowSize;
-		bedrock::PpFloat m_windowRatio;
+		float m_windowRatio;
 		CameraSettings m_mainCamera;
 
 		std::vector<ecs::Entity> m_cleanup;

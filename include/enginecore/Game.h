@@ -64,7 +64,7 @@ protected:
 	graphics::GraphicsManager m_graphicsManager;
 
 private:
-	// Use double over PpFloat, precision is required here
+	// Use double over float, precision is required here
 	double m_targetUps;
 
 };

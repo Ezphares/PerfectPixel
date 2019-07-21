@@ -8,11 +8,11 @@ namespace perfectpixel {
 		class Circle
 		{
 		public:
-			Circle(PpFloat radius, Vector2 center = Vector2());
+			Circle(float radius, Vector2 center = Vector2());
 			~Circle();
 
 		public:
-			PpFloat m_radius;
+			float m_radius;
 			Vector2 m_center;
 		};
 

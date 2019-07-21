@@ -105,7 +105,7 @@ void Game::run()
 		
 		// Render step
 		bedrock::Logger::touchLog(bedrock::Logger::LOG_TOUCH_RENDER);
-		m_processorQueue.renderAll(static_cast<bedrock::PpFloat>(frametime.count()));
+		m_processorQueue.renderAll(static_cast<float>(frametime.count()));
 		m_graphicsManager.drawAll(frametime.count());
 		m_graphicsManager.cleanup();
 		mainWindow->draw();
@@ -129,7 +129,7 @@ void Game::focus(bool hasFocus)
 
 void Game::windowResized(graphics::IWindow &window, unsigned width, unsigned height)
 {
-	m_graphicsManager.setWindowSize({ static_cast<bedrock::PpInt>(width), static_cast<bedrock::PpInt>(height) });
+	m_graphicsManager.setWindowSize({ static_cast<int32_t>(width), static_cast<int32_t>(height) });
 }
 
 void Game::splashScreenUpdate(bool &closeSplash)
@@ -176,7 +176,7 @@ void Game::update(double dt)
 {
 	bedrock::Logger::touchLog(bedrock::Logger::LOG_TOUCH_UPDATE);
 
-	bedrock::PpFloat ppdt = static_cast<bedrock::PpFloat>(dt);
+	float ppdt = static_cast<float>(dt);
 
 	m_processorQueue.processAll(ppdt);
 }

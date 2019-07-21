@@ -12,7 +12,7 @@ namespace perfectpixel { namespace physics {
 
 	namespace
 	{
-		bedrock::PpFloat COLLISON_LEEWAY = 0.01f;
+		float COLLISON_LEEWAY = 0.01f;
 		typedef ecs::QueryHelper<
 			ecs::With<ColliderComponent, ecs::TransformComponent>>
 			CollisionQuery;
@@ -29,7 +29,7 @@ namespace perfectpixel { namespace physics {
 
 	}
 
-	void CollisionProcessor::onUpdate(const std::vector<ecs::Entity> &entities, bedrock::PpFloat deltaT)
+	void CollisionProcessor::onUpdate(const std::vector<ecs::Entity> &entities, float deltaT)
 	{
 		for (ecs::Entity entity : entities)
 		{
@@ -44,7 +44,7 @@ namespace perfectpixel { namespace physics {
 		possibleCollisions(entity, cache, toCheck);
 
 		// Store mass as we might change it for resolving chained collisions
-		bedrock::PpFloat storeMass = PhysicsComponent::Has(entity) ? PhysicsComponent::Mass(entity) : 0.0f;
+		float storeMass = PhysicsComponent::Has(entity) ? PhysicsComponent::Mass(entity) : 0.0f;
 
 		for (ecs::Entity other : toCheck)
 		{
@@ -137,8 +137,8 @@ namespace perfectpixel { namespace physics {
 
 
 		bedrock::Vector2 offset = (secondPosition + secondCircle.m_center) - (firstPosition + firstCircle.m_center);
-		bedrock::PpFloat squareDistance = bedrock::Vector2::dot(offset, offset);
-		bedrock::PpFloat sumRadii = firstCircle.m_radius + secondCircle.m_radius;
+		float squareDistance = bedrock::Vector2::dot(offset, offset);
+		float sumRadii = firstCircle.m_radius + secondCircle.m_radius;
 
 
 		if (squareDistance > (sumRadii - COLLISON_LEEWAY) * (sumRadii - COLLISON_LEEWAY))
@@ -171,13 +171,13 @@ namespace perfectpixel { namespace physics {
 			bounce1{ ecs::TransformComponent::Velocity(collision.m_first) },
 			bounce2{ ecs::TransformComponent::Velocity(collision.m_second) };
 
-		bedrock::PpFloat bounciness = std::max(PhysicsComponent::Bounciness(collision.m_first), PhysicsComponent::Bounciness(collision.m_second));
+		float bounciness = std::max(PhysicsComponent::Bounciness(collision.m_first), PhysicsComponent::Bounciness(collision.m_second));
 
 		if (collision.m_maskTypeFirst == ColliderComponent::ColliderMaskType::RECTANGLE &&
 			collision.m_maskTypeSecond == ColliderComponent::ColliderMaskType::RECTANGLE)
 		{
 			bedrock::Vector2 overlap = collision.m_data_RectRectOverlap;
-			bedrock::PpFloat newVel1, newVel2;
+			float newVel1, newVel2;
 
 			if (overlap.x() < overlap.y())
 			{
@@ -227,7 +227,7 @@ namespace perfectpixel { namespace physics {
 		{
 			bedrock::Vector2 resolutionAxis = (absoluteCenter(collision.m_second) - absoluteCenter(collision.m_first)).normal();
 
-			bedrock::PpFloat
+			float
 				magnitude1,
 				magnitude2;
 
@@ -250,7 +250,7 @@ namespace perfectpixel { namespace physics {
 		ecs::TransformComponent::Velocity(collision.m_second) = bedrock::Vector3(bounce2);
 	}
 
-	void CollisionProcessor::singleAxisReposition(bedrock::PpFloat mass1, bedrock::PpFloat mass2, bedrock::PpFloat overlap, bedrock::PpFloat *out_magnitude1, bedrock::PpFloat *out_magnitude2)
+	void CollisionProcessor::singleAxisReposition(float mass1, float mass2, float overlap, float *out_magnitude1, float *out_magnitude2)
 	{
 		*out_magnitude1 = 0;
 		*out_magnitude2 = 0;
@@ -278,7 +278,7 @@ namespace perfectpixel { namespace physics {
 		*out_magnitude2 = mass1 / (mass1 + mass2) * overlap;
 	}
 
-	void CollisionProcessor::singleAxisBounce(bedrock::PpFloat bounciness, bedrock::PpFloat mass1, bedrock::PpFloat mass2, bedrock::PpFloat velocity1, bedrock::PpFloat velocity2, bedrock::PpFloat *out_newVelocity1, bedrock::PpFloat *out_newVelocity2)
+	void CollisionProcessor::singleAxisBounce(float bounciness, float mass1, float mass2, float velocity1, float velocity2, float *out_newVelocity1, float *out_newVelocity2)
 	{
 		*out_newVelocity1 = velocity1;
 		*out_newVelocity2 = velocity2;

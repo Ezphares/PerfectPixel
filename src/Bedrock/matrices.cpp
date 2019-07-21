@@ -12,9 +12,9 @@ namespace bedrock {
 
 	perfectpixel::bedrock::Matrix2x2 Matrix2x2::rotate(Angle angle)
 	{
-		PpFloat cosine = std::cos(angle.radians());
-		PpFloat sine = std::sin(angle.radians());
-		return Matrix<2, 2>(std::array<PpFloat, 4>{
+		float cosine = std::cos(angle.radians());
+		float sine = std::sin(angle.radians());
+		return Matrix<2, 2>(std::array<float, 4>{
 			cosine,		sine, // C1
 			-sine,		cosine, // C2
 		});

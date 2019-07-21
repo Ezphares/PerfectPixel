@@ -9,7 +9,7 @@ SpriteComponent::SpriteComponent(
 	graphics::Sprite *sprite,
 	bedrock::Vector2 worldSize,
 	bedrock::Vector2 offset,
-	bedrock::PpFloat fps,
+	float fps,
 	RenderHints renderHints)
 	: m_entity(entity)
 	, m_sprite(sprite)
@@ -37,7 +37,7 @@ perfectpixel::graphics::Sprite * SpriteComponent::getSprite() const
 	return m_sprite;
 }
 
-perfectpixel::bedrock::PpInt SpriteComponent::getFrame() const
+int32_t SpriteComponent::getFrame() const
 {
 	return m_currentFrame;
 }
@@ -59,7 +59,7 @@ perfectpixel::graphics::RenderHints SpriteComponent::getHints() const
 	return m_renderHints;
 }
 
-void SpriteComponent::update(bedrock::PpFloat deltaTime)
+void SpriteComponent::update(float deltaTime)
 {
 	m_frameTimeAccumulator += deltaTime;
 	if (m_frameTimeAccumulator > 1 / m_fps)

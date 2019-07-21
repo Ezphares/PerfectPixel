@@ -13,20 +13,20 @@ namespace perfectpixel {
 	class ProcessorQueue
 	{
 	public:
-		static const bedrock::PpInt USER_PROCESSOR_DEFAULT_PRIORITY;
+		static const int32_t USER_PROCESSOR_DEFAULT_PRIORITY;
 
 	public:
 		ProcessorQueue();
 		virtual ~ProcessorQueue();
 
-		void processAll(bedrock::PpFloat deltaT);
-		void renderAll(bedrock::PpFloat deltaT);
+		void processAll(float deltaT);
+		void renderAll(float deltaT);
 
-		void registerProcessor(Processor *processor, bedrock::PpInt priority, bool managed);
+		void registerProcessor(Processor *processor, int32_t priority, bool managed);
 
 	private:
-		std::map<bedrock::PpInt, std::vector<Processor*>> m_processors;
-		std::vector<bedrock::PpInt> m_priorities;
+		std::map<int32_t, std::vector<Processor*>> m_processors;
+		std::vector<int32_t> m_priorities;
 		std::vector<Processor *> m_managedProcessors;
 	};
 

@@ -17,7 +17,7 @@ namespace perfectpixel { namespace graphics {
 	{
 	public:
 		_Field(UITextComponent, std::string, Text);
-		_Field(UITextComponent, bedrock::PpInt, Alignment);
+		_Field(UITextComponent, int32_t, Alignment);
 	};
 
 } }

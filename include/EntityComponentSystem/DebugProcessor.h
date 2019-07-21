@@ -31,7 +31,7 @@ namespace perfectpixel {
 			}
 		}
 
-		virtual void onUpdate(const std::vector<Entity> &entities, bedrock::PpFloat deltaT)
+		virtual void onUpdate(const std::vector<Entity> &entities, float deltaT)
 		{
 			for (Entity entity : entities)
 			{
