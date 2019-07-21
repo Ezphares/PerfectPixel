@@ -121,6 +121,7 @@ set (Serialization_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/serialization")
 file (GLOB Serialization_INCLUDE_FILES "${Serialization_INCLUDE_DIR}/*.h")
 add_library(Serialization
 	"${Serialization_SRC_DIR}/BinarySerializer.cpp"
+	"${Serialization_SRC_DIR}/ISerializer.cpp"
 	
 	"${Serialization_INCLUDE_FILES}"
 )
