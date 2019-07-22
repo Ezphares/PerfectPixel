@@ -9,6 +9,8 @@
 #include <graphics/IWindow.h>
 #include <graphics/UIProcessor.h>
 
+#include <serialization/YAMLSerializer.h>
+
 #include <functional>
 
 #include <chrono>
@@ -130,6 +132,18 @@ void Game::focus(bool hasFocus)
 void Game::windowResized(graphics::IWindow &window, unsigned width, unsigned height)
 {
 	m_graphicsManager.setWindowSize({ static_cast<int32_t>(width), static_cast<int32_t>(height) });
+}
+
+ecs::Entity Game::spawnTemplate(const std::string &data)
+{
+	serialization::YAMLSerializer yaml;
+	yaml.load(data.c_str());
+	yaml.m_hash = &bedrock::crc32;
+
+	ecs::Entity entity = ecs::EntityManager::getInstance()->create();
+	ecs::FieldTable::getInstance()->deserialize(yaml, entity);
+	
+	return entity;
 }
 
 void Game::splashScreenUpdate(bool &closeSplash)

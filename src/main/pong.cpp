@@ -367,7 +367,8 @@ class Pong : public core::Game
 
 		serialization::YAMLSerializer yaml;
 		ecs::FieldTable::getInstance()->serialize(yaml, m_ball);
-		yaml.dump();
+		spawnTemplate(yaml.dump());
+		
 
 		for (int32_t i = 0; i < 2; ++i)
 		{

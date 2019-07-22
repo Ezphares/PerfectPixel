@@ -26,6 +26,7 @@ public:
 	void run();
 	void focus(bool hasFocus);
 	void windowResized(graphics::IWindow &window, unsigned width, unsigned height);
+	ecs::Entity spawnTemplate(const std::string &data);
 
 	//virtual bool prepareSplashScreen();
 	

@@ -18,6 +18,18 @@ namespace perfectpixel { namespace ecs {
 	typedef bool(*HasLookup)(Entity);
 	typedef void(*SerializeLookup)(serialization::ISerializer&, Entity);
 	typedef void(*DeserializeLookup)(serialization::ISerializer&, Entity);
+	typedef void(*RegisterLookup)(Entity);
+	typedef void(*DeleteLookup)(Entity);
+
+	struct ComponentLookup
+	{
+		HasLookup m_has;
+		SerializeLookup m_serialize;
+		DeserializeLookup m_deserialize;
+		RegisterLookup m_register;
+		DeleteLookup m_delete;
+		FieldLookup m_fields;
+	};
 
 	class FieldTable : public bedrock::Singleton<FieldTable>
 	{
@@ -48,10 +60,15 @@ namespace perfectpixel { namespace ecs {
 			int32_t fieldId,
 			int32_t typeId)
 		{
-			m_hasComponentLUT[componentId] = &ComponentType::Has;
-			m_componentFieldLUT[componentId] = &ComponentType::Lookup;
-			m_serializeLUT[componentId] = &ComponentType::Serialize;
-		    m_deserializeLUT[componentId] = &ComponentType::Deserialize;
+			ComponentLookup componentLookup;
+			componentLookup.m_has = &ComponentType::Has;
+			componentLookup.m_serialize = &ComponentType::Serialize;
+			componentLookup.m_deserialize = &ComponentType::Deserialize;
+			componentLookup.m_register = &ComponentType::Register;
+			componentLookup.m_delete = &ComponentType::Delete;
+			componentLookup.m_fields = &ComponentType::Lookup;
+			m_componentLUT[componentId] = componentLookup;
+
 			m_typeLUT[std::pair(PP_ID(componentName), PP_ID(fieldName))] = typeId;
 		}
 
@@ -67,12 +84,12 @@ namespace perfectpixel { namespace ecs {
 
 		FieldLookup componentFieldLookupByID(int32_t componentId)
 		{
-			return m_componentFieldLUT[componentId];
+			return m_componentLUT[componentId].m_fields;
 		}
 
 		HasLookup hasComponentByID(int32_t componentId)
 		{
-			return m_hasComponentLUT[componentId];
+			return m_componentLUT[componentId].m_has;
 		}
 
 		std::string dequalify(const std::string &typeName)
@@ -95,32 +112,43 @@ namespace perfectpixel { namespace ecs {
 			return "";
 		}
 
+		void deserialize(serialization::ISerializer &serializer, Entity entity)
+		{
+			int32_t key;
+			while (serializer.readMapKey(&key))
+			{
+				serializer.readMapBegin();
+
+				auto &component = m_componentLUT[key];
+
+				component.m_register(entity);
+				component.m_deserialize(serializer, entity);
+			}
+		}
+
 		void serialize(serialization::ISerializer &serializer, Entity entity)
 		{
 			if (EntityManager::getInstance()->isAlive(entity))
 			{
 				serializer.writeMapStart();
 				
-				for (auto it = m_hasComponentLUT.begin(); it != m_hasComponentLUT.end(); ++it)
+				for (auto it = m_componentLUT.begin(); it != m_componentLUT.end(); ++it)
 				{
-					if (it->second(entity))
+					if (it->second.m_has(entity))
 					{
 #if PP_FULL_REFLECTION_ENABLED
 						serializer.writeMapKey(m_reverseHash[it->first]);
 #else
 						serializer.writeMapKey(it->first);
 #endif
-						m_serializeLUT[it->first](serializer, entity);
+						it->second.m_serialize(serializer, entity);
 					}
 				}
 			}
 		}
 
 	private:
-		std::map<int32_t, FieldLookup> m_componentFieldLUT;
-		std::map<int32_t, HasLookup> m_hasComponentLUT;
-		std::map<int32_t, SerializeLookup> m_serializeLUT;
-		std::map<int32_t, DeserializeLookup> m_deserializeLUT;
+		std::map<int32_t, ComponentLookup> m_componentLUT;
 		std::map<std::pair<int32_t, int32_t>, int32_t> m_typeLUT;
 #if PP_FULL_REFLECTION_ENABLED
 		std::map<int32_t, std::string> m_reverseHash;

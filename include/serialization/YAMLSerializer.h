@@ -1,7 +1,11 @@
 #pragma once
 
 #include <serialization/ISerializer.h>
+
 #include <yaml-cpp/emitter.h>
+#include <yaml-cpp/node/iterator.h>
+
+#include <stack>
 
 #if PP_FULL_REFLECTION_ENABLED
 
@@ -32,20 +36,39 @@ namespace perfectpixel { namespace serialization {
 		virtual void readUInt32(uint32_t *val);
 		virtual void readMappedUInt32(uint32_t *val);
 		virtual void readText(std::string *val);
-		virtual void readName(int32_t &val);
+		virtual void readName(int32_t *val);
 #if PP_FULL_REFLECTION_ENABLED
 		virtual void readName(std::string *val);
 #endif // PP_FULL_REFLECTION_ENABLED
 		virtual uint32_t readBinary(void *p, uint32_t maxSize);
+		virtual void readMapBegin();
 		virtual bool readMapKey(int32_t *val);
 		virtual uint32_t readArrayStart();
 		virtual void readArrayEnd();
 		virtual void mapUInt32(uint32_t memory, uint32_t serialized);
 
+		virtual void load(const char *data);
+
+		void push(const YAML::Node &node);
+		void pop();
+		const YAML::Node readVal();
+
 		std::string dump();
 
+		int32_t(*m_hash)(const std::string &);
+
 	private:
+		enum Iterating
+		{
+			YAML_IT_NONE,
+			YAML_IT_MAP,
+			YAML_IT_ARRAY
+		};
+
 		YAML::Emitter *m_emitter;
+		YAML::Node *m_root;
+		std::stack<std::pair<const YAML::Node, YAML::const_iterator*>> m_stack;
+		Iterating m_iterating;
 	};
 
 } }

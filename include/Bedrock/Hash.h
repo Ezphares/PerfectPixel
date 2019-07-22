@@ -89,7 +89,7 @@ namespace perfectpixel { namespace bedrock {
 		return &str[size - dequalifiedSize(str, size)];
 	}
 
-	constexpr inline static int crc32(const char *str, int size)
+	constexpr inline static int32_t crc32(const char *str, int size)
 	{
 		unsigned int result = 0xffffffff;
 
@@ -101,7 +101,7 @@ namespace perfectpixel { namespace bedrock {
 		return result ^ 0xffffffff;
 	}
 
-	inline static unsigned int crc32(const std::string &str)
+	inline static int32_t crc32(const std::string &str)
 	{
 		return crc32(str.c_str(), str.size());
 	}

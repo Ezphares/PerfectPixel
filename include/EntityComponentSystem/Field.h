@@ -253,7 +253,9 @@ namespace perfectpixel { namespace ecs {
 
 		virtual void deserialize(serialization::ISerializer &serializer, uint32_t index)
 		{
-			throw "Not yet implemented";
+			uint32_t arraySize = serializer.readArrayStart();
+			// TODO
+			serializer.readArrayEnd();
 		}
 
 	private:
