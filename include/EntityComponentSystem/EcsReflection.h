@@ -112,6 +112,18 @@ namespace perfectpixel { namespace ecs {
 			return "";
 		}
 
+		static void Touch(const std::string &str)
+		{
+#if PP_FULL_REFLECTION_ENABLED
+			getInstance()->m_reverseHash[bedrock::crc32(str)] = str;
+#endif
+		}
+
+		static std::string Reverse(int32_t id)
+		{
+			return getInstance()->reverse(id);
+		}
+
 		void deserialize(serialization::ISerializer &serializer, Entity entity)
 		{
 			int32_t key;

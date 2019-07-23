@@ -10,6 +10,8 @@ namespace perfectpixel { namespace serialization {
 	YAMLSerializer::YAMLSerializer()
 		: m_emitter(new YAML::Emitter())
 		, m_iterating(YAML_IT_NONE)
+		, m_hash()
+		, m_reverse()
 	{
 	}
 
@@ -42,11 +44,17 @@ namespace perfectpixel { namespace serialization {
 	void YAMLSerializer::writeName(int32_t val)
 	{
 #if PP_FULL_REFLECTION_ENABLED
-		// TODO: Reverse?
-		*m_emitter << val;
-#else
-		*m_emitter << val;
+		if (m_reverse)
+		{
+			std::string text = m_reverse(val);
+			if (text != "")
+			{
+				writeName(m_reverse(val));
+				return;
+			}
+		}
 #endif
+		*m_emitter << val;
 	}
 
 	void YAMLSerializer::writeName(const std::string &val)
@@ -93,6 +101,11 @@ namespace perfectpixel { namespace serialization {
 	void YAMLSerializer::writeMapEnd()
 	{
 		*m_emitter << YAML::EndMap;
+	}
+
+	void YAMLSerializer::writeNull()
+	{
+		*m_emitter << YAML::Null;
 	}
 
 	void YAMLSerializer::load(const char *data)
@@ -162,13 +175,13 @@ namespace perfectpixel { namespace serialization {
 	{
 		const YAML::Node node = readVal();
 
-		if (node.IsScalar())
+		try
 		{
 			*val = node.as<int32_t>();
 		}
-		else
+		catch (YAML::BadConversion &)
 		{
-			throw "TODO: CRC32";
+			*val = m_hash(node.as<std::string>());
 		}
 	}
 
@@ -251,6 +264,11 @@ namespace perfectpixel { namespace serialization {
 		}
 
 		pop();
+	}
+
+	bool YAMLSerializer::isValueNull()
+	{
+		return readVal().IsNull();
 	}
 
 	void YAMLSerializer::mapUInt32(uint32_t memory, uint32_t serialized)

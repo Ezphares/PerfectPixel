@@ -365,7 +365,9 @@ class Pong : public core::Game
 		createBat(-78, sprPlayer1, false);
 		createBat(78, sprPlayer2, true);
 
+		// Serialization debug
 		serialization::YAMLSerializer yaml;
+		yaml.m_reverse = &ecs::FieldTable::Reverse;
 		ecs::FieldTable::getInstance()->serialize(yaml, m_ball);
 		spawnTemplate(yaml.dump());
 		

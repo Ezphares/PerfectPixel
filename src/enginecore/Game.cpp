@@ -139,6 +139,7 @@ ecs::Entity Game::spawnTemplate(const std::string &data)
 	serialization::YAMLSerializer yaml;
 	yaml.load(data.c_str());
 	yaml.m_hash = &bedrock::crc32;
+	yaml.m_reverse = &ecs::FieldTable::Reverse;
 
 	ecs::Entity entity = ecs::EntityManager::getInstance()->create();
 	ecs::FieldTable::getInstance()->deserialize(yaml, entity);

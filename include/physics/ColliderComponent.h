@@ -2,8 +2,8 @@
 
 #include <Bedrock/AARectangle.h>
 #include <Bedrock/Circle.h>
-#include <EntityComponentSystem/Entity.h>
 
+#include <EntityComponentSystem/Entity.h>
 #include <EntityComponentSystem/Component.h>
 #include <EntityComponentSystem/CoreComponentStorage.h>
 

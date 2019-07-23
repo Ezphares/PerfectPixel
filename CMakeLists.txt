@@ -58,6 +58,16 @@ add_library(Core
 	"${Core_INCLUDE_FILES}"
 )
 
+set (Resources_SRC_DIR "${CMAKE_SOURCE_DIR}/src/Resources")
+set (Resources_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/Resources")
+file (GLOB Resources_INCLUDE_FILES "${Resources_INCLUDE_DIR}/*.h")
+add_library(Resources
+	"${Resources_SRC_DIR}/Resource.cpp" 
+	"${Resources_SRC_DIR}/ResourceManager.cpp" 
+	
+	"${Resources_INCLUDE_FILES}"
+)
+
 set (Input_SRC_DIR "${CMAKE_SOURCE_DIR}/src/input")
 set (Input_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/input")
 file (GLOB Input_INCLUDE_FILES "${Input_INCLUDE_DIR}/*.h")
@@ -151,6 +161,7 @@ list(APPEND LIBRARIES_INTERNAL
 	Bedrock
 	EntityComponentSystem
 	Serialization
+	Resources
 )
 
 list(APPEND LIBRARIES_EXTERNAL png zlib libglew_shared yaml-cpp)

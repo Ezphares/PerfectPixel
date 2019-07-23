@@ -26,6 +26,7 @@ namespace perfectpixel {
 			virtual void writeArrayEnd() = 0;
 			virtual void writeMapStart() = 0;
 			virtual void writeMapEnd() = 0;
+			virtual void writeNull() = 0;
 
 			virtual void readFloat(float *val) = 0;
 			virtual void readInt32(int32_t *val) = 0;
@@ -41,6 +42,7 @@ namespace perfectpixel {
 			virtual bool readMapKey(int32_t *val) = 0;
 			virtual uint32_t readArrayStart() = 0;
 			virtual void readArrayEnd() = 0;
+			virtual bool isValueNull() = 0;
 			virtual void mapUInt32(uint32_t memory, uint32_t serialized = -1) = 0;
 		};
 } }

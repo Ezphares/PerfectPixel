@@ -7,8 +7,6 @@
 
 #include <stack>
 
-#if PP_FULL_REFLECTION_ENABLED
-
 namespace perfectpixel { namespace serialization {
 
 	class YAMLSerializer : public ISerializer
@@ -30,6 +28,8 @@ namespace perfectpixel { namespace serialization {
 		virtual void writeArrayEnd();
 		virtual void writeMapStart();
 		virtual void writeMapEnd();
+		virtual void writeNull();
+
 
 		virtual void readFloat(float *val);
 		virtual void readInt32(int32_t *val);
@@ -45,6 +45,7 @@ namespace perfectpixel { namespace serialization {
 		virtual bool readMapKey(int32_t *val);
 		virtual uint32_t readArrayStart();
 		virtual void readArrayEnd();
+		virtual bool isValueNull();
 		virtual void mapUInt32(uint32_t memory, uint32_t serialized);
 
 		virtual void load(const char *data);
@@ -56,6 +57,9 @@ namespace perfectpixel { namespace serialization {
 		std::string dump();
 
 		int32_t(*m_hash)(const std::string &);
+#if PP_FULL_REFLECTION_ENABLED
+		std::string(*m_reverse)(int32_t);
+#endif
 
 	private:
 		enum Iterating
@@ -72,5 +76,3 @@ namespace perfectpixel { namespace serialization {
 	};
 
 } }
-
-#endif PP_FULL_REFLECTION_ENABLED
