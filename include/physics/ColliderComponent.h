@@ -18,6 +18,24 @@ namespace serialization {
 }
 namespace physics {
 
+	class AARectangleColliderMask
+		: public ecs::Component<AARectangleColliderMask>
+		, public ecs::MapComponentStorage
+	{
+	public:
+		PPField(AARectangleColliderMask, bedrock::Vector2, Center);
+		PPField(AARectangleColliderMask, bedrock::Vector2, HalfSize);
+	};
+
+	class CircleColliderMask
+		: public ecs::Component<CircleColliderMask>
+		, public ecs::MapComponentStorage
+	{
+	public:
+		PPField(CircleColliderMask, bedrock::Vector2, Center);
+		PPField(CircleColliderMask, float, Radius);
+	};
+
 	class ColliderComponent 
 		: public ecs::Component<ColliderComponent>
 		, public ecs::LinearScanComponentStorage
@@ -29,17 +47,11 @@ namespace physics {
 			CIRCLE
 		};
 
-		union ColliderMask {
-			ColliderMask(){}
-			~ColliderMask() {}
-
-			bedrock::AARectangle m_rectangle;
-			bedrock::Circle m_circle;
-		};
-
 	public:
+		static void ClearMask(ecs::Entity entity);
+
 		static void SetMaskRectangle(ecs::Entity entity, const bedrock::AARectangle &rectangle);
-		static bedrock::AARectangle SetMaskRectangle(ecs::Entity entity);
+		static bedrock::AARectangle GetMaskRectangle(ecs::Entity entity);
 
 		static void SetMaskCircle(ecs::Entity entity, const bedrock::Circle &circle);
 		static const bedrock::Circle GetMaskCircle(ecs::Entity entity);
@@ -48,11 +60,7 @@ namespace physics {
 
 	public:
 		PPField(ColliderComponent, ColliderMaskType, MaskType);
-		PPField(ColliderComponent, ColliderMask, Mask);
 		PPField(ColliderComponent, std::string, EventTag);
 	};
 
 } }
-
-perfectpixel::serialization::ISerializer &operator<<(perfectpixel::serialization::ISerializer &ostream, const perfectpixel::physics::ColliderComponent::ColliderMask &mask);
-perfectpixel::serialization::ISerializer &operator>>(perfectpixel::serialization::ISerializer &istream, perfectpixel::physics::ColliderComponent::ColliderMask &mask);

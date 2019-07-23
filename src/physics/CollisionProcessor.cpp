@@ -85,15 +85,15 @@ namespace perfectpixel { namespace physics {
 		if (ColliderComponent::MaskType(first) == ColliderComponent::RECTANGLE && ColliderComponent::MaskType(second) == ColliderComponent::RECTANGLE)
 		{
 			return collideRectRect(
-				first, ColliderComponent::Mask(first).m_rectangle,
-				second, ColliderComponent::Mask(second).m_rectangle,
+				first, ColliderComponent::GetMaskRectangle(first),
+				second, ColliderComponent::GetMaskRectangle(second),
 				out_collision);
 		}
 		else if (ColliderComponent::MaskType(first) == ColliderComponent::CIRCLE && ColliderComponent::MaskType(second) == ColliderComponent::CIRCLE)
 		{
 			return collideCircleCircle(
-				first, ColliderComponent::Mask(first).m_circle,
-				second, ColliderComponent::Mask(second).m_circle,
+				first, ColliderComponent::GetMaskCircle(first),
+				second, ColliderComponent::GetMaskCircle(second),
 				out_collision);
 		}
 
@@ -314,11 +314,11 @@ namespace perfectpixel { namespace physics {
 		switch (ColliderComponent::MaskType(entity))
 		{
 		case ColliderComponent::RECTANGLE:
-			result += ColliderComponent::Mask(entity).m_rectangle.m_center;
+			result += AARectangleColliderMask::Center(entity);
 			break;
 
 		case ColliderComponent::CIRCLE:
-			result += ColliderComponent::Mask(entity).m_circle.m_center;
+			result += CircleColliderMask::Center(entity);
 			break;
 
 		default:
