@@ -1,3 +1,9 @@
 [submodule "depends/yaml-cpp"]
 	path = depends/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp
+[submodule "depends/libpng"]
+	path = depends/libpng
+	url = https://github.com/glennrp/libpng
+[submodule "depends/zlib"]
+	path = depends/zlib
+	url = https://github.com/madler/zlib
