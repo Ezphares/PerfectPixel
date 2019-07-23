@@ -12,6 +12,9 @@ add_definitions(-DPP_FULL_REFLECTION)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+##################################################
+# SUBMODULES
+##################################################
 # SUBMODULE yaml-cpp 
 set_property(GLOBAL PROPERTY FOLDER yaml-cpp)
 add_subdirectory("${CMAKE_SOURCE_DIR}/depends/yaml-cpp" EXCLUDE_FROM_ALL)
@@ -46,128 +49,116 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}/depends/zlib")
 include_directories("${CMAKE_SOURCE_DIR}/depends/libpng")
 include_directories("${CMAKE_SOURCE_DIR}/depends/glew/include")
 
-# LIBRARIES
-set (Core_SRC_DIR "${CMAKE_SOURCE_DIR}/src/enginecore")
-set (Core_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/enginecore")
-file (GLOB Core_INCLUDE_FILES "${Core_INCLUDE_DIR}/*.h")
-add_library(Core 
-	"${Core_SRC_DIR}/Entry.cpp" 
-	"${Core_SRC_DIR}/Game.cpp" 
-	"${Core_SRC_DIR}/Win32Initializer.cpp" 
+##################################################
+# MACROS
+##################################################
+MACRO(SOURCE_GROUP_WRAP GROUP SRC)
+	foreach(FILE ${SRC})
+		string(REPLACE "/" "\\" NGROUP "${GROUP}")
+		source_group("${NGROUP}" FILES "${FILE}")
+	endforeach()
+ENDMACRO(SOURCE_GROUP_WRAP)
+
+MACRO(MAKE_GROUP GNAME GFOLDER)
+	set ("${GNAME}_SRC_DIR" "${CMAKE_SOURCE_DIR}/src/${GFOLDER}")
+	set ("${GNAME}_INCLUDE_DIR" "${CMAKE_SOURCE_DIR}/include/${GFOLDER}")
+
+	foreach(FILE ${ARGN})
+		list(APPEND "${GNAME}_SRC_FILES" "${${GNAME}_SRC_DIR}/${FILE}")
+	endforeach()
 	
-	"${Core_INCLUDE_FILES}"
+	file(GLOB "${GNAME}_INCLUDE_FILES" "${${GNAME}_INCLUDE_DIR}/*.h")
+	
+	SOURCE_GROUP_WRAP("Source Files/${GNAME}" "${${GNAME}_SRC_FILES}")
+	SOURCE_GROUP_WRAP("Header Files/${GNAME}" "${${GNAME}_INCLUDE_FILES}")
+	
+	set ("${GNAME}_FILES" "${${GNAME}_SRC_FILES}" "${${GNAME}_INCLUDE_FILES}")
+ENDMACRO(MAKE_GROUP)
+
+
+MAKE_GROUP("Core" "enginecore"
+	"Entry.cpp"
+	"Game.cpp"
+	"Win32Initializer.cpp"
 )
 
-set (Resources_SRC_DIR "${CMAKE_SOURCE_DIR}/src/Resources")
-set (Resources_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/Resources")
-file (GLOB Resources_INCLUDE_FILES "${Resources_INCLUDE_DIR}/*.h")
-add_library(Resources
-	"${Resources_SRC_DIR}/Resource.cpp" 
-	"${Resources_SRC_DIR}/ResourceManager.cpp" 
-	
-	"${Resources_INCLUDE_FILES}"
+MAKE_GROUP("Resources" "Resources"
+	"Resource.cpp"
+	"ResourceManager.cpp"
 )
 
-set (Input_SRC_DIR "${CMAKE_SOURCE_DIR}/src/input")
-set (Input_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/input")
-file (GLOB Input_INCLUDE_FILES "${Input_INCLUDE_DIR}/*.h")
-add_library(Input 
-	"${Input_SRC_DIR}/InputManager.cpp" 
-	
-	"${Input_INCLUDE_FILES}"
+MAKE_GROUP("Input" "Input"
+	"InputManager.cpp" 
 )
 
-set (Physics_SRC_DIR "${CMAKE_SOURCE_DIR}/src/physics")
-set (Physics_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/physics")
-file (GLOB Physics_INCLUDE_FILES "${Physics_INCLUDE_DIR}/*.h")
-add_library(Physics 
-	"${Physics_SRC_DIR}/ColliderComponent.cpp" 
-	"${Physics_SRC_DIR}/PhysicsComponent.cpp" 
-	"${Physics_SRC_DIR}/CollisionProcessor.cpp" 
-	"${Physics_SRC_DIR}/IntegratorProcessor.cpp" 
-	
-	"${Physics_INCLUDE_FILES}"
+MAKE_GROUP("Physics" "physics"
+	"ColliderComponent.cpp" 
+	"PhysicsComponent.cpp" 
+	"CollisionProcessor.cpp" 
+	"IntegratorProcessor.cpp"
 )
 
-set (Graphics_SRC_DIR "${CMAKE_SOURCE_DIR}/src/graphics")
-set (Graphics_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/graphics")
-file (GLOB Graphics_INCLUDE_FILES "${Graphics_INCLUDE_DIR}/*.h")
-add_library(Graphics 
-	"${Graphics_SRC_DIR}/GraphicsManager.cpp" 
-	"${Graphics_SRC_DIR}/PNG.cpp" 
-	"${Graphics_SRC_DIR}/ShaderProgram.cpp" 
-	"${Graphics_SRC_DIR}/Sprite.cpp" 
-	"${Graphics_SRC_DIR}/SpriteComponent.cpp" 
-	"${Graphics_SRC_DIR}/Texture.cpp" 
-	"${Graphics_SRC_DIR}/VAO.cpp" 
-	"${Graphics_SRC_DIR}/FrameBuffer.cpp" 
-	"${Graphics_SRC_DIR}/windows/Win32Window.cpp" 
-	"${Graphics_SRC_DIR}/CBFGFont.cpp"
-	"${Graphics_SRC_DIR}/UIProcessor.cpp"
-	
-	"${Graphics_INCLUDE_FILES}"
+MAKE_GROUP("Graphics" "graphics"
+	"GraphicsManager.cpp" 
+	"PNG.cpp" 
+	"ShaderProgram.cpp" 
+	"Sprite.cpp" 
+	"SpriteComponent.cpp" 
+	"Texture.cpp" 
+	"VAO.cpp" 
+	"FrameBuffer.cpp" 
+	"windows/Win32Window.cpp" 
+	"CBFGFont.cpp"
+	"UIProcessor.cpp"
 )
 
-set (Bedrock_SRC_DIR "${CMAKE_SOURCE_DIR}/src/Bedrock")
-set (Bedrock_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/Bedrock")
-file (GLOB Bedrock_INCLUDE_FILES "${Bedrock_INCLUDE_DIR}/*.h")
-add_library(Bedrock 
-	"${Bedrock_SRC_DIR}/vectors.cpp" 
-	"${Bedrock_SRC_DIR}/matrices.cpp" 
-	"${Bedrock_SRC_DIR}/AARectangle.cpp" 
-	"${Bedrock_SRC_DIR}/Circle.cpp" 
-	"${Bedrock_SRC_DIR}/File.cpp" 
-	"${Bedrock_SRC_DIR}/PpException.cpp"
-	"${Bedrock_SRC_DIR}/BitSet.cpp"
-	"${Bedrock_SRC_DIR}/Logger.cpp"
-	"${Bedrock_SRC_DIR}/TypesSerialization.cpp"
-	
-	"${Bedrock_INCLUDE_FILES}"
+MAKE_GROUP("Bedrock" "Bedrock"
+	"vectors.cpp" 
+	"matrices.cpp" 
+	"AARectangle.cpp" 
+	"Circle.cpp" 
+	"File.cpp" 
+	"PpException.cpp"
+	"BitSet.cpp"
+	"Logger.cpp"
+	"TypesSerialization.cpp"
 )
 
-set (EntityComponentSystem_SRC_DIR "${CMAKE_SOURCE_DIR}/src/EntityComponentSystem")
-set (EntityComponentSystem_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/EntityComponentSystem")
-file (GLOB EntityComponentSystem_INCLUDE_FILES "${EntityComponentSystem_INCLUDE_DIR}/*.h")
-add_library(EntityComponentSystem  
-	"${EntityComponentSystem_SRC_DIR}/Entity.cpp"
-	"${EntityComponentSystem_SRC_DIR}/EntityManager.cpp" 
-	"${EntityComponentSystem_SRC_DIR}/Query.cpp" 
-	"${EntityComponentSystem_SRC_DIR}/Processor.cpp" 
-	"${EntityComponentSystem_SRC_DIR}/ProcessorQueue.cpp" 
-	
-	"${EntityComponentSystem_INCLUDE_FILES}"
+MAKE_GROUP("EntityComponentSystem" "EntityComponentSystem"
+	"Entity.cpp"
+	"EntityManager.cpp" 
+	"Query.cpp" 
+	"Processor.cpp" 
+	"ProcessorQueue.cpp"
 )
 
-set (Serialization_SRC_DIR "${CMAKE_SOURCE_DIR}/src/serialization")
-set (Serialization_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/serialization")
-file (GLOB Serialization_INCLUDE_FILES "${Serialization_INCLUDE_DIR}/*.h")
-add_library(Serialization
-	"${Serialization_SRC_DIR}/BinarySerializer.cpp"
-	"${Serialization_SRC_DIR}/ISerializer.cpp"
-	"${Serialization_SRC_DIR}/YAMLSerializer.cpp"
-	
-	"${Serialization_INCLUDE_FILES}"
+MAKE_GROUP("Serialization" "serialization"
+	"BinarySerializer.cpp"
+	"ISerializer.cpp"
+	"YAMLSerializer.cpp"
 )
 
+##################################################
+# TARGETS
+##################################################
+add_library(LibPerfectPixel 
+	"${Core_FILES}"
+	"${Resources_FILES}" 
+	"${Input_FILES}" 
+	"${Physics_FILES}" 
+	"${Graphics_FILES}" 
+	"${Bedrock_FILES}" 
+	"${EntityComponentSystem_FILES}" 
+	"${Serialization_FILES}" 
+)
 
 add_executable(Pong WIN32 "${CMAKE_SOURCE_DIR}/src/main/pong.cpp")
 add_dependencies(Pong yaml-cpp)
 
-list(APPEND LIBRARIES_INTERNAL  
-	Core
-	Input
-	Physics
-	Graphics
-	Bedrock
-	EntityComponentSystem
-	Serialization
-	Resources
-)
-
 list(APPEND LIBRARIES_EXTERNAL png zlib libglew_shared yaml-cpp)
 list(APPEND LIBRARIES_SYSTEM opengl32)
 
-target_link_libraries(Pong ${LIBRARIES_INTERNAL})
+target_link_libraries(Pong LibPerfectPixel)
 target_link_libraries(Pong ${LIBRARIES_EXTERNAL})
 target_link_libraries(Pong ${LIBRARIES_SYSTEM})
 
