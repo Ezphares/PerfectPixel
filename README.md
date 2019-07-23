@@ -2,9 +2,7 @@
 
 2D opengl game engine. Total rewrite of my old stuff.
 
-## Dependencies
-* [zlib](https://zlib.net/)
-* [PNG](http://www.libpng.org/pub/png/)
+## Dependencies (other than submodules)
 * [GLEW](http://glew.sourceforge.net/)
 
 Make sure CMake is set up so these are discoverable with find_package. Also, place the .dlls for the dependencies either in your path or the "dist" folder (this will automatically copy them to the executable directorty post-build)
