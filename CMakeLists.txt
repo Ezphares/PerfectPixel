@@ -34,14 +34,9 @@ add_custom_command(
 		"${CMAKE_SOURCE_DIR}/depends/libpng/pnglibconf.h"
 )
 
-
-# PACKAGES
-find_package(GLEW)
-if (GLEW_FOUND)
-	include_directories(${GLEW_INCLUDE_DIRS})
-else()
-	message(FATAL_ERROR "No GLEW found")
-endif()
+# SUBMODULE glew-cmake
+add_subdirectory("${CMAKE_SOURCE_DIR}/depends/glew" "${CMAKE_CURRENT_BINARY_DIR}/depends/glew" EXCLUDE_FROM_ALL)
+set_target_properties(libglew_shared PROPERTIES FOLDER depends/glew)
 	
 # INCLUDE PATHS
 include_directories("${CMAKE_SOURCE_DIR}/include")
@@ -49,6 +44,7 @@ include_directories("${CMAKE_SOURCE_DIR}/depends/yaml-cpp/include")
 include_directories("${CMAKE_SOURCE_DIR}/depends/zlib")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/depends/zlib")
 include_directories("${CMAKE_SOURCE_DIR}/depends/libpng")
+include_directories("${CMAKE_SOURCE_DIR}/depends/glew/include")
 
 # LIBRARIES
 set (Core_SRC_DIR "${CMAKE_SOURCE_DIR}/src/enginecore")
@@ -157,7 +153,7 @@ list(APPEND LIBRARIES_INTERNAL
 	Serialization
 )
 
-list(APPEND LIBRARIES_EXTERNAL png zlib GLEW::GLEW yaml-cpp)
+list(APPEND LIBRARIES_EXTERNAL png zlib libglew_shared yaml-cpp)
 list(APPEND LIBRARIES_SYSTEM opengl32)
 
 target_link_libraries(Pong ${LIBRARIES_INTERNAL})
@@ -179,6 +175,12 @@ add_custom_command(TARGET Pong POST_BUILD
 add_custom_command(TARGET Pong POST_BUILD
 	COMMAND "${CMAKE_COMMAND}" -E copy_directory
 		"$<TARGET_FILE_DIR:zlib>"
+		"$<TARGET_FILE_DIR:Pong>"
+)
+
+add_custom_command(TARGET Pong POST_BUILD
+	COMMAND "${CMAKE_COMMAND}" -E copy_directory
+		"$<TARGET_FILE_DIR:libglew_shared>"
 		"$<TARGET_FILE_DIR:Pong>"
 )
 
