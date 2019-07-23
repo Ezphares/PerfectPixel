@@ -2,10 +2,8 @@
 
 2D opengl game engine. Total rewrite of my old stuff.
 
-## Dependencies (other than submodules)
-* [GLEW](http://glew.sourceforge.net/)
-
-Make sure CMake is set up so these are discoverable with find_package. Also, place the .dlls for the dependencies either in your path or the "dist" folder (this will automatically copy them to the executable directorty post-build)
+## Dependencies
+All external dependencies are added as submodules.
 
 ## Building
 
@@ -22,4 +20,3 @@ Currently only Visual Studio 2017 on Windows will work. Only debug builds are te
 Short term:
 * Rendering rework - Move sprite components off the old OO system, have the renderer query new components rather than pushing elements to the graphics manager
 * Support for at least one more platform
-* Serialization - Might need to add ID parameter to field
