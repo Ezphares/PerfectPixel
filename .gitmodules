@@ -4,9 +4,11 @@
 [submodule "depends/libpng"]
 	path = depends/libpng
 	url = https://github.com/glennrp/libpng
+	ignore = dirty
 [submodule "depends/zlib"]
 	path = depends/zlib
 	url = https://github.com/madler/zlib
+	ignore = dirty
 [submodule "depends/glew"]
 	path = depends/glew
 	url = https://github.com/Perlmint/glew-cmake
