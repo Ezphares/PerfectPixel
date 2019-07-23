@@ -13,8 +13,8 @@ namespace perfectpixel { namespace ecs {
 		, public FlatComponentStorage<TransformComponent>
 	{
 	public:
-		_Field(TransformComponent, bedrock::Vector3, Position);
-		_Field(TransformComponent, bedrock::Vector3, Velocity);
+		PPField(TransformComponent, bedrock::Vector3, Position);
+		PPField(TransformComponent, bedrock::Vector3, Velocity);
 		//inline static Field<TransformComponent, types::Vector3> Position;
 		//inline static Field<TransformComponent, types::Vector3> Velocity;
 	};

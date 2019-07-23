@@ -16,8 +16,8 @@ namespace perfectpixel { namespace graphics {
 		, public ecs::LinearScanComponentStorage
 	{
 	public:
-		_Field(UITextComponent, std::string, Text);
-		_Field(UITextComponent, int32_t, Alignment);
+		PPField(UITextComponent, std::string, Text);
+		PPField(UITextComponent, int32_t, Alignment);
 	};
 
 } }

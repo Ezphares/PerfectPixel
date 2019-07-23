@@ -21,10 +21,10 @@ namespace perfectpixel { namespace physics {
 			FULL
 		};
 
-		_Field(PhysicsComponent, float, Mass);
-		_Field(PhysicsComponent, float, Bounciness);
-		_Field(PhysicsComponent, PhysicsSimulationType, SimulationType);
-		_ArrayField(PhysicsComponent, physics::Force, 8u, ActiveForces);
+		PPField(PhysicsComponent, float, Mass);
+		PPField(PhysicsComponent, float, Bounciness);
+		PPField(PhysicsComponent, PhysicsSimulationType, SimulationType);
+		PPArrayField(PhysicsComponent, physics::Force, 8u, ActiveForces);
 
 		static void MakeStaticCollider(ecs::Entity entity);
 		static void ActivateForce(ecs::Entity entity, const Force &force);

@@ -47,9 +47,9 @@ namespace physics {
 		static void GetNear(std::vector<ecs::Entity> &toCheck, const bedrock::Vector2 &point);
 
 	public:
-		_Field(ColliderComponent, ColliderMaskType, MaskType);
-		_Field(ColliderComponent, ColliderMask, Mask);
-		_Field(ColliderComponent, std::string, EventTag);
+		PPField(ColliderComponent, ColliderMaskType, MaskType);
+		PPField(ColliderComponent, ColliderMask, Mask);
+		PPField(ColliderComponent, std::string, EventTag);
 	};
 
 } }

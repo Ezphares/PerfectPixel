@@ -23,8 +23,8 @@ class BatComponent
 	, public LinearScanComponentStorage
 {
 public:
-	_Field(BatComponent, float, MaxSpeed);
-	_Field(BatComponent, float, CurrentDirection);
+	PPField(BatComponent, float, MaxSpeed);
+	PPField(BatComponent, float, CurrentDirection);
 };
 
 class PlayerComponent
@@ -32,7 +32,7 @@ class PlayerComponent
 	, public MapComponentStorage
 {
 public:
-	_Field(PlayerComponent, int32_t, InputAxis);
+	PPField(PlayerComponent, int32_t, InputAxis);
 };
 
 class AIComponent
@@ -40,7 +40,7 @@ class AIComponent
 	, public MapComponentStorage
 {
 public:
-	_Field(AIComponent, Entity, BallToTrack);
+	PPField(AIComponent, Entity, BallToTrack);
 };
 
 class BallComponent
@@ -48,9 +48,9 @@ class BallComponent
 	, public MapComponentStorage
 {
 public:
-	_Field(BallComponent, float, DeltaXPrev);
-	_Field(BallComponent, int32_t, Score1);
-	_Field(BallComponent, int32_t, Score2);
+	PPField(BallComponent, float, DeltaXPrev);
+	PPField(BallComponent, int32_t, Score1);
+	PPField(BallComponent, int32_t, Score2);
 
 	static void Reset(Entity entity)
 	{
@@ -70,8 +70,8 @@ class ScoreUIComponent
 	, public LinearScanComponentStorage
 {
 public:
-	_Field(ScoreUIComponent, Entity, BallToTrack);
-	_Field(ScoreUIComponent, int32_t, PlayerIndex);
+	PPField(ScoreUIComponent, Entity, BallToTrack);
+	PPField(ScoreUIComponent, int32_t, PlayerIndex);
 };
 
 class BatProcessor : public Processor

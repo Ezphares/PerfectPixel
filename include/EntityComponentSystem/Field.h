@@ -17,17 +17,17 @@
 
 #if PP_FULL_REFLECTION_ENABLED
 
-#define _Field(Owner, T, Name) inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T) \
+#define PPField(Owner, T, Name) inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T) \
 (PP_DEQUALIFY(Owner), PP_DQID(Owner), #Name, PP_ID(Name), ""/*bedrock::typeName<T>()*/, 0 /*bedrock::typeID<T>()*/);
 
-#define _ArrayField(Owner, T, Capacity, Name) inline static PPARRAYFIELDTYPE(Owner, T, Capacity) Name = PPARRAYFIELDTYPE(Owner, T, Capacity) \
+#define PPArrayField(Owner, T, Capacity, Name) inline static PPARRAYFIELDTYPE(Owner, T, Capacity) Name = PPARRAYFIELDTYPE(Owner, T, Capacity) \
 (PP_DEQUALIFY(Owner), PP_DQID(Owner), #Name, PP_ID(Name), PP_DEQUALIFY(T), PP_DQID(T));
 
 #else
 
-#define _Field(Owner, T, Name) inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T)(PP_DQID(Owner), PP_ID(Name), PP_DQID(T));
+#define PPField(Owner, T, Name) inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T)(PP_DQID(Owner), PP_ID(Name), PP_DQID(T));
 
-#define _ArrayField(Owner, T, Capacity, Name) inline static PPFIELDTYPE(Owner, T, Capacity) Name = PPFIELDTYPE(Owner, T, Capacity)(PP_DQID(Owner), PP_ID(Name), PP_DQID(T));
+#define PPArrayField(Owner, T, Capacity, Name) inline static PPFIELDTYPE(Owner, T, Capacity) Name = PPFIELDTYPE(Owner, T, Capacity)(PP_DQID(Owner), PP_ID(Name), PP_DQID(T));
 
 #endif
 
