@@ -9,7 +9,6 @@ namespace perfectpixel { namespace serialization {
 
 	YAMLSerializer::YAMLSerializer()
 		: m_emitter(new YAML::Emitter())
-		, m_iterating(YAML_IT_NONE)
 		, m_hash()
 		, m_reverse()
 	{
@@ -41,7 +40,7 @@ namespace perfectpixel { namespace serialization {
 		*m_emitter << val;
 	}
 
-	void YAMLSerializer::writeName(int32_t val)
+	void YAMLSerializer::writeIdentifier(int32_t val)
 	{
 #if PP_FULL_REFLECTION_ENABLED
 		if (m_reverse)
@@ -49,7 +48,7 @@ namespace perfectpixel { namespace serialization {
 			std::string text = m_reverse(val);
 			if (text != "")
 			{
-				writeName(m_reverse(val));
+				writeIdentifier(m_reverse(val));
 				return;
 			}
 		}
@@ -57,7 +56,7 @@ namespace perfectpixel { namespace serialization {
 		*m_emitter << val;
 	}
 
-	void YAMLSerializer::writeName(const std::string &val)
+	void YAMLSerializer::writeIdentifier(const std::string &val)
 	{
 		*m_emitter << val;
 	}
@@ -171,7 +170,7 @@ namespace perfectpixel { namespace serialization {
 		*val = readVal().as<std::string>();
 	}
 
-	void YAMLSerializer::readName(int32_t *val)
+	void YAMLSerializer::readIdentifier(int32_t *val)
 	{
 		const YAML::Node node = readVal();
 
@@ -185,7 +184,7 @@ namespace perfectpixel { namespace serialization {
 		}
 	}
 
-	void YAMLSerializer::readName(std::string *val)
+	void YAMLSerializer::readIdentifier(std::string *val)
 	{
 		readText(val);
 	}

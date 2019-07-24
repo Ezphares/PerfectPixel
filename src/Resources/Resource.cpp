@@ -114,7 +114,7 @@ perfectpixel::serialization::ISerializer & operator<<(perfectpixel::serializatio
 {
 	if (resource.isValid())
 	{
-		serializer.writeName(resource.getId());
+		serializer.writeIdentifier(resource.getId());
 	}
 	else
 	{
@@ -131,7 +131,7 @@ perfectpixel::serialization::ISerializer & operator>>(perfectpixel::serializatio
 	if (!serializer.isValueNull())
 	{
 		int32_t id;
-		serializer.readName(&id);
+		serializer.readIdentifier(&id);
 		resource.set(id);
 	}
 

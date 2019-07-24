@@ -19,9 +19,9 @@ namespace perfectpixel { namespace serialization {
 		virtual void writeUInt32(uint32_t val);
 		virtual void writeMappedUInt32(uint32_t val);
 		virtual void writeText(const std::string &val);
-		virtual void writeName(int32_t val);
+		virtual void writeIdentifier(int32_t val);
 		virtual void writeMapKey(int32_t val);
-		virtual void writeName(const std::string &val);
+		virtual void writeIdentifier(const std::string &val);
 		virtual void writeMapKey(const std::string &val);
 		virtual void writeBinary(const void *p, uint32_t size);
 		virtual void writeArrayStart(bool simple);
@@ -36,9 +36,9 @@ namespace perfectpixel { namespace serialization {
 		virtual void readUInt32(uint32_t *val);
 		virtual void readMappedUInt32(uint32_t *val);
 		virtual void readText(std::string *val);
-		virtual void readName(int32_t *val);
+		virtual void readIdentifier(int32_t *val);
 #if PP_FULL_REFLECTION_ENABLED
-		virtual void readName(std::string *val);
+		virtual void readIdentifier(std::string *val);
 #endif // PP_FULL_REFLECTION_ENABLED
 		virtual uint32_t readBinary(void *p, uint32_t maxSize);
 		virtual void readMapBegin();
@@ -62,17 +62,9 @@ namespace perfectpixel { namespace serialization {
 #endif
 
 	private:
-		enum Iterating
-		{
-			YAML_IT_NONE,
-			YAML_IT_MAP,
-			YAML_IT_ARRAY
-		};
-
 		YAML::Emitter *m_emitter;
 		YAML::Node *m_root;
 		std::stack<std::pair<const YAML::Node, YAML::const_iterator*>> m_stack;
-		Iterating m_iterating;
 	};
 
 } }
