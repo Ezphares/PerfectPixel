@@ -1,5 +1,9 @@
 cmake_minimum_required (VERSION 3.0)
 
+if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+	message(FATAL_ERROR "In-Source build not supported. Please build in a subdirect")
+endif()
+
 project (PerfectPixel)
 
 set (PerfectPixel_VERSION_MAJOR 0)
@@ -26,16 +30,20 @@ set_target_properties(zlib PROPERTIES FOLDER depends/zlib)
 
 # SUBMODULE libpng
 add_subdirectory("${CMAKE_SOURCE_DIR}/depends/libpng" "${CMAKE_CURRENT_BINARY_DIR}/depends/libpng" EXCLUDE_FROM_ALL)
-set_target_properties(png PROPERTIES FOLDER depends/libpng)
-set_target_properties(genfiles PROPERTIES FOLDER depends/libpng)
-
 add_custom_command(
-	PRE_BUILD
 	OUTPUT ${CMAKE_SOURCE_DIR}/depends/libpng/pnglibconf.h
 	COMMAND "${CMAKE_COMMAND}" -E copy
 		"${CMAKE_SOURCE_DIR}/depends/libpng/scripts/pnglibconf.h.prebuilt"
 		"${CMAKE_SOURCE_DIR}/depends/libpng/pnglibconf.h"
 )
+add_custom_target(pnglibconf ALL
+	DEPENDS "${CMAKE_SOURCE_DIR}/depends/libpng/pnglibconf.h"
+)
+add_dependencies(png pnglibconf)
+
+set_target_properties(png PROPERTIES FOLDER depends/libpng)
+set_target_properties(genfiles PROPERTIES FOLDER depends/libpng)
+set_target_properties(pnglibconf PROPERTIES FOLDER depends/libpng)
 
 # SUBMODULE glew-cmake
 add_subdirectory("${CMAKE_SOURCE_DIR}/depends/glew" "${CMAKE_CURRENT_BINARY_DIR}/depends/glew" EXCLUDE_FROM_ALL)
