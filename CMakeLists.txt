@@ -31,7 +31,7 @@ set_target_properties(genfiles PROPERTIES FOLDER depends/libpng)
 
 add_custom_command(
 	PRE_BUILD
-	OUTPUT ${CMAKE_SOURCE_DIR}/depends/zlib/pnglibconf.h
+	OUTPUT ${CMAKE_SOURCE_DIR}/depends/libpng/pnglibconf.h
 	COMMAND "${CMAKE_COMMAND}" -E copy
 		"${CMAKE_SOURCE_DIR}/depends/libpng/scripts/pnglibconf.h.prebuilt"
 		"${CMAKE_SOURCE_DIR}/depends/libpng/pnglibconf.h"
