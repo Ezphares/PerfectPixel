@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.0)
 
 if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
-	message(FATAL_ERROR "In-Source build not supported. Please build in a subdirect")
+	message(FATAL_ERROR "\nIn-Source build not supported. Please build in a subdirectory.\nYou might need to delete CMakeCache.txt")
 endif()
 
 project (PerfectPixel)
