@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.0)
 
-if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+if (${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
 	message(FATAL_ERROR "\nIn-Source build not supported. Please build in a subdirectory.\nYou might need to delete CMakeCache.txt")
 endif()
 
@@ -14,6 +14,10 @@ set (CMAKE_CXX_STANDARD 17)
 add_definitions(-DPP_CLEANUP_CALLBACKS)
 add_definitions(-DPP_FULL_REFLECTION)
 
+#TODO zlib/libpng dependency fun
+set(SKIP_INSTALL_ALL ON)
+
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 ##################################################
@@ -21,41 +25,34 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 ##################################################
 # SUBMODULE yaml-cpp 
 set_property(GLOBAL PROPERTY FOLDER yaml-cpp)
-add_subdirectory("${CMAKE_SOURCE_DIR}/depends/yaml-cpp" EXCLUDE_FROM_ALL)
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/depends/yaml-cpp" EXCLUDE_FROM_ALL)
 set_target_properties(yaml-cpp PROPERTIES FOLDER depends/yaml-cpp)
 
 # SUBMODULE zlib
-add_subdirectory("${CMAKE_SOURCE_DIR}/depends/zlib" "${CMAKE_CURRENT_BINARY_DIR}/depends/zlib" EXCLUDE_FROM_ALL)
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/depends/zlib" "${CMAKE_CURRENT_BINARY_DIR}/depends/zlib" EXCLUDE_FROM_ALL)
 set_target_properties(zlib PROPERTIES FOLDER depends/zlib)
+set(ZLIB_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/depends/zlib" "${CMAKE_CURRENT_BINARY_DIR}/depends/zlib")
+set(ZLIB_LIBRARY zlib)
 
 # SUBMODULE libpng
-add_subdirectory("${CMAKE_SOURCE_DIR}/depends/libpng" "${CMAKE_CURRENT_BINARY_DIR}/depends/libpng" EXCLUDE_FROM_ALL)
-add_custom_command(
-	OUTPUT ${CMAKE_SOURCE_DIR}/depends/libpng/pnglibconf.h
-	COMMAND "${CMAKE_COMMAND}" -E copy
-		"${CMAKE_SOURCE_DIR}/depends/libpng/scripts/pnglibconf.h.prebuilt"
-		"${CMAKE_SOURCE_DIR}/depends/libpng/pnglibconf.h"
-)
-add_custom_target(pnglibconf ALL
-	DEPENDS "${CMAKE_SOURCE_DIR}/depends/libpng/pnglibconf.h"
-)
-add_dependencies(png pnglibconf)
-
+option(PNG_BUILD_ZLIB "Custom zlib Location, else find_package is used" OFF)
+set(PNG_BUILD_ZLIB ON)
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/depends/libpng" "${CMAKE_CURRENT_BINARY_DIR}/depends/libpng" EXCLUDE_FROM_ALL)
 set_target_properties(png PROPERTIES FOLDER depends/libpng)
 set_target_properties(genfiles PROPERTIES FOLDER depends/libpng)
-set_target_properties(pnglibconf PROPERTIES FOLDER depends/libpng)
 
 # SUBMODULE glew-cmake
-add_subdirectory("${CMAKE_SOURCE_DIR}/depends/glew" "${CMAKE_CURRENT_BINARY_DIR}/depends/glew" EXCLUDE_FROM_ALL)
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/depends/glew" "${CMAKE_CURRENT_BINARY_DIR}/depends/glew" EXCLUDE_FROM_ALL)
 set_target_properties(libglew_shared PROPERTIES FOLDER depends/glew)
 	
 # INCLUDE PATHS
-include_directories("${CMAKE_SOURCE_DIR}/include")
-include_directories("${CMAKE_SOURCE_DIR}/depends/yaml-cpp/include")
-include_directories("${CMAKE_SOURCE_DIR}/depends/zlib")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/depends/yaml-cpp/include")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/depends/zlib")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/depends/zlib")
-include_directories("${CMAKE_SOURCE_DIR}/depends/libpng")
-include_directories("${CMAKE_SOURCE_DIR}/depends/glew/include")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/depends/libpng")
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/depends/libpng")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/depends/glew/include")
 
 ##################################################
 # MACROS
@@ -68,8 +65,8 @@ MACRO(SOURCE_GROUP_WRAP GROUP SRC)
 ENDMACRO(SOURCE_GROUP_WRAP)
 
 MACRO(MAKE_GROUP GNAME GFOLDER)
-	set ("${GNAME}_SRC_DIR" "${CMAKE_SOURCE_DIR}/src/${GFOLDER}")
-	set ("${GNAME}_INCLUDE_DIR" "${CMAKE_SOURCE_DIR}/include/${GFOLDER}")
+	set ("${GNAME}_SRC_DIR" "${CMAKE_CURRENT_SOURCE_DIR}/src/${GFOLDER}")
+	set ("${GNAME}_INCLUDE_DIR" "${CMAKE_CURRENT_SOURCE_DIR}/include/${GFOLDER}")
 
 	foreach(FILE ${ARGN})
 		list(APPEND "${GNAME}_SRC_FILES" "${${GNAME}_SRC_DIR}/${FILE}")
@@ -160,11 +157,13 @@ add_library(LibPerfectPixel
 	"${Serialization_FILES}" 
 )
 
-add_executable(Pong WIN32 "${CMAKE_SOURCE_DIR}/src/main/pong.cpp")
-add_dependencies(Pong yaml-cpp)
+add_executable(Pong WIN32 "${CMAKE_CURRENT_SOURCE_DIR}/src/main/pong.cpp")
 
 list(APPEND LIBRARIES_EXTERNAL png zlib libglew_shared yaml-cpp)
 list(APPEND LIBRARIES_SYSTEM opengl32)
+
+add_dependencies(LibPerfectPixel genfiles)
+add_dependencies(Pong LibPerfectPixel ${LIBRARIES_EXTERNAL})
 
 target_link_libraries(Pong LibPerfectPixel)
 target_link_libraries(Pong ${LIBRARIES_EXTERNAL})
@@ -172,7 +171,7 @@ target_link_libraries(Pong ${LIBRARIES_SYSTEM})
 
 add_custom_command(TARGET Pong POST_BUILD
 	COMMAND "${CMAKE_COMMAND}" -E copy_directory
-		"${CMAKE_SOURCE_DIR}/dist"
+		"${CMAKE_CURRENT_SOURCE_DIR}/dist"
 		"$<TARGET_FILE_DIR:Pong>"
 )
 
@@ -194,4 +193,9 @@ add_custom_command(TARGET Pong POST_BUILD
 		"$<TARGET_FILE_DIR:Pong>"
 )
 
+# if (NOT SKIP_INSTALL_LIB AND NOT SKIP_INSTALL_ALL)
+# install(EXPORT zlib
+	# DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+# endif()
+	
 set_property(TARGET Pong PROPERTY VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
