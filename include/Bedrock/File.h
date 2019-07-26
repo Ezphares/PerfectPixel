@@ -14,6 +14,8 @@ public:
 
 public:
 	std::string str();
+	char *getBuffer();
+	size_t getSize();
 
 private:
 	char *m_buffer;

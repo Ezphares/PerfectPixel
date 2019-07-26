@@ -48,5 +48,15 @@ namespace perfectpixel {
 			return std::string(m_buffer, m_length);
 		}
 
+		char * File::getBuffer()
+		{
+			return m_buffer;
+		}
+
+		size_t File::getSize()
+		{
+			return m_length;
+		}
+
 	}
 }

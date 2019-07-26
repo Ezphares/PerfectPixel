@@ -90,6 +90,7 @@ MAKE_GROUP("Core" "enginecore"
 MAKE_GROUP("Resources" "Resources"
 	"Resource.cpp"
 	"ResourceManager.cpp"
+	"FileResourceLocator.cpp"
 )
 
 MAKE_GROUP("Input" "Input"
