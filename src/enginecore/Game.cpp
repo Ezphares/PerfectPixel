@@ -207,6 +207,8 @@ void Game::loadResources()
 {
 	resources::ResourceManager::getInstance()->setResourceLocator(&m_fileResourceLocator);
 
+	resources::ResourceManager::AddLoader<resources::Image, resources::PNGImage>(&resources::PNGImage::PNGImageLoaderFunction);
+
 	registerResouces();
 }
 

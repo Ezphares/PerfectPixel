@@ -23,6 +23,12 @@ namespace perfectpixel { namespace bedrock {
 			return m_raw ? reinterpret_cast<T *>(m_raw.get()) : nullptr;
 		}
 
+		template<typename T>
+		const T *get() const
+		{
+			return m_raw ? reinterpret_cast<T *>(m_raw.get()) : nullptr;
+		}
+
 	private:
 		Opaque(void *data, void(*deleter)(void*))
 			: m_raw(data, deleter)

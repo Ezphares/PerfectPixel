@@ -28,7 +28,7 @@ namespace perfectpixel { namespace resources {
 				return [](void **data) {
 					delete reinterpret_cast<T *>(*data);
 					*data = nullptr;
-				}
+				};
 			}
 		};
 		typedef std::tuple<int32_t, int32_t, ResourceLoader> ResourceLoaderLookup;

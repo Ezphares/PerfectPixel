@@ -17,9 +17,9 @@ namespace perfectpixel {
 				bool m_bgr, m_vflip;
 			};
 
-			static void PNGImageLoaderFunction(char *data, size_t dataSize, void **target, bedrock::Opaque userData)
+			static void PNGImageLoaderFunction(char *data, size_t dataSize, void **target, const bedrock::Opaque &userData)
 			{
-				PNGImageUserData *udata = userData.get<PNGImageUserData>();
+				const PNGImageUserData *udata = userData.get<PNGImageUserData>();
 				*target = new PNGImage();
 				PNGImage::FromSimpleBuffer(
 					reinterpret_cast<PNGImage *>(*target),

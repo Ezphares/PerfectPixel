@@ -107,7 +107,6 @@ MAKE_GROUP("Physics" "physics"
 
 MAKE_GROUP("Graphics" "graphics"
 	"GraphicsManager.cpp" 
-	"PNG.cpp" 
 	"ShaderProgram.cpp" 
 	"Sprite.cpp" 
 	"SpriteComponent.cpp" 
