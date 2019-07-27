@@ -2,6 +2,7 @@
 #include <graphics/UITextComponent.h>
 #include <enginecore/Game.h>
 #include <graphics/IWindow.h>
+#include <Resources/PNGImage.h>
 #include <graphics/Texture.h>
 #include <EntityComponentSystem/TransformComponent.h>
 #include <EntityComponentSystem/Component.h>
@@ -312,7 +313,7 @@ class Pong : public core::Game
 		TransformComponent::Position(eTopWall) = bedrock::Vector3::UP * 58.0f;
 		TransformComponent::Position(eBottomWall) = bedrock::Vector3::DOWN * 58.0f;
 
-		graphics::Texture *tex = new  graphics::Texture(graphics::PNG::fromFile("pong-all.png") );
+		graphics::Texture *tex = new  graphics::Texture(resources::PNGImage::fromFile("pong-all.png") );
 
 		graphics::Sprite *sprPlayer1 = new graphics::Sprite(
 			tex,
@@ -403,6 +404,11 @@ class Pong : public core::Game
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 		closeSplash = true;
 	}
+
+	virtual void registerResouces()
+	{
+	}
+
 };
 
 PP_GAME(Pong);

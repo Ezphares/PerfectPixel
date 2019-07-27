@@ -11,9 +11,9 @@ namespace perfectpixel { namespace resources {
 	class Resource
 	{
 	public:
-		Resource();
-		Resource(const std::string &id);
-		Resource(int32_t id);
+		Resource(int32_t type);
+		Resource(int32_t type, const std::string &id);
+		Resource(int32_t type, int32_t id);
 
 		~Resource();
 		Resource(const Resource &toCopy);
@@ -29,6 +29,7 @@ namespace perfectpixel { namespace resources {
 		void set();
 
 	private:
+		const int32_t m_type;
 		int32_t m_id;
 		bool m_valid;
 	};

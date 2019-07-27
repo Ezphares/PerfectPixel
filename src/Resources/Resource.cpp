@@ -11,24 +11,26 @@
 
 namespace perfectpixel { namespace resources {
 
-	Resource::Resource()
-		: m_valid(false)
+	Resource::Resource(int32_t type)
+		: m_type(type)
+		, m_valid(false)
 	{
 	}
 
-	Resource::Resource(const std::string &ID)
-		: Resource()
+	Resource::Resource(int32_t type, const std::string &ID)
+		: Resource(type)
 	{
 		set(ID);
 	}
 
-	Resource::Resource(int32_t ID)
-		: Resource()
+	Resource::Resource(int32_t type, int32_t ID)
+		: Resource(type)
 	{
 		set(ID);
 	}
 
 	Resource::Resource(const Resource &toCopy)
+		: m_type(toCopy.m_type)
 	{
 		set();
 		if (toCopy.isValid())
@@ -38,6 +40,7 @@ namespace perfectpixel { namespace resources {
 	}
 
 	Resource::Resource(Resource &&toMove)
+		: m_type(toMove.m_type)
 	{
 		set();
 		if (toMove.isValid())
@@ -87,7 +90,7 @@ namespace perfectpixel { namespace resources {
 	{
 		if (m_valid)
 		{
-			ResourceManager::Release(m_id);
+			ResourceManager::Release(m_type, m_id);
 		}
 		m_valid = false;
 	}
@@ -103,7 +106,7 @@ namespace perfectpixel { namespace resources {
 	{
 		set();
 
-		ResourceManager::Take(id);
+		ResourceManager::Take(m_type, id);
 		m_valid = true;
 		m_id = id;
 	}

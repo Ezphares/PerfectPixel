@@ -1,5 +1,7 @@
 #include <enginecore/Game.h>
 
+#include <Resources/PNGImage.h>
+
 #include <EntityComponentSystem/LifecycleComponents.h>
 #include <EntityComponentSystem/DebugProcessor.h>
 
@@ -25,6 +27,7 @@ namespace core {
 		, m_graphicsManager([](ecs::Entity entity) {return ecs::TransformComponent::Position(entity); })
 		, m_targetUps(100)
 		, m_splashFilename("splash.png")
+		, m_fileResourceLocator()
 	{
 	}
 
@@ -200,11 +203,18 @@ void Game::cleanup()
 {
 }
 
+void Game::loadResources()
+{
+	resources::ResourceManager::getInstance()->setResourceLocator(&m_fileResourceLocator);
+
+	registerResouces();
+}
+
 void Game::showSplashScreen()
 {
 	graphics::WindowSettings splashSettings;
 
-	graphics::PNG splashPng = graphics::PNG::fromFile(m_splashFilename, true, false);
+	resources::PNGImage splashPng = resources::PNGImage::fromFile(m_splashFilename, true, false);
 	splashSettings.title = "Splash";
 	splashSettings.dimensions = graphics::WindowDimensions(splashPng.m_w, splashPng.m_h);
 	splashSettings.type = graphics::WindowSettings::BORDERLESS;
@@ -213,6 +223,8 @@ void Game::showSplashScreen()
 	splash->setSplash(splashPng);
 	splash->initialize(splashSettings);
 	splash->activate();
+
+	loadResources();
 
 	bool shouldClose = false;
 	while (!shouldClose)

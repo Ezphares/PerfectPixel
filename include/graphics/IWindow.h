@@ -1,7 +1,7 @@
 #pragma once
 
 #include <graphics/WindowSettings.h>
-#include <graphics/PNG.h>
+#include <resources/Image.h>
 
 #include <Bedrock/InputCallback.h>
 
@@ -24,7 +24,7 @@ public:
 	virtual WindowDimensions getDimensions() = 0;
 	virtual bool isClosed() = 0;
 	virtual void draw() = 0;
-	virtual void setSplash(const PNG &png) = 0;
+	virtual void setSplash(const resources::Image &image) = 0;
 
 	virtual void setKeyCallback(bedrock::KeyCallback callback) = 0;
 	virtual void setFocusCallback(FocusCallback callback) = 0;

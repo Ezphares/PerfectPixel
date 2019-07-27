@@ -17,20 +17,22 @@
 
 #if PP_FULL_REFLECTION_ENABLED
 
-#define PPField(Owner, T, Name) inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T) \
-(PP_DEQUALIFY(Owner), PP_DQID(Owner), #Name, PP_ID(Name), ""/*bedrock::typeName<T>()*/, 0 /*bedrock::typeID<T>()*/);
+#define PPFieldImpl(Owner, T, Name, Default) inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T) \
+(PP_DEQUALIFY(Owner), PP_DQID(Owner), #Name, PP_ID(Name), ""/*bedrock::typeName<T>()*/, 0 /*bedrock::typeID<T>()*/, Default);
 
 #define PPArrayField(Owner, T, Capacity, Name) inline static PPARRAYFIELDTYPE(Owner, T, Capacity) Name = PPARRAYFIELDTYPE(Owner, T, Capacity) \
 (PP_DEQUALIFY(Owner), PP_DQID(Owner), #Name, PP_ID(Name), PP_DEQUALIFY(T), PP_DQID(T));
 
 #else
 
-#define PPField(Owner, T, Name) inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T)(PP_DQID(Owner), PP_ID(Name), PP_DQID(T));
+#define PPFieldImpl(Owner, T, Name, Default) inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T)(PP_DQID(Owner), PP_ID(Name), PP_DQID(T), Default);
 
 #define PPArrayField(Owner, T, Capacity, Name) inline static PPFIELDTYPE(Owner, T, Capacity) Name = PPFIELDTYPE(Owner, T, Capacity)(PP_DQID(Owner), PP_ID(Name), PP_DQID(T));
 
 #endif
 
+#define PPField(Owner, T, Name) PPFieldImpl(Owner, T, Name, T())
+#define PPResourceField(Owner, ResourceType, Name) PPFieldImpl(Owner, ::perfectpixel::resources::Resource, Name, ::perfectpixel::resources::Resource(ResourceType))
 #define _InternalField(Owner, T, Name) inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T)(::perfectpixel::ecs::FieldTable::NoReflection);
 
 namespace perfectpixel { namespace ecs {
@@ -50,14 +52,17 @@ namespace perfectpixel { namespace ecs {
 	public:
 		Field(FieldTable::ReflectionHint)
 			: m_data()
+			, m_default()
 		{
 		}
 
 		Field(
 			int32_t ownerId,
 			int32_t selfId,
-			int32_t typeId)
+			int32_t typeId,
+			T defaultValue)
 			: m_data()
+			, m_default(defaultValue)
 		{
 			if (Owner::AddField(selfId, this))
 			{
@@ -72,8 +77,10 @@ namespace perfectpixel { namespace ecs {
 			const std::string &selfName,
 			int32_t selfId,
 			const std::string &typeName, 
-			int32_t typeId)
+			int32_t typeId,
+			T defaultValue)
 			: m_data()
+			, m_default(defaultValue)
 		{
 			if (Owner::AddField(selfId, this))
 			{
@@ -117,9 +124,9 @@ namespace perfectpixel { namespace ecs {
 		{
 			if (m_data.size() <= index)
 			{
-				m_data.resize(index + 1);
+				m_data.resize(index + 1, m_default);
 			}
-			m_data[index] = T();
+			m_data[index] = m_default;
 		}
 
 		virtual void serialize(serialization::ISerializer &serializer, uint32_t index)
@@ -151,6 +158,7 @@ namespace perfectpixel { namespace ecs {
 
 	private:
 		std::vector<T> m_data;
+		T m_default;
 	};
 
 	template <typename Owner, typename T, std::uint32_t Capacity>
@@ -260,6 +268,7 @@ namespace perfectpixel { namespace ecs {
 
 	private:
 		std::vector<std::vector<T>> m_data;
+		T m_default;
 	};
 
 } }

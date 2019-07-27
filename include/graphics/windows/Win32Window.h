@@ -25,7 +25,7 @@ public:
 	virtual void destroy();
 	virtual WindowDimensions getDimensions();
 	virtual bool isClosed();
-	virtual void setSplash(const PNG &png);
+	virtual void setSplash(const resources::Image &image);
 	virtual void setKeyCallback(bedrock::KeyCallback callback);
 	virtual void setFocusCallback(FocusCallback callback);
 	virtual void setResizeCallback(SizeCallback callback);

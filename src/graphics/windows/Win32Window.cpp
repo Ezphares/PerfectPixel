@@ -188,22 +188,22 @@ bool Win32Window::isClosed()
 	return m_closed;
 }
 
-void Win32Window::setSplash(const PNG &png)
+void Win32Window::setSplash(const resources::Image &image)
 {
-	unsigned char *buffer = png.m_buffer.m_idata;
+	unsigned char *buffer = image.getBuffer();
 
-	if (png.m_channels < 4)
+	if (image.getChannels() < 4)
 	{
-		buffer = new unsigned char[png.m_buffer.m_size / png.m_channels * 4];
-		memset(buffer, 0, png.m_buffer.m_size / png.m_channels * 4);
+		buffer = new unsigned char[image.getBufferSize() / image.getChannels() * 4];
+		memset(buffer, 0, image.getBufferSize() / image.getChannels() * 4);
 
-		for (unsigned i = 0; i < png.m_buffer.m_size / png.m_channels; ++i)
+		for (unsigned i = 0; i < image.getBufferSize() / image.getChannels(); ++i)
 		{
-			memcpy(buffer + i * 4, png.m_buffer.m_idata + i * png.m_channels, png.m_channels);
+			memcpy(buffer + i * 4, image.getBuffer() + i * image.getChannels(), image.getChannels());
 		}
 	}
 	
-	m_splash = CreateBitmap(png.m_w, png.m_h, 1, 32, buffer);
+	m_splash = CreateBitmap(image.getSize().m_x, image.getSize().m_y, 1, 32, buffer);
 	m_brush = CreatePatternBrush(m_splash);
 }
 

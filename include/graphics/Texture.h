@@ -1,7 +1,8 @@
 #pragma once
 
 #include <graphics/LocalGL.h>
-#include <graphics/PNG.h>
+
+#include <Resources/Image.h>
 
 #include <Bedrock/vectors.h>
 
@@ -22,7 +23,7 @@ public:
 	
 public:
 	Texture(const PlaceHolder &);
-	Texture(const PNG &png);
+	Texture(const resources::Image &image);
 	Texture(const bedrock::Point2 size);
 	Texture(const CBFGFontHeader& header, const char *raw);
 

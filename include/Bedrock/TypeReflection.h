@@ -32,6 +32,12 @@ namespace perfectpixel { namespace bedrock {
 		throw PpException(err.str());
 	}
 
+	template<>
+	inline int32_t typeID<nullptr_t>()
+	{
+		return 0;
+	}
+
 #if PP_FULL_REFLECTION_ENABLED
 	template <typename T>
 	std::string typeName()
@@ -40,6 +46,12 @@ namespace perfectpixel { namespace bedrock {
 		err << "No TypeName registered for requested type [" << typeid(T).name() << "]";
 
 		throw PpException(err.str());
+	}
+
+	template<>
+	inline std::string typeName<nullptr_t>()
+	{
+		return "nullptr_t";
 	}
 #endif // PP_FULL_REFLECTION_ENABLED
 

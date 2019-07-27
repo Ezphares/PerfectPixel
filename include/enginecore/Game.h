@@ -6,6 +6,8 @@
 #include <EntityComponentSystem/ProcessorQueue.h>
 #include <graphics/GraphicsManager.h>
 #include <input/InputManager.h>
+#include <Resources/ResourceManager.h>
+#include <Resources/FileResourceLocator.h>
 
 #include <Bedrock/numbers.h>
 
@@ -32,6 +34,7 @@ public:
 	
 	virtual void preInit() {};
 	virtual void setupMainWindow(graphics::WindowSettings &settings) = 0;
+	virtual void registerResouces() {}
 	virtual void gameStart() = 0;
 	virtual void step() {};
 	virtual void splashScreenUpdate(bool &closeSplash);
@@ -63,6 +66,8 @@ protected:
 	ecs::ProcessorQueue m_processorQueue;
 	input::InputManager m_inputManager;
 	graphics::GraphicsManager m_graphicsManager;
+	resources::FileResourceLocator m_fileResourceLocator;
+
 
 private:
 	// Use double over float, precision is required here

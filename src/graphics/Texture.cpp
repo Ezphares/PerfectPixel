@@ -13,7 +13,7 @@ namespace perfectpixel {
 const Texture::PlaceHolder Texture::PLACEHOLDER = {};
 
 
-Texture::Texture(const PNG &png)
+Texture::Texture(const resources::Image &image)
 {
 	glGenTextures(1, &m_textureId);
 	if (&m_textureId == 0)
@@ -23,26 +23,24 @@ Texture::Texture(const PNG &png)
 
 	bind();
 
-	GLint color_format = png.m_channels == 3 ? GL_RGB : GL_RGBA;
+	GLint color_format = image.getChannels() == 3 ? GL_RGB : GL_RGBA;
 	glTexImage2D(
 		GL_TEXTURE_2D,
 		0,
 		color_format,
-		static_cast<GLsizei>(png.m_w),
-		static_cast<GLsizei>(png.m_h),
+		static_cast<GLsizei>(image.getSize().m_x),
+		static_cast<GLsizei>(image.getSize().m_y),
 		0,
 		color_format,
 		GL_UNSIGNED_BYTE,
-		static_cast<GLvoid*>(png.m_buffer.m_idata));
+		static_cast<GLvoid*>(image.getBuffer()));
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	m_size = bedrock::Point2(
-		static_cast<int32_t>(png.m_w),
-		static_cast<int32_t>(png.m_h));
+	m_size = image.getSize();
 }
 
 Texture::Texture(const bedrock::Point2 size)
