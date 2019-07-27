@@ -66,6 +66,7 @@ namespace perfectpixel {
 
 		public:
 			PNGImage();
+			virtual ~PNGImage();
 
 		public:
 			static PNGImage fromFile(const std::string &filename, bool switchRgb = false, bool vflip = true);

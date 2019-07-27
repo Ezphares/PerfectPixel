@@ -11,5 +11,7 @@ namespace perfectpixel { namespace resources {
 		virtual uint32_t getChannels() const = 0;
 		virtual unsigned char *getBuffer() const = 0;
 		virtual size_t getBufferSize() const = 0;
+
+		virtual inline ~Image() {}
 	};
 } }

@@ -34,6 +34,10 @@ namespace perfectpixel { namespace resources {
 	{
 	}
 
+	PNGImage::~PNGImage()
+	{
+	}
+
 	PNGImage PNGImage::fromFile(const std::string &filename, bool switchRgb /*= false*/, bool vflip /*= true*/)
 	{
 		PNGImage result;
