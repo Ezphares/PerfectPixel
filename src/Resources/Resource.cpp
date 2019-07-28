@@ -88,6 +88,8 @@ namespace perfectpixel { namespace resources {
 
 	void Resource::set()
 	{
+		m_cache = nullptr;
+
 		if (m_valid)
 		{
 			ResourceManager::Release(m_type, m_id);
@@ -109,6 +111,26 @@ namespace perfectpixel { namespace resources {
 		ResourceManager::Take(m_type, id);
 		m_valid = true;
 		m_id = id;
+	}
+
+	void *Resource::_get()
+	{
+		if (!m_valid)
+		{
+			throw bedrock::PpException("Trying to get invalid resource");
+		}
+		if (m_cache)
+		{
+			return m_cache;
+		}
+		bool shouldCache;
+		void *result = ResourceManager::GetData(m_type, m_id, &shouldCache);
+
+		if (result && shouldCache)
+		{
+			m_cache = result;
+		}
+		return result;
 	}
 
 } }

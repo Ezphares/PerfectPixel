@@ -54,6 +54,24 @@ namespace perfectpixel { namespace resources {
 		}
 	}
 
+	void * ResourceManager::GetData(int32_t type, int32_t id, bool *out_cache)
+	{
+		ResourceManager *instance = getInstance();
+		ResourceMetadata &metadata = instance->getMetadata(type, id);
+
+		if (!metadata.m_data && metadata.m_loadingStrategy == RLS_AUTO_USE)
+		{
+			instance->load(type, id);
+		}
+
+		if (out_cache)
+		{
+			*out_cache = metadata.m_loadingStrategy != RLS_AUTO_USE;
+		}
+
+		return metadata.m_data;
+	}
+
 	void ResourceManager::insert(const ResourceMetadata &metadata)
 	{
 		auto it = m_metadata.begin();
@@ -129,15 +147,39 @@ namespace perfectpixel { namespace resources {
 		delete buffer;
 	}
 
-	void ResourceManager::unload(int32_t type, int32_t id)
+	void ResourceManager::unload(int32_t type, int32_t id, bool now)
 	{
-		ResourceMetadata &metadata = getMetadata(type, id);
-		ResourceLoader &loader = getLoader(metadata);
-		if (metadata.m_data)
+		if (now)
 		{
-			loader.m_unload(&metadata.m_data);
+			ResourceMetadata &metadata = getMetadata(type, id);
+			ResourceLoader &loader = getLoader(metadata);
+			if (metadata.m_data)
+			{
+				loader.m_unload(&metadata.m_data);
+			}
+			metadata.m_data = nullptr;
 		}
-		metadata.m_data = nullptr;
+		else
+		{
+			m_unloadQueue.emplace_back(type, id);
+		}
+	}
+
+	void ResourceManager::processUnloads()
+	{
+		for (auto it : m_unloadQueue)
+		{
+			ResourceMetadata &metadata = getMetadata(it.first, it.second);
+
+			// A new ref appeared, abort
+			if (metadata.m_loadingStrategy == RLS_AUTO_REF && metadata.m_refs != 0)
+			{
+				continue;
+			}
+
+			unload(metadata.m_type, metadata.m_id, true);
+		}
+		m_unloadQueue.clear();
 	}
 
 	ResourceManager::ResourceMetadata & ResourceManager::getMetadata(int32_t type, int32_t id)

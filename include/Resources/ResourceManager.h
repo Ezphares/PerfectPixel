@@ -78,6 +78,7 @@ namespace perfectpixel { namespace resources {
 			int32_t variant = 0,
 			const bedrock::Opaque &userData = bedrock::Opaque()
 		);
+		static void *GetData(int32_t type, int32_t id, bool *out_cache);
 
 		void setResourceLocator(IResourceLocator *locator);
 
@@ -88,7 +89,8 @@ namespace perfectpixel { namespace resources {
 		void pushOffset(int32_t type, size_t count = 1);
 
 		void load(int32_t type, int32_t id);
-		void unload(int32_t type, int32_t id);
+		void unload(int32_t type, int32_t id, bool now = false);
+		void processUnloads();
 		ResourceMetadata &getMetadata(int32_t type, int32_t id);
 		ResourceLoader getLoader(const ResourceMetadata &metadata);
 		
@@ -98,6 +100,7 @@ namespace perfectpixel { namespace resources {
 		std::vector<ResourceMetadata> m_metadata;
 		std::vector<ResourceLoaderLookup> m_loaderLUT;
 		IResourceLocator *m_locator;
+		std::vector<std::pair<int32_t, int32_t>> m_unloadQueue;
 	};
 
 } }

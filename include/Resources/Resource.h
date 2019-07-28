@@ -28,9 +28,17 @@ namespace perfectpixel { namespace resources {
 		void set(int32_t id);
 		void set();
 
+		void *_get();
+		template<typename T>
+		T *get()
+		{
+			return reinterpret_cast<T *>(_get());
+		}
+
 	private:
 		const int32_t m_type;
 		int32_t m_id;
+		void *m_cache;
 		bool m_valid;
 	};
 } }

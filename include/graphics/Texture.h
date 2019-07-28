@@ -23,7 +23,7 @@ public:
 	
 public:
 	Texture(const PlaceHolder &);
-	Texture(const resources::Image &image);
+	Texture(const resources::Image &image, int32_t imageResourceId = 0);
 	Texture(const bedrock::Point2 size);
 	Texture(const CBFGFontHeader& header, const char *raw);
 
@@ -42,6 +42,7 @@ public:
 private:
 	GLuint m_textureId;
 	bedrock::Point2 m_size;
+	int32_t m_sourceImageId;
 
 };
 

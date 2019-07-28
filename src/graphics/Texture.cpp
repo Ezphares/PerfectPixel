@@ -13,7 +13,8 @@ namespace perfectpixel {
 const Texture::PlaceHolder Texture::PLACEHOLDER = {};
 
 
-Texture::Texture(const resources::Image &image)
+Texture::Texture(const resources::Image &image, int32_t imageResourceId)
+	: m_sourceImageId(imageResourceId)
 {
 	glGenTextures(1, &m_textureId);
 	if (&m_textureId == 0)
@@ -45,6 +46,7 @@ Texture::Texture(const resources::Image &image)
 
 Texture::Texture(const bedrock::Point2 size)
 	: m_size(size)
+	, m_sourceImageId(0)
 {
 	glGenTextures(1, &m_textureId);
 	if (&m_textureId == 0)
@@ -73,6 +75,7 @@ Texture::Texture(const bedrock::Point2 size)
 Texture::Texture(const PlaceHolder &)
 	: m_textureId(0)
 	, m_size()
+	, m_sourceImageId(0)
 {
 }
 
