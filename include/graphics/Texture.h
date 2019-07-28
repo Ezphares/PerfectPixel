@@ -37,6 +37,7 @@ public:
 
 	GLuint getId() const;
 
+	int32_t getSourceImageId() const;
 	void destroy();
 
 private:

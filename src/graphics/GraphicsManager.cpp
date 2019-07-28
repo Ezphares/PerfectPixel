@@ -498,6 +498,37 @@ void GraphicsManager::updateCamera()
 		static_cast<int32_t>(scale.y())});
 }
 
+perfectpixel::graphics::Texture &GraphicsManager::getImageTexture(resources::Resource &imageResource)
+{
+	resources::Image *image = imageResource.get<resources::Image>();
+
+	// Attempt 1: Cached index
+	uint32_t idx = image->getTextureHint();
+	if (idx < m_managedTextures.size())
+	{
+		if (m_managedTextures[idx].getSourceImageId() == imageResource.getId())
+		{
+			return m_managedTextures[idx];
+		}
+	}
+
+	// Attempt 2: Scan
+	for (idx = 0; idx < m_managedTextures.size(); ++idx)
+	{
+		if (m_managedTextures[idx].getSourceImageId() == imageResource.getId())
+		{
+			image->setTextureHint(idx);
+			return m_managedTextures[idx];
+		}
+	}
+
+	// Attempt 3: Create
+	idx = m_managedTextures.size();
+	m_managedTextures.emplace_back(*image, imageResource.getId());
+	image->setTextureHint(idx);
+	return m_managedTextures[idx];
+}
+
 bool GraphicsManager::compSortSoftalpha(const SpriteDrawInfo &first, const SpriteDrawInfo &second)
 {
 	if (first.m_depth > second.m_depth)

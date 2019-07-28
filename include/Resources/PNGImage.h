@@ -25,6 +25,8 @@ namespace perfectpixel {
 			virtual unsigned char * getBuffer() const override;
 			virtual size_t getBufferSize() const override;
 
+			virtual uint32_t getTextureHint() const override;
+			virtual void setTextureHint(uint32_t hint) override;
 		private:
 			struct PngReadStruct {
 				png_structp m_png;
@@ -68,6 +70,7 @@ namespace perfectpixel {
 			png_uint_32 m_w, m_h;
 			png_byte m_channels;
 			PngBuffer m_buffer;
+			uint32_t m_textureHint;
 		};
 
 	}

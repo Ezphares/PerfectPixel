@@ -2,10 +2,10 @@
 
 namespace perfectpixel { namespace resources {
 
-	void ResourceManager::Take(int32_t type, int32_t id)
+	void ResourceManager::Take(int32_t type, int32_t id, uint32_t *ref_cacheHint)
 	{
 		ResourceManager *instance = getInstance();
-		ResourceMetadata &metadata = instance->getMetadata(type, id);
+		ResourceMetadata &metadata = instance->getMetadata(type, id, ref_cacheHint);
 		if (metadata.m_refs == 0 && metadata.m_loadingStrategy == RLS_AUTO_REF)
 		{
 			instance->load(metadata);
@@ -13,10 +13,10 @@ namespace perfectpixel { namespace resources {
 		metadata.m_refs++;
 	}
 
-	void ResourceManager::Release(int32_t type, int32_t id)
+	void ResourceManager::Release(int32_t type, int32_t id, uint32_t *ref_cacheHint)
 	{
 		ResourceManager *instance = getInstance();
-		ResourceMetadata &metadata = instance->getMetadata(type, id);
+		ResourceMetadata &metadata = instance->getMetadata(type, id, ref_cacheHint);
 		if (metadata.m_refs == 0)
 		{
 			throw "Ref corruption";
@@ -57,10 +57,10 @@ namespace perfectpixel { namespace resources {
 		}
 	}
 
-	void * ResourceManager::GetData(int32_t type, int32_t id, bool *out_cache)
+	void * ResourceManager::GetData(int32_t type, int32_t id, bool *out_cache, uint32_t *ref_cacheHint)
 	{
 		ResourceManager *instance = getInstance();
-		ResourceMetadata &metadata = instance->getMetadata(type, id);
+		ResourceMetadata &metadata = instance->getMetadata(type, id, ref_cacheHint);
 
 		if (!metadata.m_data && metadata.m_loadingStrategy == RLS_AUTO_USE)
 		{
@@ -181,12 +181,22 @@ namespace perfectpixel { namespace resources {
 		m_unloadQueue.clear();
 	}
 
-	ResourceManager::ResourceMetadata & ResourceManager::getMetadata(int32_t type, int32_t id)
+	ResourceManager::ResourceMetadata & ResourceManager::getMetadata(int32_t type, int32_t id, uint32_t *ref_cacheHint)
 	{
-		auto it = m_metadata.begin();
-		std::advance(it, offset(type));
+		if (ref_cacheHint && *ref_cacheHint < m_metadata.size())
+		{
+			ResourceMetadata &metadata = m_metadata[*ref_cacheHint];
+			if (metadata.m_type == type && metadata.m_id == id)
+			{
+				return metadata;
+			}
+		}
 
-		for (; it != m_metadata.end(); ++it)
+		auto it = m_metadata.begin();
+		size_t idx = offset(type);
+		std::advance(it, idx);
+
+		for (; it != m_metadata.end(); ++it, ++idx)
 		{
 			if (it->m_type != type)
 			{
@@ -196,6 +206,10 @@ namespace perfectpixel { namespace resources {
 			if (it->m_id == id)
 			{
 				return *it;
+				if (ref_cacheHint)
+				{
+					*ref_cacheHint = idx;
+				}
 			}
 		}
 

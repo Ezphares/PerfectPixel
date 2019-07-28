@@ -149,6 +149,11 @@ GLuint Texture::getId() const
 	return m_textureId;
 }
 
+int32_t Texture::getSourceImageId() const
+{
+	return m_sourceImageId;
+}
+
 void Texture::destroy()
 {
 	if (m_textureId != 0)

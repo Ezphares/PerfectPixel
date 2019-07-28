@@ -89,10 +89,11 @@ namespace perfectpixel { namespace resources {
 	void Resource::set()
 	{
 		m_cache = nullptr;
+		m_cacheHint = -1;
 
 		if (m_valid)
 		{
-			ResourceManager::Release(m_type, m_id);
+			ResourceManager::Release(m_type, m_id, &m_cacheHint);
 		}
 		m_valid = false;
 	}
@@ -108,7 +109,7 @@ namespace perfectpixel { namespace resources {
 	{
 		set();
 
-		ResourceManager::Take(m_type, id);
+		ResourceManager::Take(m_type, id, &m_cacheHint);
 		m_valid = true;
 		m_id = id;
 	}
@@ -124,7 +125,7 @@ namespace perfectpixel { namespace resources {
 			return m_cache;
 		}
 		bool shouldCache;
-		void *result = ResourceManager::GetData(m_type, m_id, &shouldCache);
+		void *result = ResourceManager::GetData(m_type, m_id, &shouldCache, &m_cacheHint);
 
 		if (result && shouldCache)
 		{

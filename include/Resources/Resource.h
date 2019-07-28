@@ -38,6 +38,7 @@ namespace perfectpixel { namespace resources {
 	private:
 		const int32_t m_type;
 		int32_t m_id;
+		uint32_t m_cacheHint;
 		void *m_cache;
 		bool m_valid;
 	};

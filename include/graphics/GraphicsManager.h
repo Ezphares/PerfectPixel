@@ -11,6 +11,8 @@
 #include <graphics/IFont.h>
 #include <graphics/DrawQueue.h>
 
+#include <Resources/Resource.h>
+
 #include <EntityComponentSystem/EntityManager.h>
 #include <EntityComponentSystem/PositionCallback.h>
 #include <Bedrock/vectors.h>
@@ -78,6 +80,8 @@ namespace graphics {
 
 		void updateCamera();
 
+		Texture &getImageTexture(resources::Resource &imageResource);
+
 		static bool compSortSoftalpha(const SpriteDrawInfo &first, const SpriteDrawInfo &second);
 
 	private:
@@ -112,6 +116,8 @@ namespace graphics {
 		std::size_t m_ftWrite;
 
 		DrawQueue m_uiQueue;
+
+		std::vector<Texture> m_managedTextures;
 	};
 
 }

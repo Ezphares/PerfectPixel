@@ -13,6 +13,9 @@ namespace perfectpixel { namespace resources {
 		virtual unsigned char *getBuffer() const = 0;
 		virtual size_t getBufferSize() const = 0;
 
+		virtual uint32_t getTextureHint() const = 0;
+		virtual void setTextureHint(uint32_t hint) = 0;
+
 		virtual inline ~Image() {}
 	};
 } }

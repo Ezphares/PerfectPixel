@@ -37,6 +37,16 @@ namespace perfectpixel { namespace resources {
 		return m_buffer.m_size;
 	}
 
+	uint32_t PNGImage::getTextureHint() const
+	{
+		return m_textureHint;
+	}
+
+	void PNGImage::setTextureHint(uint32_t hint)
+	{
+		m_textureHint = hint;
+	}
+
 	PNGImage::PNGImage()
 		: m_bitDepth(0)
 		, m_colorType(0)
@@ -44,6 +54,7 @@ namespace perfectpixel { namespace resources {
 		, m_w(0)
 		, m_channels(0)
 		, m_buffer()
+		, m_textureHint(-1)
 	{
 	}
 
