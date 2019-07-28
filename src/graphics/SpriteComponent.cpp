@@ -6,7 +6,7 @@ namespace perfectpixel {
 
 SpriteComponent::SpriteComponent(
 	ecs::Entity entity,
-	graphics::Sprite *sprite,
+	resources::Sprite *sprite,
 	bedrock::Vector2 worldSize,
 	bedrock::Vector2 offset,
 	float fps,
@@ -32,7 +32,7 @@ perfectpixel::ecs::Entity SpriteComponent::getEntity() const
 	return m_entity;
 }
 
-perfectpixel::graphics::Sprite * SpriteComponent::getSprite() const
+perfectpixel::resources::Sprite * SpriteComponent::getSprite() const
 {
 	return m_sprite;
 }

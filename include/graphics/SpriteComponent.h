@@ -1,10 +1,12 @@
 #pragma once
 
-#include <graphics/Sprite.h>
 #include <graphics/RenderHint.h>
 
 #include <EntityComponentSystem/Entity.h>
+
 #include <Bedrock/vectors.h>
+
+#include <Resources/Sprite.h>
 
 namespace perfectpixel {
 	namespace graphics {
@@ -14,7 +16,7 @@ namespace perfectpixel {
 		public:
 			SpriteComponent(
 				ecs::Entity entity,
-				graphics::Sprite *m_sprite,
+				resources::Sprite *m_sprite,
 
 				bedrock::Vector2 worldSize,
 				bedrock::Vector2 offset,
@@ -27,7 +29,7 @@ namespace perfectpixel {
 		public:
 			ecs::Entity getEntity() const;
 
-			Sprite *getSprite() const;
+			resources::Sprite *getSprite() const;
 			int32_t getFrame() const;
 
 			bedrock::Vector2 getOffset() const;
@@ -39,7 +41,7 @@ namespace perfectpixel {
 
 		private:
 			ecs::Entity m_entity;
-			graphics::Sprite *m_sprite;
+			resources::Sprite *m_sprite;
 			bedrock::Vector2 m_size;
 			bedrock::Vector2 m_offset;
 			float m_fps;

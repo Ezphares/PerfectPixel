@@ -232,7 +232,7 @@ class Pong : public core::Game
 		mainWindow.title = "Pong";
 	}
 
-	void createBat(float x, graphics::Sprite *spr, bool isAi)
+	void createBat(float x, resources::Sprite *spr, bool isAi)
 	{
 		Entity e{ EntityManager::getInstance()->create() };
 
@@ -314,27 +314,26 @@ class Pong : public core::Game
 		TransformComponent::Position(eTopWall) = bedrock::Vector3::UP * 58.0f;
 		TransformComponent::Position(eBottomWall) = bedrock::Vector3::DOWN * 58.0f;
 
-		graphics::Texture *tex = new graphics::Texture(
-			*resources::Resource(bedrock::typeID<resources::Image>(), PP_ID(pong_all.png)).get<resources::Image>()
-		);
+			
+		resources::Resource img = resources::Resource(bedrock::typeID<resources::Image>(), PP_ID(pong_all.png));
 
-		graphics::Sprite *sprPlayer1 = new graphics::Sprite(
-			tex,
+		resources::Sprite *sprPlayer1 = new resources::Sprite(
+			img,
 			{ 0, .5f },
 			{ .125f, .5f });
 		
-		graphics::Sprite *sprPlayer2 = new graphics::Sprite(
-			tex,
+		resources::Sprite *sprPlayer2 = new resources::Sprite(
+			img,
 			{ .125f, .5f },
 			{ .125f, .5f });
 
-		graphics::Sprite *sprBall = new graphics::Sprite(
-			tex,
+		resources::Sprite *sprBall = new resources::Sprite(
+			img,
 			{ .25f, .875f },
 			{ .125f, .125f });
 
-		graphics::Sprite *sprBlock = new graphics::Sprite(
-			tex,
+		resources::Sprite *sprBlock = new resources::Sprite(
+			img,
 			{ .25f, .5f },
 			{ .25f, .25f });
 

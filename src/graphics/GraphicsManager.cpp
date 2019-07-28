@@ -324,7 +324,7 @@ void GraphicsManager::drawSpriteComponent(const SpriteComponent &spriteComponent
 		actualPosition.y() + worldSize.y()
 	};
 
-	Sprite *sprite = spriteComponent.getSprite();
+	resources::Sprite *sprite = spriteComponent.getSprite();
 	const bedrock::Vector2 texturePosition = sprite->getTexCoord(spriteComponent.getFrame());
 	const bedrock::Vector2 textureSize = sprite->getSize();
 
@@ -336,7 +336,7 @@ void GraphicsManager::drawSpriteComponent(const SpriteComponent &spriteComponent
 	};
 
 	drawInfo.m_hints = spriteComponent.getHints();
-	drawInfo.m_texture = sprite->getTexture();
+	drawInfo.m_texture = &getImageTexture(sprite->getImage());
 	drawInfo.m_depth = actualPosition.z();
 
 	enqueueSpriteDraw(drawInfo);

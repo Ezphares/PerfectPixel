@@ -31,6 +31,7 @@ namespace perfectpixel { namespace resources {
 
 	Resource::Resource(const Resource &toCopy)
 		: m_type(toCopy.m_type)
+		, m_valid(false)
 	{
 		set();
 		if (toCopy.isValid())
@@ -41,6 +42,7 @@ namespace perfectpixel { namespace resources {
 
 	Resource::Resource(Resource &&toMove)
 		: m_type(toMove.m_type)
+		, m_valid(false)
 	{
 		set();
 		if (toMove.isValid())
