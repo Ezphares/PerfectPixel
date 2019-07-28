@@ -91,7 +91,9 @@ MAKE_GROUP("Resources" "Resources"
 	"Resource.cpp"
 	"ResourceManager.cpp"
 	"FileResourceLocator.cpp"
+	
 	"PNGImage.cpp"
+	"Sprite.cpp" 
 )
 
 MAKE_GROUP("Input" "Input"
@@ -108,7 +110,6 @@ MAKE_GROUP("Physics" "physics"
 MAKE_GROUP("Graphics" "graphics"
 	"GraphicsManager.cpp" 
 	"ShaderProgram.cpp" 
-	"Sprite.cpp" 
 	"SpriteComponent.cpp" 
 	"Texture.cpp" 
 	"VAO.cpp" 
