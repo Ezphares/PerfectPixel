@@ -4,6 +4,19 @@
 
 namespace perfectpixel { namespace resources {
 
+	void PNGImage::PNGImageLoaderFunction(char *data, size_t dataSize, void **target, const bedrock::Opaque &userData)
+	{
+		const PNGImageUserData *udata = userData.get<PNGImageUserData>();
+		*target = new PNGImage();
+		PNGImage::FromSimpleBuffer(
+			reinterpret_cast<PNGImage *>(*target),
+			data,
+			dataSize,
+			udata ? udata->m_bgr : false,
+			udata ? udata->m_vflip : true
+		);
+	}
+
 	bedrock::Point2 PNGImage::getSize() const
 	{
 		return bedrock::Point2(static_cast<int32_t>(m_w), static_cast<int32_t>(m_h));

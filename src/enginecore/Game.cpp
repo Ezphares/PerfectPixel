@@ -140,7 +140,7 @@ void Game::windowResized(graphics::IWindow &window, unsigned width, unsigned hei
 ecs::Entity Game::spawnTemplate(const std::string &data)
 {
 	serialization::YAMLSerializer yaml;
-	yaml.load(data.c_str());
+	yaml.loadBuffer(data);
 	yaml.m_hash = &bedrock::crc32;
 	yaml.m_reverse = &ecs::FieldTable::Reverse;
 
@@ -201,6 +201,7 @@ void Game::update(double dt)
 
 void Game::cleanup()
 {
+	resources::ResourceManager::getInstance()->processUnloads();
 }
 
 void Game::loadResources()

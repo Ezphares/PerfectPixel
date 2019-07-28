@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Bedrock/numbers.h>
+#include <Bedrock/defines.h>
 
 #include <cstdint>
 #include <string>
@@ -112,6 +113,14 @@ namespace perfectpixel { namespace bedrock {
 #define PP_DQID(str) (static_cast<int32_t>( \
 	::perfectpixel::bedrock::crc32(::perfectpixel::bedrock::dequalify(#str, sizeof(#str) - 1), \
 	      ::perfectpixel::bedrock::dequalifiedSize(#str, sizeof(#str) - 1))))
+
+#if PP_FULL_REFLECTION_ENABLED
+#define PP_KEY(str) #str
+#define PP_KEY_EQUAL(key, num) (PP_ID(key) == num)
+#else
+#define PP_KEY(str) PP_ID(str)
+#define PP_KEY_EQUAL(key, num) (key == num)
+#endif // PP_FULL_REFLECTION_ENABLED
 
 inline static int32_t PpId(const std::string &str){ return static_cast<int32_t>(::perfectpixel::bedrock::crc32(str)); }
 

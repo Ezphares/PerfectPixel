@@ -10,6 +10,9 @@ namespace perfectpixel {
 		class ISerializer
 		{
 		public:
+			virtual void loadBuffer(const char *buffer, size_t bufferSize) = 0;
+			virtual void loadBuffer(const std::string &buffer) = 0;
+
 			virtual void writeFloat(float val) = 0;
 			virtual void writeInt32(int32_t val) = 0;
 			virtual void writeUInt32(uint32_t val) = 0;

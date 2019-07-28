@@ -3,6 +3,7 @@
 #include <enginecore/Game.h>
 #include <graphics/IWindow.h>
 #include <Resources/PNGImage.h>
+#include <Resources/Resource.h>
 #include <graphics/Texture.h>
 #include <EntityComponentSystem/TransformComponent.h>
 #include <EntityComponentSystem/Component.h>
@@ -313,7 +314,9 @@ class Pong : public core::Game
 		TransformComponent::Position(eTopWall) = bedrock::Vector3::UP * 58.0f;
 		TransformComponent::Position(eBottomWall) = bedrock::Vector3::DOWN * 58.0f;
 
-		graphics::Texture *tex = new  graphics::Texture(resources::PNGImage::fromFile("pong-all.png") );
+		graphics::Texture *tex = new graphics::Texture(
+			*resources::Resource(bedrock::typeID<resources::Image>(), PP_ID(pong_all.png)).get<resources::Image>()
+		);
 
 		graphics::Sprite *sprPlayer1 = new graphics::Sprite(
 			tex,
@@ -407,6 +410,12 @@ class Pong : public core::Game
 
 	virtual void registerResouces()
 	{
+		resources::ResourceManager::RegisterResource(
+			"pong_all.png",
+			resources::ResourceManager::RLS_AUTO_USE,
+			PP_ID(pong_all.png),
+			bedrock::typeID<resources::Image>(),
+			bedrock::typeID<resources::PNGImage>());
 	}
 
 };

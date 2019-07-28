@@ -14,6 +14,21 @@ namespace perfectpixel { namespace serialization {
 	{
 	}
 
+	void YAMLSerializer::loadBuffer(const char *buffer, size_t bufferSize)
+	{
+		loadBuffer(std::string(buffer, bufferSize));
+	}
+
+	void YAMLSerializer::loadBuffer(const std::string &buffer)
+	{
+		m_root = YAML::Load(buffer);
+		while (!m_stack.empty())
+		{
+			m_stack.pop();
+		}
+		push(m_root);
+	}
+
 	void YAMLSerializer::writeFloat(float val)
 	{
 		*m_emitter << val;
@@ -107,12 +122,6 @@ namespace perfectpixel { namespace serialization {
 		*m_emitter << YAML::Null;
 	}
 
-	void YAMLSerializer::load(const char *data)
-	{
-		m_root = new YAML::Node(YAML::Load(data));
-		push(*m_root);
-	}
-
 	void YAMLSerializer::push(const YAML::Node &node)
 	{
 		m_stack.emplace(node, nullptr);
@@ -124,7 +133,7 @@ namespace perfectpixel { namespace serialization {
 		m_stack.pop();
 		if (m_stack.empty())
 		{
-			delete m_root;
+			m_root = YAML::Node();
 		}
 	}
 

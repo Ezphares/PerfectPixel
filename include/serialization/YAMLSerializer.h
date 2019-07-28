@@ -14,6 +14,9 @@ namespace perfectpixel { namespace serialization {
 	public:
 		YAMLSerializer();
 
+		virtual void loadBuffer(const char *buffer, size_t bufferSize) override;
+		virtual void loadBuffer(const std::string &buffer) override;
+
 		virtual void writeFloat(float val);
 		virtual void writeInt32(int32_t val);
 		virtual void writeUInt32(uint32_t val);
@@ -48,8 +51,6 @@ namespace perfectpixel { namespace serialization {
 		virtual bool isValueNull();
 		virtual void mapUInt32(uint32_t memory, uint32_t serialized);
 
-		virtual void load(const char *data);
-
 		void push(const YAML::Node &node);
 		void pop();
 		const YAML::Node readVal();
@@ -63,7 +64,7 @@ namespace perfectpixel { namespace serialization {
 
 	private:
 		YAML::Emitter *m_emitter;
-		YAML::Node *m_root;
+		YAML::Node m_root;
 		std::stack<std::pair<const YAML::Node, YAML::const_iterator*>> m_stack;
 	};
 

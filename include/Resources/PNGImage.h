@@ -17,18 +17,7 @@ namespace perfectpixel {
 				bool m_bgr, m_vflip;
 			};
 
-			static void PNGImageLoaderFunction(char *data, size_t dataSize, void **target, const bedrock::Opaque &userData)
-			{
-				const PNGImageUserData *udata = userData.get<PNGImageUserData>();
-				*target = new PNGImage();
-				PNGImage::FromSimpleBuffer(
-					reinterpret_cast<PNGImage *>(*target),
-					data, 
-					dataSize,
-					udata ? udata->m_bgr : false,
-					udata ? udata->m_vflip : true
-				);
-			}
+			static void PNGImageLoaderFunction(char *data, size_t dataSize, void **target, const bedrock::Opaque &userData);
 
 
 			virtual bedrock::Point2 getSize() const override;
@@ -83,3 +72,5 @@ namespace perfectpixel {
 
 	}
 }
+
+PP_TYPE_REFLECTION(::perfectpixel::resources::PNGImage, PNGImage);

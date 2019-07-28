@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Bedrock/vectors.h>
+#include <Bedrock/TypeReflection.h>
 
 namespace perfectpixel { namespace resources {
 
@@ -15,3 +16,5 @@ namespace perfectpixel { namespace resources {
 		virtual inline ~Image() {}
 	};
 } }
+
+PP_TYPE_REFLECTION(::perfectpixel::resources::Image, Image);
