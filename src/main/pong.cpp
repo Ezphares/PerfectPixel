@@ -241,8 +241,11 @@ class Pong : public core::Game
 		TransformComponent::Register(e);
 		TransformComponent::Position(e) =bedrock:: Vector3::RIGHT * x;
 
-		graphics::SpriteComponent sprite{ e, spr,{ 4, 16 },{ -2,  -8 }, 1 };
-		m_graphicsManager.registerSprite(e, sprite);
+		graphics::SpriteComponent::Register(e);
+		graphics::SpriteComponent::SpriteData(e) = *spr;
+		graphics::SpriteComponent::Size(e) = { 4, 16 };
+		graphics::SpriteComponent::Offset(e) = { -2, -8 };
+		graphics::SpriteComponent::FPS(e) = 1.0f;
 
 		physics::PhysicsComponent::Register(e);
 		physics::PhysicsComponent::Bounciness(e) = 0.0f;
@@ -337,13 +340,23 @@ class Pong : public core::Game
 			{ .25f, .5f },
 			{ .25f, .25f });
 
-		graphics::SpriteComponent sprComBall{ m_ball, sprBall,{ 4, 4 },{ -2, -2 }, 1 };
-		graphics::SpriteComponent sprComTop{ eTopWall, sprBlock,{ 160, 4 },{ -80, -2 }, 1 };
-		graphics::SpriteComponent sprComBottom{ eBottomWall, sprBlock, {160, 4 }, { -80, -2}, 1 };
+		graphics::SpriteComponent::Register(m_ball);
+		graphics::SpriteComponent::SpriteData(m_ball) = *sprBall;
+		graphics::SpriteComponent::Size(m_ball) = { 4, 4 };
+		graphics::SpriteComponent::Offset(m_ball) = { -2, -2 };
+		graphics::SpriteComponent::FPS(m_ball) = 1.0f;
 
-		m_graphicsManager.registerSprite(m_ball, sprComBall);
-		m_graphicsManager.registerSprite(eTopWall, sprComTop);
-		m_graphicsManager.registerSprite(eBottomWall, sprComBottom);
+		graphics::SpriteComponent::Register(eTopWall);
+		graphics::SpriteComponent::SpriteData(eTopWall) = *sprBlock;
+		graphics::SpriteComponent::Size(eTopWall) = { 160, 4 };
+		graphics::SpriteComponent::Offset(eTopWall) = { -80, -2 };
+		graphics::SpriteComponent::FPS(eTopWall) = 1.0f;
+
+		graphics::SpriteComponent::Register(eBottomWall);
+		graphics::SpriteComponent::SpriteData(eBottomWall) = *sprBlock;
+		graphics::SpriteComponent::Size(eBottomWall) = { 160, 4 };
+		graphics::SpriteComponent::Offset(eBottomWall) = { -80, -2 };
+		graphics::SpriteComponent::FPS(eBottomWall) = 1.0f;
 
 		physics::ColliderComponent::Register(m_ball);
 		physics::ColliderComponent::SetMaskRectangle(m_ball, bedrock::AARectangle({ 4, 4 }));

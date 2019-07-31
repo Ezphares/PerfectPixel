@@ -1,7 +1,10 @@
-#include "graphics/GraphicsManager.h"
+#include <graphics/GraphicsManager.h>
 
 #include <graphics/LocalGL.h>
 #include <graphics/CBFGFont.h>
+
+#include <EntityComponentSystem/QueryHelper.h>
+#include <EntityComponentSystem/TransformComponent.h>
 
 #include <Bedrock/File.h>
 #include <Bedrock/PpException.h>
@@ -38,8 +41,8 @@ namespace graphics {
 	}
 
 
-GraphicsManager::GraphicsManager(ecs::PositionCallback positionCallback)
-	: m_positionCallback(positionCallback)
+GraphicsManager::GraphicsManager()
+	: m_spriteQuery(ecs::QueryHelper<ecs::With<SpriteComponent>>::build())
 	, m_programSpriteHardAlpha(NULL)
 	, m_programSpriteSoftAlpha(NULL)
 	, m_programPostProcess(NULL)
@@ -138,9 +141,12 @@ void GraphicsManager::drawAll(double deltaT)
 	m_softAlpha.clear();
 	m_hardAlpha.clear();
 
-	for (auto it : m_spriteComponents)
+	for (auto entity : m_spriteQuery.execute())
 	{
-		drawSpriteComponent(it.second);
+		// TODO: update sprite from resource
+		SpriteComponent::Update(entity, deltaT);
+
+		drawSpriteComponent(entity);
 	}
 
 	std::sort(m_softAlpha.begin(), m_softAlpha.end(), &GraphicsManager::compSortSoftalpha);
@@ -255,26 +261,6 @@ void GraphicsManager::setWindowSize(bedrock::Point2 size)
 	setWindowRatio(calculateRatio(size.m_x, size.m_y));
 }
 
-void GraphicsManager::registerSprite(ecs::Entity entity, const SpriteComponent &spriteComponent)
-{
-	m_spriteComponents.insert(std::pair<ecs::Entity, SpriteComponent>(entity, spriteComponent));
-}
-
-bool GraphicsManager::hasSprite(ecs::Entity entity) const
-{
-	return m_spriteComponents.find(entity) != m_spriteComponents.end();
-}
-
-perfectpixel::graphics::SpriteComponent & GraphicsManager::getSprite(ecs::Entity entity)
-{
-	auto it = m_spriteComponents.find(entity);
-	if (it == m_spriteComponents.end())
-	{
-		throw bedrock::PpException("Attempted to get SpriteComponent for entity without one attached");
-	}
-	return it->second;
-}
-
 void GraphicsManager::queueDrawSingle(DrawQueueElement *element)
 {
 	switch (element->m_type)
@@ -302,31 +288,28 @@ void GraphicsManager::cleanup()
 	m_cleanup.clear();
 }
 
-void GraphicsManager::drawSpriteComponent(const SpriteComponent &spriteComponent)
+void GraphicsManager::drawSpriteComponent(ecs::Entity entity)
 {
-	const ecs::Entity entity{ spriteComponent.getEntity() };
-
-	if (!ecs::EntityManager::getInstance()->isAlive(entity))
+	bedrock::Vector3 actualPosition = bedrock::Vector3(SpriteComponent::Offset(entity));
+	if (ecs::TransformComponent::Has(entity))
 	{
-		m_cleanup.push_back(entity);
-		return;
+		actualPosition += bedrock::Vector3(ecs::TransformComponent::Position(entity));
 	}
 
-	const bedrock::Vector3 actualPosition{ m_positionCallback(entity) + bedrock::Vector3(spriteComponent.getOffset()) };
-	const bedrock::Vector2 worldSize{ spriteComponent.getSize() };
+	bedrock::Vector2 upperBound = bedrock::Vector2(actualPosition) + SpriteComponent::Size(entity);
 
 	SpriteDrawInfo drawInfo;
 
 	drawInfo.m_worldCoord = {
 		actualPosition.x(),
 		actualPosition.y(),
-		actualPosition.x() + worldSize.x(),
-		actualPosition.y() + worldSize.y()
+		upperBound.x(),
+		upperBound.y()
 	};
 
-	resources::Sprite *sprite = spriteComponent.getSprite();
-	const bedrock::Vector2 texturePosition = sprite->getTexCoord(spriteComponent.getFrame());
-	const bedrock::Vector2 textureSize = sprite->getSize();
+	resources::Sprite &sprite = SpriteComponent::SpriteData(entity);
+	const bedrock::Vector2 texturePosition = sprite.getTexCoord(SpriteComponent::CurrentFrame(entity));
+	const bedrock::Vector2 textureSize = sprite.getSize();
 
 	drawInfo.m_texCoord = {
 		texturePosition.x(),
@@ -335,8 +318,8 @@ void GraphicsManager::drawSpriteComponent(const SpriteComponent &spriteComponent
 		texturePosition.y() + textureSize.y()
 	};
 
-	drawInfo.m_hints = spriteComponent.getHints();
-	drawInfo.m_texture = &getImageTexture(sprite->getImage());
+	drawInfo.m_hints = (RenderHints)SpriteComponent::DrawHint(entity);
+	drawInfo.m_texture = &getImageTexture(sprite.getImage());
 	drawInfo.m_depth = actualPosition.z();
 
 	enqueueSpriteDraw(drawInfo);

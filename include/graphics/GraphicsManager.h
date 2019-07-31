@@ -14,7 +14,8 @@
 #include <Resources/Resource.h>
 
 #include <EntityComponentSystem/EntityManager.h>
-#include <EntityComponentSystem/PositionCallback.h>
+
+#include <EntityComponentSystem/Query.h>
 #include <Bedrock/vectors.h>
 
 #include <map>
@@ -41,7 +42,7 @@ namespace graphics {
 		typedef std::vector<SpriteDrawInfo> SpriteDrawList;
 
 	public:
-		GraphicsManager(ecs::PositionCallback positionCallback);
+		GraphicsManager();
 		~GraphicsManager();
 
 	public:
@@ -55,10 +56,6 @@ namespace graphics {
 		void setMainCamera(const CameraSettings &camera);
 		void setWindowSize(bedrock::Point2 size);
 
-		void registerSprite(ecs::Entity entity, const SpriteComponent &spriteComponent);
-		bool hasSprite(ecs::Entity entity) const;
-		SpriteComponent &getSprite(ecs::Entity entity);
-
 		void queueDrawSingle(DrawQueueElement *element);
 
 		IFont *getDefaultFont() {return m_font;}
@@ -66,7 +63,7 @@ namespace graphics {
 		void cleanup();
 
 	private:
-		void drawSpriteComponent(const SpriteComponent &spriteComponent);
+		void drawSpriteComponent(ecs::Entity entity);
 
 		void enqueueSpriteDraw(const SpriteDrawInfo &info);
 		void addSpriteToBuffer(const SpriteDrawInfo &info, SpriteBuffer *buffer);
@@ -85,7 +82,7 @@ namespace graphics {
 		static bool compSortSoftalpha(const SpriteDrawInfo &first, const SpriteDrawInfo &second);
 
 	private:
-		ecs::PositionCallback m_positionCallback;
+		ecs::Query m_spriteQuery;
 
 		SpriteComponents m_spriteComponents;
 

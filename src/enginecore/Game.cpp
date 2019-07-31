@@ -24,7 +24,7 @@ namespace core {
 	Game::Game()
 		: m_shouldExit(false)
 		, m_inputManager()
-		, m_graphicsManager([](ecs::Entity entity) {return ecs::TransformComponent::Position(entity); })
+		, m_graphicsManager()
 		, m_targetUps(100)
 		, m_splashFilename("splash.png")
 		, m_fileResourceLocator()

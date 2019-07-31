@@ -287,7 +287,7 @@ namespace perfectpixel { namespace serialization {
 	std::string YAMLSerializer::dump()
 	{
 		std::string result;
-		result.assign(m_emitter->c_str());
+		result.assign(m_emitter->c_str(), m_emitter->size());
 		return result;
 	}
 
