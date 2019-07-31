@@ -1,6 +1,6 @@
 #pragma once
 
-#include "EntityComponentSystem/Component.h"
+#include <EntityComponentSystem/Component.h>
 
 #include <EntityComponentSystem/Entity.h>
 #include <Bedrock/BitSet.h>
