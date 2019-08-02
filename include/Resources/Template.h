@@ -14,7 +14,7 @@ namespace perfectpixel { namespace resources {
 
 		void applyTo(ecs::Entity target);
 
-		static ResourceManager::ResourceLoaderFunction CreateTemplateLoader(serialization::ISerializer &serializer);
+		static ResourceManager::ResourceLoaderFunction CreateTemplateLoader(std::function<serialization::ISerializer*()> provider);
 		static void TemplateUnloader(void **data);
 
 	private:

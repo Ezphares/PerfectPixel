@@ -9,7 +9,7 @@ SpriteComponent:
   DrawHint: 0
   FPS: 1
   CurrentFrame: 0
-  SpriteResource: 2125925745
+  SpriteResource: "ball.spr"
   Size: [4, 4]
   SpriteData:
     Image: ~

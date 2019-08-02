@@ -222,6 +222,11 @@ namespace perfectpixel { namespace serialization {
 
 	bool YAMLSerializer::readMapKey(int32_t *val)
 	{
+		if (m_stack.empty())
+		{
+			return false;
+		}
+
 		if (!m_stack.top().first.IsMap())
 		{
 			throw "YAML Decoding error";

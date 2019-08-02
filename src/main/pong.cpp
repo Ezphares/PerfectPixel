@@ -314,17 +314,16 @@ class Pong : public core::Game
 			eBottomWall{ EntityManager::getInstance()->create() };
 
 		m_ball = EntityManager::getInstance()->create();
-		BallComponent::Register(m_ball);
 
-		TransformComponent::Register(m_ball);
 		TransformComponent::Register(eTopWall);
 		TransformComponent::Register(eBottomWall);
-
 
 		TransformComponent::Position(eTopWall) = bedrock::Vector3::UP * 58.0f;
 		TransformComponent::Position(eBottomWall) = bedrock::Vector3::DOWN * 58.0f;
 
-			
+		resources::Resource ballTpl = resources::Resource(bedrock::typeID<resources::Template>(), PP_ID(ball.tpl));
+		ballTpl.get<resources::Template>()->applyTo(m_ball);
+
 		resources::Resource img = resources::Resource(bedrock::typeID<resources::Image>(), PP_ID(pong_all.png));
 
 		resources::Sprite *sprPlayer1 = new resources::Sprite(
@@ -342,12 +341,6 @@ class Pong : public core::Game
 			{ .25f, .5f },
 			{ .25f, .25f });
 
-		graphics::SpriteComponent::Register(m_ball);
-		graphics::SpriteComponent::Size(m_ball) = { 4, 4 };
-		graphics::SpriteComponent::Offset(m_ball) = { -2, -2 };
-		graphics::SpriteComponent::FPS(m_ball) = 1.0f;
-		graphics::SpriteComponent::SpriteResource(m_ball) = resources::Resource(bedrock::typeID<resources::Sprite>(), PP_ID(ball.spr));
-
 		graphics::SpriteComponent::Register(eTopWall);
 		graphics::SpriteComponent::SpriteData(eTopWall) = *sprBlock;
 		graphics::SpriteComponent::Size(eTopWall) = { 160, 4 };
@@ -360,19 +353,11 @@ class Pong : public core::Game
 		graphics::SpriteComponent::Offset(eBottomWall) = { -80, -2 };
 		graphics::SpriteComponent::FPS(eBottomWall) = 1.0f;
 
-		physics::ColliderComponent::Register(m_ball);
-		physics::ColliderComponent::SetMaskRectangle(m_ball, bedrock::AARectangle({ 4, 4 }));
-
 		physics::ColliderComponent::Register(eTopWall);
 		physics::ColliderComponent::SetMaskRectangle(eTopWall, bedrock::AARectangle({ 160, 4 }));
 
 		physics::ColliderComponent::Register(eBottomWall);
 		physics::ColliderComponent::SetMaskRectangle(eBottomWall, bedrock::AARectangle({ 160, 4 }));
-
-		physics::PhysicsComponent::Register(m_ball);
-		physics::PhysicsComponent::Bounciness(m_ball) = 1.0f;
-		physics::PhysicsComponent::Mass(m_ball) = 0.0f;
-		physics::PhysicsComponent::SimulationType(m_ball) = physics::PhysicsComponent::FULL;
 
 		physics::PhysicsComponent::Register(eTopWall);
 		physics::PhysicsComponent::MakeStaticCollider(eTopWall);
@@ -386,8 +371,8 @@ class Pong : public core::Game
 		// Serialization debug
 		serialization::YAMLSerializer yaml;
 		yaml.m_reverse = &ecs::FieldTable::Reverse;
-		ecs::FieldTable::getInstance()->serialize(yaml, m_ball);
-		spawnTemplate(yaml.dump());
+		ecs::FieldTable::getInstance()->serialize(yaml, eTopWall);
+		yaml.dump();
 		
 
 		for (int32_t i = 0; i < 2; ++i)

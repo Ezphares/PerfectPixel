@@ -13,13 +13,15 @@ namespace perfectpixel { namespace resources {
 		auto KEY_SPACING = PP_KEY(UVFrmeSpacing);
 	}
 
-	perfectpixel::resources::ResourceManager::ResourceLoaderFunction Sprite::CreateSpriteLoader(serialization::ISerializer &serializer)
+	perfectpixel::resources::ResourceManager::ResourceLoaderFunction Sprite::CreateSpriteLoader(std::function<serialization::ISerializer*()> provider)
 	{
-		return [&serializer](char *data, size_t dataSize, void **target, const bedrock::Opaque &userData) {
-			serializer.loadBuffer(data, dataSize);
+		return [provider](char *data, size_t dataSize, void **target, const bedrock::Opaque &userData) {
+			serialization::ISerializer *serializer = provider();
+			serializer->loadBuffer(data, dataSize);
 			Sprite *res = new Sprite();
-			serializer >> (*res);
+			*serializer >> (*res);
 			*target = res;
+			delete serializer;
 		};
 	}
 

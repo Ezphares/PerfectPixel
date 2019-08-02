@@ -17,6 +17,8 @@ namespace perfectpixel {
 			: public ecs::Component<SpriteComponent>
 			, public ecs::DefaultComponentStorage
 		{
+		private:
+
 		public:
 			PPResourceField(SpriteComponent, bedrock::typeID<resources::Sprite>(), SpriteResource);
 			PPField(SpriteComponent, resources::Sprite, SpriteData);

@@ -24,17 +24,20 @@ namespace perfectpixel { namespace resources {
 		ecs::FieldTable::getInstance()->copy(target, m_entity);
 	}
 
-	perfectpixel::resources::ResourceManager::ResourceLoaderFunction Template::CreateTemplateLoader(serialization::ISerializer &serializer)
+	perfectpixel::resources::ResourceManager::ResourceLoaderFunction Template::CreateTemplateLoader(std::function<serialization::ISerializer*()> provider)
 	{
-		return [&serializer](char *data, size_t dataSize, void **target, const bedrock::Opaque &) {
-			serializer.loadBuffer(data, dataSize);
+		return [provider](char *data, size_t dataSize, void **target, const bedrock::Opaque &) {
+			serialization::ISerializer *serializer = provider();
+			serializer->loadBuffer(data, dataSize);
 			
 			Template *tpl = new Template(ecs::EntityManager::getInstance()->create());
+			tpl->m_entity = ecs::EntityManager::getInstance()->create();
 			
 			ecs::InactiveComponent::Register(tpl->m_entity);
-			ecs::FieldTable::getInstance()->deserialize(serializer, tpl->m_entity);
+			ecs::FieldTable::getInstance()->deserialize(*serializer, tpl->m_entity);
 
 			*target = tpl;
+			delete serializer;
 		};
 	}
 

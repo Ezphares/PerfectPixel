@@ -207,18 +207,20 @@ void Game::cleanup()
 
 void Game::loadResources()
 {
-	// FIXME this is a memory leak, but worth it for testing for now
-	serialization::YAMLSerializer *genericYAMLSerializer = new serialization::YAMLSerializer();
-	genericYAMLSerializer->m_hash = &bedrock::crc32;
-	genericYAMLSerializer->m_reverse = &ecs::FieldTable::Reverse;
+	auto deserializationProvider = []() -> serialization::ISerializer* {
+		serialization::YAMLSerializer *serializer = new serialization::YAMLSerializer();
+		serializer->m_hash = &bedrock::crc32;
+		serializer->m_reverse = &ecs::FieldTable::Reverse;
+		return serializer;
+	};
 
 	resources::ResourceManager::getInstance()->setResourceLocator(&m_fileResourceLocator);
 
 	resources::ResourceManager::AddLoader<resources::Image, resources::PNGImage>(&resources::PNGImage::PNGImageLoaderFunction);
-	resources::ResourceManager::AddLoader<resources::Sprite>(resources::Sprite::CreateSpriteLoader(*genericYAMLSerializer));
+	resources::ResourceManager::AddLoader<resources::Sprite>(resources::Sprite::CreateSpriteLoader(deserializationProvider));
 
 	resources::ResourceManager::AddLoader<resources::Template>(
-		resources::Template::CreateTemplateLoader(*genericYAMLSerializer), &resources::Template::TemplateUnloader);
+		resources::Template::CreateTemplateLoader(deserializationProvider), &resources::Template::TemplateUnloader);
 
 
 	registerResouces();

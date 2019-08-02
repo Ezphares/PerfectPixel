@@ -10,7 +10,7 @@ namespace perfectpixel { namespace resources {
 	class Sprite
 	{
 	public:
-		static ResourceManager::ResourceLoaderFunction CreateSpriteLoader(serialization::ISerializer &serializer);
+		static ResourceManager::ResourceLoaderFunction CreateSpriteLoader(std::function<serialization::ISerializer*()> provider);
 
 	public:
 		Sprite();
