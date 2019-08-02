@@ -82,20 +82,23 @@ namespace perfectpixel { namespace resources {
 		serializer.writeMapKey(KEY_IMAGE);
 		serializer << m_image;
 
-		serializer.writeMapKey(KEY_TOPLEFT);
-		serializer << m_textureTopLeft;
+		if (m_image.isValid())
+		{
+			serializer.writeMapKey(KEY_TOPLEFT);
+			serializer << m_textureTopLeft;
 
-		serializer.writeMapKey(KEY_FRAMESIZE);
-		serializer << m_textureSize;
+			serializer.writeMapKey(KEY_FRAMESIZE);
+			serializer << m_textureSize;
 
-		serializer.writeMapKey(KEY_SPACING);
-		serializer << m_frameSpacing;
+			serializer.writeMapKey(KEY_SPACING);
+			serializer << m_frameSpacing;
 
-		serializer.writeMapKey(KEY_FRAMES);
-		serializer << m_frames;
+			serializer.writeMapKey(KEY_FRAMES);
+			serializer << m_frames;
 
-		serializer.writeMapKey(KEY_PERROW);
-		serializer << m_framesPerRow;
+			serializer.writeMapKey(KEY_PERROW);
+			serializer << m_framesPerRow;
+		}
 
 		serializer.writeMapEnd();
 	}

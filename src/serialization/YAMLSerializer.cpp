@@ -26,7 +26,6 @@ namespace perfectpixel { namespace serialization {
 		{
 			m_stack.pop();
 		}
-		push(m_root);
 	}
 
 	void YAMLSerializer::writeFloat(float val)
@@ -139,7 +138,11 @@ namespace perfectpixel { namespace serialization {
 
 	const YAML::Node YAMLSerializer::readVal()
 	{
-		if (m_stack.top().first.IsMap())
+		if (m_stack.empty())
+		{
+			return m_root;
+		}
+		else if (m_stack.top().first.IsMap())
 		{
 			return (*m_stack.top().second)->second;
 		}

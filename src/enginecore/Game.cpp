@@ -1,6 +1,7 @@
 #include <enginecore/Game.h>
 
 #include <Resources/PNGImage.h>
+#include <Resources/Template.h>
 
 #include <EntityComponentSystem/LifecycleComponents.h>
 #include <EntityComponentSystem/DebugProcessor.h>
@@ -206,9 +207,19 @@ void Game::cleanup()
 
 void Game::loadResources()
 {
+	// FIXME this is a memory leak, but worth it for testing for now
+	serialization::YAMLSerializer *genericYAMLSerializer = new serialization::YAMLSerializer();
+	genericYAMLSerializer->m_hash = &bedrock::crc32;
+	genericYAMLSerializer->m_reverse = &ecs::FieldTable::Reverse;
+
 	resources::ResourceManager::getInstance()->setResourceLocator(&m_fileResourceLocator);
 
 	resources::ResourceManager::AddLoader<resources::Image, resources::PNGImage>(&resources::PNGImage::PNGImageLoaderFunction);
+	resources::ResourceManager::AddLoader<resources::Sprite>(resources::Sprite::CreateSpriteLoader(*genericYAMLSerializer));
+
+	resources::ResourceManager::AddLoader<resources::Template>(
+		resources::Template::CreateTemplateLoader(*genericYAMLSerializer), &resources::Template::TemplateUnloader);
+
 
 	registerResouces();
 }

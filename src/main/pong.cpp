@@ -1,17 +1,24 @@
-#include <graphics/LocalGL.h>
-#include <graphics/UITextComponent.h>
 #include <enginecore/Game.h>
-#include <graphics/IWindow.h>
-#include <Resources/PNGImage.h>
-#include <Resources/Resource.h>
-#include <graphics/Texture.h>
+
 #include <EntityComponentSystem/TransformComponent.h>
 #include <EntityComponentSystem/Component.h>
-#include <Bedrock/vectors.h>
-#include <Bedrock/TypeReflection.h>
+
+#include <graphics/LocalGL.h>
+#include <graphics/UITextComponent.h>
+#include <graphics/IWindow.h>
+#include <graphics/Texture.h>
+
 #include <physics/PhysicsComponent.h>
 #include <physics/ColliderComponent.h>
+
+#include <Bedrock/vectors.h>
+#include <Bedrock/TypeReflection.h>
+
 #include <serialization/YAMLSerializer.h>
+
+#include <Resources/PNGImage.h>
+#include <Resources/Template.h>
+#include <Resources/Resource.h>
 
 #include <chrono>
 #include <thread>
@@ -330,21 +337,16 @@ class Pong : public core::Game
 			{ .125f, .5f },
 			{ .125f, .5f });
 
-		resources::Sprite *sprBall = new resources::Sprite(
-			img,
-			{ .25f, .875f },
-			{ .125f, .125f });
-
 		resources::Sprite *sprBlock = new resources::Sprite(
 			img,
 			{ .25f, .5f },
 			{ .25f, .25f });
 
 		graphics::SpriteComponent::Register(m_ball);
-		graphics::SpriteComponent::SpriteData(m_ball) = *sprBall;
 		graphics::SpriteComponent::Size(m_ball) = { 4, 4 };
 		graphics::SpriteComponent::Offset(m_ball) = { -2, -2 };
 		graphics::SpriteComponent::FPS(m_ball) = 1.0f;
+		graphics::SpriteComponent::SpriteResource(m_ball) = resources::Resource(bedrock::typeID<resources::Sprite>(), PP_ID(ball.spr));
 
 		graphics::SpriteComponent::Register(eTopWall);
 		graphics::SpriteComponent::SpriteData(eTopWall) = *sprBlock;
@@ -422,12 +424,27 @@ class Pong : public core::Game
 
 	virtual void registerResouces()
 	{
+		// TEXTURES
 		resources::ResourceManager::RegisterResource(
 			"pong_all.png",
 			resources::ResourceManager::RLS_AUTO_USE,
 			PP_ID(pong_all.png),
 			bedrock::typeID<resources::Image>(),
 			bedrock::typeID<resources::PNGImage>());
+
+		// SPRITES
+		resources::ResourceManager::RegisterResource(
+			"ball.spr",
+			resources::ResourceManager::RLS_AUTO_REF,
+			PP_ID(ball.spr),
+			bedrock::typeID<resources::Sprite>());
+
+		// TEMPLATES
+		resources::ResourceManager::RegisterResource(
+			"ball.tpl",
+			resources::ResourceManager::RLS_AUTO_USE,
+			PP_ID(ball.tpl),
+			bedrock::typeID<resources::Template>());
 	}
 
 };

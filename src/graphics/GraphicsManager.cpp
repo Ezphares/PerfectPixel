@@ -308,6 +308,11 @@ void GraphicsManager::drawSpriteComponent(ecs::Entity entity)
 	};
 
 	resources::Sprite &sprite = SpriteComponent::SpriteData(entity);
+	if (!sprite.getImage().isValid())
+	{
+		sprite = *SpriteComponent::SpriteResource(entity).get<resources::Sprite>();
+	}
+
 	const bedrock::Vector2 texturePosition = sprite.getTexCoord(SpriteComponent::CurrentFrame(entity));
 	const bedrock::Vector2 textureSize = sprite.getSize();
 

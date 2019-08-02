@@ -91,6 +91,7 @@ MAKE_GROUP("Resources" "Resources"
 	"Resource.cpp"
 	"ResourceManager.cpp"
 	"FileResourceLocator.cpp"
+	"Template.cpp"
 	
 	"PNGImage.cpp"
 	"Sprite.cpp" 

@@ -105,16 +105,8 @@ namespace perfectpixel { namespace resources {
 		{
 			if (it == m_offsets.end() || it->first > type)
 			{
-				if (it == m_offsets.begin())
-				{
-					m_offsets.emplace(it, type, 0ul);
-					return 0;
-				}
-				else
-				{
-					m_offsets.emplace(it, type, (it - 1)->second);
-					return it->second;
-				}
+
+				return m_offsets.emplace(it, type, (it == m_offsets.end()) ? m_metadata.size() : it->second)->second;
 			}
 			else if (it->first == type)
 			{

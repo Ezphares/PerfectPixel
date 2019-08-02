@@ -41,6 +41,8 @@ namespace perfectpixel { namespace resources {
 		bedrock::Vector2 m_frameSpacing;
 
 		Resource m_image;
+
+		bool m_valid;
 	};
 
 

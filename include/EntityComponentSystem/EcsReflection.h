@@ -129,6 +129,8 @@ namespace perfectpixel { namespace ecs {
 
 		void deserialize(serialization::ISerializer &serializer, Entity entity)
 		{
+			serializer.readMapBegin();
+
 			int32_t key;
 			while (serializer.readMapKey(&key))
 			{
