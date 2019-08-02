@@ -10,7 +10,7 @@ namespace perfectpixel { namespace resources {
 		auto KEY_FRAMESIZE = PP_KEY(UVFrameSize);
 		auto KEY_FRAMES = PP_KEY(Frames);
 		auto KEY_PERROW = PP_KEY(FramesPerRow);
-		auto KEY_SPACING = PP_KEY(UVFrmeSpacing);
+		auto KEY_SPACING = PP_KEY(UVFrameSpacing);
 	}
 
 	perfectpixel::resources::ResourceManager::ResourceLoaderFunction Sprite::CreateSpriteLoader(std::function<serialization::ISerializer*()> provider)
