@@ -44,6 +44,8 @@ namespace ecs {
 	//uint32_t entityGeneration(Entity entity);
 	//uint32_t entityIndex(Entity entity);
 	Entity entityCreate(std::uint32_t generation, std::uint32_t index);
+
+	static const Entity NO_ENTITY = entityCreate(-1, -1);
 }
 }
 

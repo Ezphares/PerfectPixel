@@ -43,6 +43,7 @@ namespace perfectpixel { namespace ecs {
 		virtual void reset(uint32_t index = 0) = 0;
 		virtual void serialize(serialization::ISerializer &serializer, uint32_t index) = 0;
 		virtual void deserialize(serialization::ISerializer &serializer, uint32_t index) = 0;
+		virtual void copy(uint32_t dstIndex, uint32_t srcIndex) = 0;
 	};
 
 	template <typename Owner, typename T>
@@ -120,7 +121,7 @@ namespace perfectpixel { namespace ecs {
 			return m_data.at(Owner::Index(entity));
 		}
 
-		virtual void reset(uint32_t index)
+		virtual void reset(uint32_t index) override
 		{
 			if (m_data.size() <= index)
 			{
@@ -129,14 +130,19 @@ namespace perfectpixel { namespace ecs {
 			m_data[index] = m_default;
 		}
 
-		virtual void serialize(serialization::ISerializer &serializer, uint32_t index)
+		virtual void serialize(serialization::ISerializer &serializer, uint32_t index) override
 		{
 			serializer << m_data[index];
 		}
 
-		virtual void deserialize(serialization::ISerializer &serializer, uint32_t index)
+		virtual void deserialize(serialization::ISerializer &serializer, uint32_t index) override
 		{
 			_deserialize<T>(serializer, index);
+		}
+
+		virtual void copy(uint32_t dstIndex, uint32_t srcIndex) override
+		{
+			m_data[dstIndex] = m_data[srcIndex];
 		}
 
 		// For overloading reasons we have to split the deserialization into enums and everything else
@@ -243,7 +249,7 @@ namespace perfectpixel { namespace ecs {
 			return m_data.at(Owner::Index(entity)).at(index);
 		}
 
-		virtual void reset(uint32_t idx)
+		virtual void reset(uint32_t idx) override
 		{
 			if (m_data.size() <= idx)
 			{
@@ -252,18 +258,28 @@ namespace perfectpixel { namespace ecs {
 			m_data[idx] = std::vector<T>();
 		}
 
-		virtual void serialize(serialization::ISerializer &serializer, uint32_t index)
+		virtual void serialize(serialization::ISerializer &serializer, uint32_t index) override
 		{
 			serializer.writeArrayStart();
-			//TODO
+			
+			for (const T &element : m_data[index])
+			{
+//				serializer << element; TODO
+			}
+
 			serializer.writeArrayEnd();
 		}
 
-		virtual void deserialize(serialization::ISerializer &serializer, uint32_t index)
+		virtual void deserialize(serialization::ISerializer &serializer, uint32_t index) override
 		{
 			uint32_t arraySize = serializer.readArrayStart();
 			// TODO
 			serializer.readArrayEnd();
+		}
+
+		virtual void copy(uint32_t dstIndex, uint32_t srcIndex) override
+		{
+			m_data[dstIndex] = m_data[srcIndex];
 		}
 
 	private:

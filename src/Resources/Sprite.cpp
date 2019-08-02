@@ -15,7 +15,7 @@ namespace perfectpixel { namespace resources {
 
 	perfectpixel::resources::ResourceManager::ResourceLoaderFunction Sprite::CreateSpriteLoader(serialization::ISerializer &serializer)
 	{
-		return [&](char *data, size_t dataSize, void **target, const bedrock::Opaque &userData) {
+		return [&serializer](char *data, size_t dataSize, void **target, const bedrock::Opaque &userData) {
 			serializer.loadBuffer(data, dataSize);
 			Sprite *res = new Sprite();
 			serializer >> (*res);

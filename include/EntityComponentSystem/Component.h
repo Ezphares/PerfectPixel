@@ -100,6 +100,23 @@ namespace perfectpixel { namespace ecs {
 			getInstance()->objects--;
 		}
 
+		static void Copy(Entity destination, Entity source)
+		{
+			if (!Has(destination))
+			{
+				Register(destination);
+			}
+
+			uint32_t dstIndex = Index(destination);
+			uint32_t srcIndex = Index(source);
+
+			T *instance = getInstance();
+			for (auto field : instance->fields)
+			{
+				field.second->copy(dstIndex, srcIndex);
+			}
+		}
+
 		static void SafeDelete(Entity entity)
 		{
 			if (getInstance()->_has(entity)) Delete(entity);

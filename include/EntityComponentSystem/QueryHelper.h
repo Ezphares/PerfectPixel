@@ -2,6 +2,7 @@
 
 #include <EntityComponentSystem/Query.h>
 #include <EntityComponentSystem/IComponentStorage.h>
+#include <EntityComponentSystem/LifecycleComponents.h>
 
 namespace perfectpixel { namespace ecs {
 
@@ -45,10 +46,19 @@ namespace perfectpixel { namespace ecs {
 	template<typename WithComponents, typename WithoutComponents = typename Without<>>
 	struct QueryHelper
 	{
-		static Query build()
+		static Query build(bool onlyActive = true)
 		{
+			if (onlyActive) {
+				return Query([](bedrock::BitSet &mask)
+				{
+					WithComponents::execute(mask);
+					WithoutComponents::execute(mask);
+				});
+			}
+
 			return Query([](bedrock::BitSet &mask)
 			{
+				Without<InactiveComponent>::execute(mask);
 				WithComponents::execute(mask);
 				WithoutComponents::execute(mask);
 			});

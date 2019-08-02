@@ -144,7 +144,7 @@ void GraphicsManager::drawAll(double deltaT)
 	for (auto entity : m_spriteQuery.execute())
 	{
 		// TODO: update sprite from resource
-		SpriteComponent::Update(entity, deltaT);
+		SpriteComponent::Update(entity, static_cast<float>(deltaT));
 
 		drawSpriteComponent(entity);
 	}

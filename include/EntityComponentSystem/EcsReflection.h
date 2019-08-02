@@ -20,6 +20,7 @@ namespace perfectpixel { namespace ecs {
 	typedef void(*DeserializeLookup)(serialization::ISerializer&, Entity);
 	typedef void(*RegisterLookup)(Entity);
 	typedef void(*DeleteLookup)(Entity);
+	typedef void(*CopyLookup)(Entity, Entity);
 
 	struct ComponentLookup
 	{
@@ -29,6 +30,7 @@ namespace perfectpixel { namespace ecs {
 		RegisterLookup m_register;
 		DeleteLookup m_delete;
 		FieldLookup m_fields;
+		CopyLookup m_copy;
 	};
 
 	class FieldTable : public bedrock::Singleton<FieldTable>
@@ -67,6 +69,7 @@ namespace perfectpixel { namespace ecs {
 			componentLookup.m_register = &ComponentType::Register;
 			componentLookup.m_delete = &ComponentType::Delete;
 			componentLookup.m_fields = &ComponentType::Lookup;
+			componentLookup.m_copy = &ComponentType::Copy;
 			m_componentLUT[componentId] = componentLookup;
 
 			m_typeLUT[std::pair(PP_ID(componentName), PP_ID(fieldName))] = typeId;
@@ -135,6 +138,21 @@ namespace perfectpixel { namespace ecs {
 
 				component.m_register(entity);
 				component.m_deserialize(serializer, entity);
+			}
+		}
+
+		void copy(Entity destination, Entity source)
+		{
+			if (EntityManager::getInstance()->isAlive(destination) &&
+				EntityManager::getInstance()->isAlive(source))
+			{
+				for (auto it = m_componentLUT.begin(); it != m_componentLUT.end(); ++it)
+				{
+					if (it->second.m_has(source))
+					{
+						it->second.m_copy(destination, source);
+					}
+				}
 			}
 		}
 
