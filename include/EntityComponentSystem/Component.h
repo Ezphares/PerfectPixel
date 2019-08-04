@@ -5,7 +5,7 @@
 #include <EntityComponentSystem/EntityManager.h>
 
 #include <Bedrock/Singleton.h>
-#include <Bedrock/Bitset.h>
+#include <Bedrock/BitSet.h>
 
 #include <map>
 
