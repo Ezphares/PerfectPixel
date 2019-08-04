@@ -67,10 +67,10 @@ struct Vector
 		return accumulator;
 	}
 
-	template <typename T = typename std::enable_if<D==3, Vector<3>>::type>
-	static T cross(const Vector<D> &l, const Vector<D> &r)
+	template<unsigned _ = D>
+	static Vector<D> cross(const Vector<D> &l, const Vector<D> &r, typename std::enable_if<_ == 3, void>::type * = nullptr)
 	{
-		return T(std::array<float, 3>
+		return Vector<D>(std::array<float, 3>
 		{
 			l.m_data[1] * r.m_data[2] - l.m_data[2] * r.m_data[1],
 			l.m_data[2] * r.m_data[0] - l.m_data[0] * r.m_data[2],
@@ -78,8 +78,8 @@ struct Vector
 		});
 	}
 
-	template <typename T = typename std::enable_if<D == 3, float>::type>
-	static T triple(const Vector<D> &a, const Vector<D> &b, const Vector<D> &c)
+	template<unsigned _ = D>
+	static float triple(const Vector<D> &a, const Vector<D> &b, const Vector<D> &c, typename std::enable_if<_ == 3, void>::type * = nullptr)
 	{
 		return dot(a, cross(b, c));
 	}
