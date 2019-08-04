@@ -1,5 +1,7 @@
 ![PerfectPixel](dist/splash.png)
 
+![](https://travis-ci.org/Ezphares/PerfectPixel.svg?branch=master)
+
 2D opengl game engine. Total rewrite of my old stuff.
 
 ## Dependencies
