@@ -14,6 +14,8 @@ namespace perfectpixel { namespace ecs {
 	template <typename T>
 	class Component : public bedrock::Singleton<T>
 	{
+	using bedrock::Singleton<T>::getInstance;
+
 	protected:
 		Component()
 		{

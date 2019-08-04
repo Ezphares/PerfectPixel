@@ -24,9 +24,9 @@ namespace perfectpixel { namespace resources {
 		virtual ~Sprite();
 
 		Resource getImage() const;
-		bedrock::Vector2 Sprite::getTexCoord(int32_t frame = 0) const;
-		bedrock::Vector2 Sprite::getSize() const;
-		int32_t Sprite::getFrameNumber() const;
+		bedrock::Vector2 getTexCoord(int32_t frame = 0) const;
+		bedrock::Vector2 getSize() const;
+		int32_t getFrameNumber() const;
 
 	public:
 		void serialize(serialization::ISerializer &serializer) const;

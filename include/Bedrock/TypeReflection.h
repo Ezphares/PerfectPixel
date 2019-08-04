@@ -33,7 +33,7 @@ namespace perfectpixel { namespace bedrock {
 	}
 
 	template<>
-	inline int32_t typeID<nullptr_t>()
+	inline int32_t typeID<std::nullptr_t>()
 	{
 		return 0;
 	}
@@ -49,7 +49,7 @@ namespace perfectpixel { namespace bedrock {
 	}
 
 	template<>
-	inline std::string typeName<nullptr_t>()
+	inline std::string typeName<std::nullptr_t>()
 	{
 		return "nullptr_t";
 	}

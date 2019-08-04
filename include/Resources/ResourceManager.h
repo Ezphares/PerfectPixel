@@ -55,7 +55,7 @@ namespace perfectpixel { namespace resources {
 
 
 	public:
-		template<typename T, typename Variant = nullptr_t>
+		template<typename T, typename Variant = std::nullptr_t>
 		static void AddLoader(ResourceLoaderFunction loader, ResourceUnloaderFunction unloader = nullptr)
 		{
 			ResourceLoaderLookup entry;

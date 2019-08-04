@@ -157,7 +157,7 @@ namespace perfectpixel { namespace ecs {
 			typename std::enable_if_t<std::is_enum<X>::value>* = nullptr>
 			void _deserialize(serialization::ISerializer &serializer, uint32_t index)
 		{
-			std::underlying_type<T>::type temp;
+			typename std::underlying_type<T>::type temp;
 			serializer >> temp;
 			m_data[index] = static_cast<T>(temp);
 		}
@@ -175,7 +175,7 @@ namespace perfectpixel { namespace ecs {
 		typedef std::vector<T> Container;
 
 		ArrayField(FieldTable::ReflectionHint)
-			: m_data
+			: m_data()
 		{
 		}
 

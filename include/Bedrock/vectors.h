@@ -178,9 +178,9 @@ struct Vector2 : public Vector<2>
 	Vector2(float x, float y) : Vector<2>( std::array<float, 2>{ x,y }) {}
 	explicit Vector2(const Vector3 &discard);
 
-	inline const float x() const { return m_data[0]; }
+	inline float x() const { return m_data[0]; }
 	inline float &x() { return m_data[0]; }
-	inline const float y() const { return m_data[1]; }
+	inline float y() const { return m_data[1]; }
 	inline float &y() { return m_data[1]; }
 
 	const static Vector2 DOWN;
@@ -196,11 +196,11 @@ struct Vector3 : public Vector<3> {
 	explicit Vector3(const Vector2 &expand);
 	explicit Vector3(const Vector4 &discard, bool wDivide = true);
 
-	inline const float x() const { return m_data[0]; }
+	inline float x() const { return m_data[0]; }
 	inline float &x() { return m_data[0]; }
-	inline const float y() const { return m_data[1]; }
+	inline float y() const { return m_data[1]; }
 	inline float &y() { return m_data[1]; }
-	inline const float z() const { return m_data[2]; }
+	inline float z() const { return m_data[2]; }
 	inline float &z() { return m_data[2]; }
 
 	const static Vector3 DOWN;
@@ -215,13 +215,13 @@ struct Vector4 : public Vector<4> {
 	Vector4() : Vector<4>() {}
 	Vector4(float x, float y, float z, float w) : Vector<4>(std::array<float, 4>{ x, y, z, w }) {}
 
-	inline const float x() const { return m_data[0]; }
+	inline float x() const { return m_data[0]; }
 	inline float &x() { return m_data[0]; }
-	inline const float y() const { return m_data[1]; }
+	inline float y() const { return m_data[1]; }
 	inline float &y() { return m_data[1]; }
-	inline const float z() const { return m_data[2]; }
+	inline float z() const { return m_data[2]; }
 	inline float &z() { return m_data[2]; }
-	inline const float w() const { return m_data[3]; }
+	inline float w() const { return m_data[3]; }
 	inline float &w() { return m_data[3]; }
 };
 

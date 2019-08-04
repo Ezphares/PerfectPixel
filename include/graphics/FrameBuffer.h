@@ -1,6 +1,6 @@
 #pragma once
 
-#include <graphics/texture.h>
+#include <graphics/Texture.h>
 
 namespace perfectpixel {
 	namespace graphics {

@@ -47,7 +47,7 @@ namespace perfectpixel { namespace ecs {
 		}
 	};
 
-	template<typename WithComponents, typename WithoutComponents = typename Without<>>
+	template<typename WithComponents, typename WithoutComponents = Without<>>
 	struct QueryHelper
 	{
 		static Query build(bool onlyActive = true)
