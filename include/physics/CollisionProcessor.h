@@ -11,15 +11,10 @@
 #include <set>
 #include <vector>
 
-namespace tests {
-    class test_CollisionProcessor;
-}
-
 namespace perfectpixel { namespace physics {
 
 	class CollisionProcessor : public ecs::Processor
 	{
-		friend class tests::test_CollisionProcessor;
 	private:
 		struct CollisionData {
 			inline CollisionData()
@@ -36,17 +31,9 @@ namespace perfectpixel { namespace physics {
 		CollisionProcessor();
 		virtual ~CollisionProcessor();
 
-		virtual void onUpdate(const std::vector<ecs::Entity> &entities, float deltaT);
+		virtual void onUpdate(const std::vector<ecs::Entity> &entities, float deltaT) override;
 
-	private:
-		void collideSingle(ecs::Entity entity, std::set<ecs::Entity> &cache);
-		void possibleCollisions(const ecs::Entity entity, std::set<ecs::Entity> &cache, std::vector<ecs::Entity> &out_possibleCollisions);
-
-		bool checkCollision(ecs::Entity first, ecs::Entity second, CollisionData &out_collision);
-		bool collideRectRect(ecs::Entity first, const bedrock::AARectangle &firstRect, ecs::Entity second, const bedrock::AARectangle &secondRect, CollisionData &out_collision);
-		bool collideCircleCircle(ecs::Entity first, const bedrock::Circle &firstCircle, ecs::Entity second, const bedrock::Circle &secondCircle, CollisionData &out_collision);
-
-		void resolveCollision(const CollisionData &collision);
+		// Resolution utilities
 		void singleAxisReposition(float mass1, float mass2, float overlap, float *out_magnitude1, float *out_magnitude2);
 		void singleAxisBounce(
 			float bounciness,
@@ -57,7 +44,22 @@ namespace perfectpixel { namespace physics {
 			float *out_newVelocity1,
 			float *out_newVelocity2);
 
+		uint32_t getCollisionsLastUpdate();
+
+	private:
+		void collideSingle(ecs::Entity entity, std::set<ecs::Entity> &cache);
+		void possibleCollisions(const ecs::Entity entity, std::set<ecs::Entity> &cache, std::vector<ecs::Entity> &out_possibleCollisions);
+
+		bool checkCollision(ecs::Entity first, ecs::Entity second, CollisionData &out_collision);
+		bool collideRectRect(ecs::Entity first, const bedrock::AARectangle &firstRect, ecs::Entity second, const bedrock::AARectangle &secondRect, CollisionData &out_collision);
+		bool collideCircleCircle(ecs::Entity first, const bedrock::Circle &firstCircle, ecs::Entity second, const bedrock::Circle &secondCircle, CollisionData &out_collision);
+
+		void resolveCollision(const CollisionData &collision);
+
 		bedrock::Vector2 absoluteCenter(ecs::Entity entity);
+
+	private:
+		uint32_t m_collisionCount;
 	};
 
 } }

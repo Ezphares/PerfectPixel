@@ -1,14 +1,18 @@
 [submodule "depends/yaml-cpp"]
 	path = depends/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp.git
+	ignore = dirty
 [submodule "depends/libpng"]
 	path = depends/libpng
 	url = https://github.com/glennrp/libpng
 	ignore = dirty
 [submodule "depends/zlib"]
 	path = depends/zlib
-	url = https://github.com/madler/zlib
+	url = https://github.com/ezphares/zlib
 	ignore = dirty
 [submodule "depends/glew"]
 	path = depends/glew
 	url = https://github.com/Perlmint/glew-cmake
+[submodule "depends/googletest"]
+	path = depends/googletest
+	url = https://github.com/google/googletest
