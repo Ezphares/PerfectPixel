@@ -20,6 +20,7 @@ namespace perfectpixel { namespace physics {
 
 	CollisionProcessor::CollisionProcessor()
 		: Processor(CollisionQuery::build())
+		, m_collisionCount(0u)
 	{
 
 	}
@@ -33,11 +34,19 @@ namespace perfectpixel { namespace physics {
 	{
 		(void)deltaT;
 
+		m_collisionCount = 0u;
+		std::set<ecs::Entity> collisionCache;
+
 		for (ecs::Entity entity : entities)
 		{
-			std::set<ecs::Entity> collisionCache;
+			collisionCache.insert(entity);
 			collideSingle(entity, collisionCache);
 		}
+	}
+
+	uint32_t CollisionProcessor::getCollisionsLastUpdate()
+	{
+		return m_collisionCount;
 	}
 
 	void CollisionProcessor::collideSingle(ecs::Entity entity, std::set<ecs::Entity> &cache)
@@ -53,6 +62,7 @@ namespace perfectpixel { namespace physics {
 			CollisionData collision;
 			if (checkCollision(entity, other, collision))
 			{
+				++m_collisionCount;
 				resolveCollision(collision);
 			}
 		}
@@ -70,8 +80,7 @@ namespace perfectpixel { namespace physics {
 
 		for (auto other : toCheck)
 		{
-
-			if (cache.insert(other).second)
+			if (cache.find(other) == cache.end())
 			{
 				out_possibleCollisions.push_back(other);
 			}

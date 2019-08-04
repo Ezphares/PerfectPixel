@@ -1,135 +1,133 @@
-#include "stdafx.h"
-#include "CppUnitTest.h"
-
 #include "testutil.h"
 
 #include <physics/CollisionProcessor.h>
 
-#include <types/vectors.h>
+#include <Bedrock/vectors.h>
 
-#include <iostream>
 #include <cmath>
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace perfectpixel::physics;
 using namespace perfectpixel;
 
-namespace tests
+class test_CollisionProcessor : public ::testing::Test
 {
-	TEST_CLASS(test_CollisionProcessor)
+protected:
+
+	void SetUp() override
 	{
-	public:
-		ecs::EntityManager *m_entityManager;
-		CollisionProcessor *m_processor;
+		m_processor = new CollisionProcessor();
+	}
 
-	public:
-		TEST_METHOD_INITIALIZE(setup)
-		{
-			m_entityManager = new ecs::EntityManager();
-			m_processor = new CollisionProcessor();
-		}
+	void TearDown() override
+	{
+		delete m_processor;
+	}
 
-		TEST_METHOD_CLEANUP(cleanup)
-		{
-			delete m_processor;
-			delete m_entityManager;
-		}
+	CollisionProcessor *m_processor;
+};
 
-		TEST_METHOD(test_CollisionProcessor_checkCollision_rect_rect)
-		{
-			ecs::Entity a{ m_entityManager->create() }, b{ m_entityManager->create() };
-			
-			CollisionProcessor::CollisionData data;
-			types::Vector2 *overlap = &data.m_data_RectRectOverlap;
+TEST_F(test_CollisionProcessor, test_CollisionProcessor_checkCollision_rect_rect)
+{
+	ecs::Entity 
+		a{ ecs::EntityManager::getInstance()->create() }, 
+		b{ ecs::EntityManager::getInstance()->create() };
+	std::vector<ecs::Entity>entities;
+	entities.push_back(a);
+	entities.push_back(b);
 
-			ColliderComponent::Register(a);
-			ColliderComponent::Register(b);
+	ecs::TransformComponent::Register(a);
+	ecs::TransformComponent::Register(b);
+	ColliderComponent::Register(a);
+	ColliderComponent::Register(b);
 
-			ColliderComponent::SetMaskRectangle(a, types::AARectangle({ 10, 10 }));
-			ColliderComponent::SetMaskRectangle(a, types::AARectangle({ 20, 10 }));
+	ColliderComponent::SetMaskRectangle(a, bedrock::AARectangle({ 10, 10 }));
+	ColliderComponent::SetMaskRectangle(b, bedrock::AARectangle({ 20, 10 }));
 
-			Assert::IsTrue(m_processor->checkCollision(a, b, data), L"Collision missed", LINE_INFO());
-			AssertFloatApprox(overlap->x(), 15);
-			AssertFloatApprox(overlap->y(), 10);
+	m_processor->onUpdate(entities, 1.0f);
+	ASSERT_EQ(1u, m_processor->getCollisionsLastUpdate());
+	//AssertFloatApprox(overlap->x(), 15);
+	//AssertFloatApprox(overlap->y(), 10);
 
-			ecs::TransformComponent::Position(b) = { 0, 10, 0};
-			Assert::IsFalse(m_processor->checkCollision(a, b, data), L"Incorrect collison detected", LINE_INFO());
+	ecs::TransformComponent::Position(b) = { 0, 10, 0 };
+	m_processor->onUpdate(entities, 1.0f);
+	ASSERT_EQ(0u, m_processor->getCollisionsLastUpdate());
 
-			// Checking partial collision
-			ecs::TransformComponent::Position(b) = { 10, 0, 0 };
-			Assert::IsTrue(m_processor->checkCollision(a, b, data), L"Incorrect collison detected", LINE_INFO());
-			AssertFloatApprox(overlap->x(), 5);
+	// Checking partial collision
+	ecs::TransformComponent::Position(b) = { 10, 0, 0 };
+	m_processor->onUpdate(entities, 1.0f);
+	ASSERT_EQ(1u, m_processor->getCollisionsLastUpdate());
+	//AssertFloatApprox(overlap->x(), 5);
 
-			// Checking that both sides create negative offset
-			ecs::TransformComponent::Position(b) = { -10, 0, 0 };
-			Assert::IsTrue(m_processor->checkCollision(a, b, data), L"Incorrect collison detected", LINE_INFO());
-			AssertFloatApprox(overlap->x(), 5);
+	// Checking that both sides create negative offset
+	ecs::TransformComponent::Position(b) = { -10, 0, 0 };
+	m_processor->onUpdate(entities, 1.0f);
+	ASSERT_EQ(1u, m_processor->getCollisionsLastUpdate());
+	//AssertFloatApprox(overlap->x(), 5);
 
-			// Check partial on both axes
-			ecs::TransformComponent::Position(b) = { 14, -9, 0 };
-			Assert::IsTrue(m_processor->checkCollision(a, b, data), L"Incorrect collison detected", LINE_INFO());
-			AssertFloatApprox(overlap->x(), 1);
-			AssertFloatApprox(overlap->y(), 1);
-		}
+	// Check partial on both axes
+	ecs::TransformComponent::Position(b) = { 14, -9, 0 };
+	m_processor->onUpdate(entities, 1.0f);
+	ASSERT_EQ(1u, m_processor->getCollisionsLastUpdate());
+	//AssertFloatApprox(overlap->x(), 1);
+	//AssertFloatApprox(overlap->y(), 1);
+}
 		
-		TEST_METHOD(test_CollisionProcessor_singleAxisReposition)
-		{
-			types::PpFloat magnitude1, magnitude2;
+TEST_F(test_CollisionProcessor, test_CollisionProcessor_singleAxisReposition)
+{
+	float magnitude1, magnitude2;
 
-			// Check equal
-			m_processor->singleAxisReposition(1, 1, 5, &magnitude1, &magnitude2);
-			AssertFloatApprox(magnitude1, 2.5f);
-			AssertFloatApprox(magnitude2, 2.5f);
+	// Check equal
+	m_processor->singleAxisReposition(1, 1, 5, &magnitude1, &magnitude2);
+	ASSERT_FLOAT_EQ(magnitude1, 2.5f);
+	ASSERT_FLOAT_EQ(magnitude2, 2.5f);
 
-			// Check 2 larger
-			m_processor->singleAxisReposition(1, 4, 5, &magnitude1, &magnitude2);
-			AssertFloatApprox(magnitude1, 4);
-			AssertFloatApprox(magnitude2, 1);
+	// Check 2 larger
+	m_processor->singleAxisReposition(1, 4, 5, &magnitude1, &magnitude2);
+	ASSERT_FLOAT_EQ(magnitude1, 4);
+	ASSERT_FLOAT_EQ(magnitude2, 1);
 
-			// Check 1 larger
-			m_processor->singleAxisReposition(8, 2, 5, &magnitude1, &magnitude2);
-			AssertFloatApprox(magnitude1, 1);
-			AssertFloatApprox(magnitude2, 4);
-		}
+	// Check 1 larger
+	m_processor->singleAxisReposition(8, 2, 5, &magnitude1, &magnitude2);
+	ASSERT_FLOAT_EQ(magnitude1, 1);
+	ASSERT_FLOAT_EQ(magnitude2, 4);
+}
 		
-		TEST_METHOD(test_CollisionProcessor_singleAxisReposition_zeros)
-		{
-			types::PpFloat magnitude1, magnitude2;
+TEST_F(test_CollisionProcessor, test_CollisionProcessor_singleAxisReposition_zeros)
+{
+	float magnitude1, magnitude2;
 
-			// Check 1 zero
-			m_processor->singleAxisReposition(0, 2, 10, &magnitude1, &magnitude2);
-			AssertFloatApprox(magnitude1, 10);
-			AssertFloatApprox(magnitude2, 0);
+	// Check 1 zero
+	m_processor->singleAxisReposition(0, 2, 10, &magnitude1, &magnitude2);
+	ASSERT_FLOAT_EQ(magnitude1, 10);
+	ASSERT_FLOAT_EQ(magnitude2, 0);
 
-			// Check 2 zero
-			m_processor->singleAxisReposition(.5f, 0, 15, &magnitude1, &magnitude2);
-			AssertFloatApprox(magnitude1, 0);
-			AssertFloatApprox(magnitude2, 15);
+	// Check 2 zero
+	m_processor->singleAxisReposition(.5f, 0, 15, &magnitude1, &magnitude2);
+	ASSERT_FLOAT_EQ(magnitude1, 0);
+	ASSERT_FLOAT_EQ(magnitude2, 15);
 
-			// Check both zero, should not move
-			m_processor->singleAxisReposition(0, 0, 10, &magnitude1, &magnitude2);
-			AssertFloatApprox(magnitude1, 0);
-			AssertFloatApprox(magnitude2, 0);
-		}
+	// Check both zero, should not move
+	m_processor->singleAxisReposition(0, 0, 10, &magnitude1, &magnitude2);
+	ASSERT_FLOAT_EQ(magnitude1, 0);
+	ASSERT_FLOAT_EQ(magnitude2, 0);
+}
 
-		TEST_METHOD(test_CollisionProcessor_singleAxisRepositionty_infinity)
-		{
-			types::PpFloat magnitude1, magnitude2;
+TEST_F(test_CollisionProcessor, test_CollisionProcessor_singleAxisRepositionty_infinity)
+{
+	float magnitude1, magnitude2;
 
-			// Check 1 inf
-			m_processor->singleAxisReposition(types::Infinity, 2, 10, &magnitude1, &magnitude2);
-			AssertFloatApprox(magnitude1, 0);
-			AssertFloatApprox(magnitude2, 10);
+	// Check 1 inf
+	m_processor->singleAxisReposition(bedrock::Infinity, 2, 10, &magnitude1, &magnitude2);
+	ASSERT_FLOAT_EQ(magnitude1, 0);
+	ASSERT_FLOAT_EQ(magnitude2, 10);
 
-			// Check 2 inf
-			m_processor->singleAxisReposition(3, types::Infinity, 7.5f, &magnitude1, &magnitude2);
-			AssertFloatApprox(magnitude1, 7.5f);
-			AssertFloatApprox(magnitude2, 0);
+	// Check 2 inf
+	m_processor->singleAxisReposition(3, bedrock::Infinity, 7.5f, &magnitude1, &magnitude2);
+	ASSERT_FLOAT_EQ(magnitude1, 7.5f);
+	ASSERT_FLOAT_EQ(magnitude2, 0);
 
-			// Check both inf, should not move
-			m_processor->singleAxisReposition(types::Infinity, types::Infinity, 10, &magnitude1, &magnitude2);
-			AssertFloatApprox(magnitude1, 0);
-			AssertFloatApprox(magnitude2, 0);
-		}
-	};
+	// Check both inf, should not move
+	m_processor->singleAxisReposition(bedrock::Infinity, bedrock::Infinity, 10, &magnitude1, &magnitude2);
+	ASSERT_FLOAT_EQ(magnitude1, 0);
+	ASSERT_FLOAT_EQ(magnitude2, 0);
 }

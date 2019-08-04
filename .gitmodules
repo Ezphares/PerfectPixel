@@ -1,6 +1,7 @@
 [submodule "depends/yaml-cpp"]
 	path = depends/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp.git
+	ignore = dirty
 [submodule "depends/libpng"]
 	path = depends/libpng
 	url = https://github.com/glennrp/libpng

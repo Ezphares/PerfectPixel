@@ -14,8 +14,7 @@ set (CMAKE_CXX_STANDARD 17)
 add_definitions(-DPP_CLEANUP_CALLBACKS)
 add_definitions(-DPP_FULL_REFLECTION)
 
-
-
+# TODO: if windows
 add_definitions(-DNOMINMAX)
 
 #TODO zlib/libpng dependency fun
@@ -28,11 +27,14 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # SUBMODULES
 ##################################################
 # SUBMODULE yaml-cpp 
-set_property(GLOBAL PROPERTY FOLDER yaml-cpp)
+option(YAML_CPP_BUILD_TESTS "Enable testing" ON)
+set (YAML_CPP_BUILD_TESTS OFF)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/depends/yaml-cpp" EXCLUDE_FROM_ALL)
 set_target_properties(yaml-cpp PROPERTIES FOLDER depends/yaml-cpp)
 
 # SUBMODULE zlib
+option(ZLIB_TESTS "Build zlib tests" ON)
+set(ZLIB_TESTS OFF)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/depends/zlib" "${CMAKE_CURRENT_BINARY_DIR}/depends/zlib" EXCLUDE_FROM_ALL)
 set_target_properties(zlib PROPERTIES FOLDER depends/zlib)
 set(ZLIB_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/depends/zlib" "${CMAKE_CURRENT_BINARY_DIR}/depends/zlib")
@@ -41,6 +43,8 @@ set(ZLIB_LIBRARY zlib)
 # SUBMODULE libpng
 option(PNG_BUILD_ZLIB "Custom zlib Location, else find_package is used" OFF)
 set(PNG_BUILD_ZLIB ON)
+option(PNG_TESTS  "Build libpng tests" ON)
+set(PNG_TESTS OFF)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/depends/libpng" "${CMAKE_CURRENT_BINARY_DIR}/depends/libpng" EXCLUDE_FROM_ALL)
 set_target_properties(png PROPERTIES FOLDER depends/libpng)
 set_target_properties(genfiles PROPERTIES FOLDER depends/libpng)
@@ -48,7 +52,19 @@ set_target_properties(genfiles PROPERTIES FOLDER depends/libpng)
 # SUBMODULE glew-cmake
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/depends/glew" "${CMAKE_CURRENT_BINARY_DIR}/depends/glew" EXCLUDE_FROM_ALL)
 set_target_properties(libglew_shared PROPERTIES FOLDER depends/glew)
-	
+
+# SUBMODULE googletest
+option(
+  gtest_force_shared_crt
+  "Use shared (DLL) run-time lib even when Google Test is built as static lib."
+  OFF)
+set(gtest_force_shared_crt ON)
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/depends/googletest" "${CMAKE_CURRENT_BINARY_DIR}/depends/googletest" EXCLUDE_FROM_ALL)
+set_target_properties(gtest PROPERTIES FOLDER depends/googletest)
+set_target_properties(gtest_main PROPERTIES FOLDER depends/googletest)
+set_target_properties(gmock PROPERTIES FOLDER depends/googletest)
+set_target_properties(gmock_main PROPERTIES FOLDER depends/googletest)
+
 # INCLUDE PATHS
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/depends/yaml-cpp/include")
@@ -134,6 +150,7 @@ MAKE_GROUP("Bedrock" "Bedrock"
 	"BitSet.cpp"
 	"Logger.cpp"
 	"TypesSerialization.cpp"
+	"Quaternion.cpp"
 )
 
 MAKE_GROUP("EntityComponentSystem" "EntityComponentSystem"
@@ -150,6 +167,17 @@ MAKE_GROUP("Serialization" "serialization"
 	"YAMLSerializer.cpp"
 )
 
+list(APPEND UNIT_TEST_FILES
+	"${CMAKE_CURRENT_SOURCE_DIR}/tests/test_Vectors.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/tests/test_Matrices.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/tests/test_Quaternion.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/tests/test_Entity.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/tests/test_EntityManager.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/tests/test_CollisionProcessor.cpp"
+	
+	"${CMAKE_CURRENT_SOURCE_DIR}/tests/testutil.h"
+)
+
 ##################################################
 # TARGETS
 ##################################################
@@ -164,6 +192,13 @@ add_library(LibPerfectPixel
 	"${Serialization_FILES}" 
 )
 
+enable_testing()
+add_executable(RunTests ${UNIT_TEST_FILES})
+target_compile_options(RunTests PRIVATE -DGTEST_DONT_DEFINE_TEST=1)
+add_test(
+	NAME RunTests
+	COMMAND RunTests
+)
 
 add_executable(Pong WIN32 "${CMAKE_CURRENT_SOURCE_DIR}/src/main/pong.cpp")
 
@@ -178,6 +213,7 @@ endif()
 
 list(APPEND LIBRARIES_EXTERNAL png zlib libglew_shared yaml-cpp)
 list(APPEND LIBRARIES_SYSTEM opengl32)
+list(APPEND LIBRARIES_TEST gtest gtest_main)
 
 add_dependencies(LibPerfectPixel genfiles)
 add_dependencies(Pong LibPerfectPixel ${LIBRARIES_EXTERNAL})
@@ -185,6 +221,8 @@ add_dependencies(Pong LibPerfectPixel ${LIBRARIES_EXTERNAL})
 target_link_libraries(Pong LibPerfectPixel)
 target_link_libraries(Pong ${LIBRARIES_EXTERNAL})
 target_link_libraries(Pong ${LIBRARIES_SYSTEM})
+
+target_link_libraries(RunTests LibPerfectPixel ${LIBRARIES_TEST})
 
 add_custom_command(TARGET Pong POST_BUILD
 	COMMAND "${CMAKE_COMMAND}" -E copy_directory
