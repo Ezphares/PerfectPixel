@@ -22,7 +22,11 @@ namespace perfectpixel { namespace ecs {
 	template<>
 	struct ComponentTypeList<>
 	{
-		static void execute(bedrock::BitSet &mask, IComponentStorage::ComponentStorageFilterType filterType) {};
+		static void execute(bedrock::BitSet &mask, IComponentStorage::ComponentStorageFilterType filterType) 
+		{
+			(void)mask;
+			(void)filterType;
+		};
 	};
 
 	template<typename... Ts>
@@ -51,6 +55,7 @@ namespace perfectpixel { namespace ecs {
 			if (onlyActive) {
 				return Query([](bedrock::BitSet &mask)
 				{
+					Without<InactiveComponent>::execute(mask);
 					WithComponents::execute(mask);
 					WithoutComponents::execute(mask);
 				});
@@ -58,7 +63,6 @@ namespace perfectpixel { namespace ecs {
 
 			return Query([](bedrock::BitSet &mask)
 			{
-				Without<InactiveComponent>::execute(mask);
 				WithComponents::execute(mask);
 				WithoutComponents::execute(mask);
 			});

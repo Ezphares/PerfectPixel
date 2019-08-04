@@ -1,6 +1,7 @@
 #include <physics/ColliderComponent.h>
 
 #include <EntityComponentSystem/EntityManager.h>
+#include <EntityComponentSystem/LifecycleComponents.h>
 
 #include <Bedrock/PpException.h>
 
@@ -75,8 +76,11 @@ namespace perfectpixel {
 
 		void ColliderComponent::GetNear(std::vector<ecs::Entity> &toCheck, const bedrock::Vector2 &point)
 		{
+			(void)point; // TODO: Do broadphase collision here
+
 			bedrock::BitSet mask = ecs::EntityManager::getInstance()->all();
 			Filter(mask, IComponentStorage::WITH);
+			ecs::InactiveComponent::Filter(mask, IComponentStorage::WITHOUT);
 			ecs::EntityManager::getInstance()->expandMask(mask, &toCheck, nullptr);
 		}
 

@@ -7,6 +7,8 @@ namespace perfectpixel { namespace graphics {
 	
 	void UIProcessor::onRender(const std::vector<ecs::Entity> &entities, float deltaT)
 	{
+		(void)deltaT;
+
 		if (!m_font) m_font = m_gm->getDefaultFont();
 
 		for (auto entity : entities)

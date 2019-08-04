@@ -6,6 +6,7 @@
 #include <serialization/ISerializer.h>
 
 #include <type_traits>
+#include <algorithm>
 #include <array>
 
 namespace perfectpixel { 
@@ -262,7 +263,7 @@ perfectpixel::serialization::ISerializer &operator>>(perfectpixel::serialization
 {
 	uint32_t datasize = istream.readArrayStart();
 
-	for (unsigned i = 0; i < D; ++i)
+	for (unsigned i = 0; i < std::min(D, datasize); ++i)
 	{
 		istream.readFloat(&vec.m_data[i]);
 	}

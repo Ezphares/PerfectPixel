@@ -1,0 +1,6 @@
+Image: "pong_all.png"
+UVTopLeft: [0.25, 0.5]
+UVFrameSize: [0.25, 0.25]
+UVFrameSpacing: [0, 0]
+Frames: 1
+FramesPerRow: 1

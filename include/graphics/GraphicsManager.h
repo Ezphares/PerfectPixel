@@ -77,7 +77,7 @@ namespace graphics {
 
 		void updateCamera();
 
-		Texture &getImageTexture(resources::Resource &imageResource);
+		Texture &getImageTexture(resources::Resource imageResource);
 
 		static bool compSortSoftalpha(const SpriteDrawInfo &first, const SpriteDrawInfo &second);
 

@@ -33,6 +33,7 @@ namespace perfectpixel {
 
 		virtual void onUpdate(const std::vector<Entity> &entities, float deltaT)
 		{
+			(void)deltaT;
 			for (Entity entity : entities)
 			{
 				if (!CreationDoneLifecycleComponent::Has(entity))

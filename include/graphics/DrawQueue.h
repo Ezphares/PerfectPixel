@@ -40,6 +40,8 @@ namespace perfectpixel { namespace graphics {
 			switch (type)
 			{
 			case DQET_SPRITE:
+				// TODO: Not yet implemented
+				throw bedrock::PpException(" Not yet implemented");
 				break;
 			case DQET_UI_TEXT:
 				result = new UITextDrawQueueElement();

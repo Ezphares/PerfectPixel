@@ -486,7 +486,7 @@ void GraphicsManager::updateCamera()
 		static_cast<int32_t>(scale.y())});
 }
 
-perfectpixel::graphics::Texture &GraphicsManager::getImageTexture(resources::Resource &imageResource)
+perfectpixel::graphics::Texture &GraphicsManager::getImageTexture(resources::Resource imageResource)
 {
 	resources::Image *image = imageResource.get<resources::Image>();
 

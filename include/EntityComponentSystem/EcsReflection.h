@@ -72,7 +72,7 @@ namespace perfectpixel { namespace ecs {
 			componentLookup.m_copy = &ComponentType::Copy;
 			m_componentLUT[componentId] = componentLookup;
 
-			m_typeLUT[std::pair(PP_ID(componentName), PP_ID(fieldName))] = typeId;
+			m_typeLUT[std::pair(componentId, fieldId)] = typeId;
 		}
 
 		int32_t componentFieldTypeID(int32_t componentId, int32_t fieldId)

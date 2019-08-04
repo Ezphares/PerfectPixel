@@ -38,7 +38,7 @@ public:
 	virtual void gameStart() = 0;
 	virtual void step() {};
 	virtual void splashScreenUpdate(bool &closeSplash);
-	virtual void setupCustomProcessors(ecs::ProcessorQueue &queue) {};
+	virtual void setupCustomProcessors(ecs::ProcessorQueue &queue) { (void)queue; };
 
 protected:
 	graphics::IWindow *createWindow(const graphics::WindowSettings &settings);

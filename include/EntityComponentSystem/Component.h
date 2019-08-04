@@ -30,7 +30,7 @@ namespace perfectpixel { namespace ecs {
 	protected:
 		static Field<Component<T>, Entity> Owner;
 
-		virtual void purge(uint32_t idx) {};
+		virtual void purge(uint32_t idx) { (void)idx; };
 		virtual void initialize(uint32_t idx)
 		{
 			for (auto field : fields)
@@ -77,18 +77,18 @@ namespace perfectpixel { namespace ecs {
 
 		static void Register(Entity entity)
 		{
-			T *instance = getInstance();
-			uint32_t idx = instance->_register(entity, instance->lastIndex);
+			T *self = getInstance();
+			uint32_t idx = self->_register(entity, self->lastIndex);
 
-			if (idx >= instance->lastIndex)
+			if (idx >= self->lastIndex)
 			{
-				instance->lastIndex++;
+				self->lastIndex++;
 			}
 
 			Owner.reset(idx);
 			Owner._set(idx, entity);
-			instance->initialize(idx);
-			instance->objects++;
+			self->initialize(idx);
+			self->objects++;
 		}
 
 		static void Delete(Entity entity)
@@ -110,8 +110,8 @@ namespace perfectpixel { namespace ecs {
 			uint32_t dstIndex = Index(destination);
 			uint32_t srcIndex = Index(source);
 
-			T *instance = getInstance();
-			for (auto field : instance->fields)
+			T *self = getInstance();
+			for (auto field : self->fields)
 			{
 				field.second->copy(dstIndex, srcIndex);
 			}
@@ -196,6 +196,8 @@ namespace perfectpixel { namespace ecs {
 
 		virtual uint32_t _register(Entity entity, uint32_t currentSize)
 		{
+			(void)currentSize;
+
 			uint32_t idx = entity.index;
 			if (m_mask.size() <= idx)
 			{

@@ -2,6 +2,7 @@
 
 #include <yaml-cpp/node/parse.h>
 #include <yaml-cpp/yaml.h>
+#include <yaml-cpp/node/convert.h>
 
 #if PP_FULL_REFLECTION_ENABLED
 

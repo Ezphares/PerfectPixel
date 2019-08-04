@@ -72,18 +72,24 @@ namespace perfectpixel { namespace ecs {
 
 	void Processor::onCreate(const std::vector<Entity> &entities)
 	{
+		(void)entities;
 	}
 
 
 	void Processor::onUpdate(const std::vector<Entity> &entities, float deltaT)
 	{
+		(void)entities;
+		(void)deltaT;
 	}
 
 	void Processor::onRender(const std::vector<Entity> &entities, float deltaT)
 	{
+		(void)entities;
+		(void)deltaT;
 	}
 
 	void Processor::onDestroy(const std::vector<Entity> &entities)
 	{
+		(void)entities;
 	}
 } }

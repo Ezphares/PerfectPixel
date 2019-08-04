@@ -31,6 +31,8 @@ namespace perfectpixel { namespace physics {
 
 	void CollisionProcessor::onUpdate(const std::vector<ecs::Entity> &entities, float deltaT)
 	{
+		(void)deltaT;
+
 		for (ecs::Entity entity : entities)
 		{
 			std::set<ecs::Entity> collisionCache;
@@ -104,8 +106,8 @@ namespace perfectpixel { namespace physics {
 	bool CollisionProcessor::collideRectRect(ecs::Entity first, const bedrock::AARectangle &firstRect, ecs::Entity second, const bedrock::AARectangle &secondRect, CollisionData &out_collision)
 	{
 		bedrock::Vector2
-			&firstPosition = bedrock::Vector2(ecs::TransformComponent::Position(first)),
-			&secondPosition = bedrock::Vector2(ecs::TransformComponent::Position(second));
+			firstPosition = bedrock::Vector2(ecs::TransformComponent::Position(first)),
+			secondPosition = bedrock::Vector2(ecs::TransformComponent::Position(second));
 
 
 		bedrock::Vector2 offset = (secondPosition + secondRect.m_center) - (firstPosition + firstRect.m_center);
@@ -132,9 +134,8 @@ namespace perfectpixel { namespace physics {
 	bool CollisionProcessor::collideCircleCircle(ecs::Entity first, const bedrock::Circle &firstCircle, ecs::Entity second, const bedrock::Circle &secondCircle, CollisionData &out_collision)
 	{
 		bedrock::Vector2
-			&firstPosition = bedrock::Vector2(ecs::TransformComponent::Position(first)),
-			&secondPosition = bedrock::Vector2(ecs::TransformComponent::Position(second));
-
+			firstPosition = bedrock::Vector2(ecs::TransformComponent::Position(first)),
+			secondPosition = bedrock::Vector2(ecs::TransformComponent::Position(second));
 
 		bedrock::Vector2 offset = (secondPosition + secondCircle.m_center) - (firstPosition + firstCircle.m_center);
 		float squareDistance = bedrock::Vector2::dot(offset, offset);

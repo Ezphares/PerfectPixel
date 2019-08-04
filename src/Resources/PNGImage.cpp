@@ -54,7 +54,7 @@ namespace perfectpixel { namespace resources {
 		, m_w(0)
 		, m_channels(0)
 		, m_buffer()
-		, m_textureHint(-1)
+		, m_textureHint(~0u)
 	{
 	}
 
@@ -101,10 +101,15 @@ namespace perfectpixel { namespace resources {
 			throw bedrock::PpException("Could not create PNG metadata structures");
 		}
 
+		// TODO: USe error callbacks instead
+#pragma warning(push)
+#pragma warning(disable: 4611)
 		if (setjmp(png_jmpbuf(readStruct.m_png)))
 		{
 			throw bedrock::PpException("Could not set jump");
 		}
+#pragma warning(pop)
+
 
 		png_set_read_fn(readStruct.m_png, &pngReadBuffer, &ReadFromSimpleBuffer);
 		png_set_sig_bytes(readStruct.m_png, 8);

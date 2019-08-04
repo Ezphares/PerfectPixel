@@ -91,7 +91,7 @@ namespace perfectpixel { namespace resources {
 	void Resource::set()
 	{
 		m_cache = nullptr;
-		m_cacheHint = -1;
+		m_cacheHint = ~0u;
 
 		if (m_valid)
 		{

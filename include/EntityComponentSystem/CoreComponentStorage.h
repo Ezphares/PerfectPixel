@@ -43,6 +43,8 @@ namespace perfectpixel { namespace ecs {
 
 		virtual uint32_t _register(Entity entity, uint32_t currentSize)
 		{
+			(void)currentSize; // Not needed in LinearScan
+
 			uint32_t eidx = entity.index;
 			if (eidx > m_maxEntityIndex)
 			{
@@ -119,6 +121,8 @@ namespace perfectpixel { namespace ecs {
 
 		virtual uint32_t _register(Entity entity, uint32_t currentSize)
 		{
+			(void)currentSize; // Not needed in flat component storage
+
 			uint32_t idx = entity.index;
 			if (m_mask.size() <= idx)
 			{

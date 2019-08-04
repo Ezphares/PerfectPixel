@@ -264,6 +264,7 @@ namespace perfectpixel { namespace ecs {
 			
 			for (const T &element : m_data[index])
 			{
+				(void)element;
 //				serializer << element; TODO
 			}
 
@@ -272,8 +273,12 @@ namespace perfectpixel { namespace ecs {
 
 		virtual void deserialize(serialization::ISerializer &serializer, uint32_t index) override
 		{
-			uint32_t arraySize = serializer.readArrayStart();
-			// TODO
+			uint32_t arraySize = std::min(serializer.readArrayStart(), Capacity);
+			
+			m_data[index].resize(arraySize);
+
+			// TODO:
+
 			serializer.readArrayEnd();
 		}
 

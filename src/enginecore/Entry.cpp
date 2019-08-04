@@ -11,6 +11,10 @@ int WINAPI WinMain(
 	_In_ LPSTR     lpCmdLine,
 	_In_ int       nCmdShow)
 {
+	(void)hPrevInstance;
+	(void)lpCmdLine;
+	(void)nCmdShow;
+
 	using namespace perfectpixel::core;
 
 	Game::setup(new Win32Initializer(hInstance));

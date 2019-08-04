@@ -54,7 +54,7 @@ Entity EntityManager::at(std::uint32_t index)
 {
 	if (index > m_entities.size())
 	{
-		return entityCreate(-1, -1);
+		return entityCreate(~0u, ~0u);
 	}
 	return m_entities[index];
 }

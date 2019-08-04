@@ -102,6 +102,7 @@ public:
 
 	virtual void onUpdate(const std::vector<Entity> &entities, float deltaT)
 	{
+		(void)deltaT;
 	    for (auto entity : entities)
 		{
 			TransformComponent::Velocity(entity) = 
@@ -122,6 +123,7 @@ public:
 
 	virtual void onUpdate(const std::vector<Entity> &entities, float deltaT)
 	{
+		(void)deltaT;
 		for (auto entity : entities)
 		{
 			BatComponent::CurrentDirection(entity) =
@@ -144,6 +146,7 @@ public:
 
 	virtual void onUpdate(const std::vector<Entity> &entities, float deltaT)
 	{
+		(void)deltaT;
 		for (auto entity : entities)
 		{
 			BatComponent::CurrentDirection(entity) =
@@ -172,6 +175,7 @@ public:
 
 	virtual void onUpdate(const std::vector<Entity> &entities, float deltaT)
 	{
+		(void)deltaT;
 		for (auto entity : entities)
 		{
 			bool shouldReset = false;
@@ -212,6 +216,7 @@ public:
 
 	virtual void onUpdate(const std::vector<Entity> &entities, float deltaT)
 	{
+		(void)deltaT;
 		for (auto entity : entities)
 		{
 			std::stringstream textStream;
@@ -272,6 +277,12 @@ class Pong : public core::Game
 			AIComponent::Register(e);
 			AIComponent::BallToTrack(e) = m_ball;
 		}
+
+		// Serialization debug
+		serialization::YAMLSerializer yaml;
+		yaml.m_reverse = &ecs::FieldTable::Reverse;
+		ecs::FieldTable::getInstance()->serialize(yaml, e);
+		yaml.dump();
 	}
 
 	virtual void setupCustomProcessors(ecs::ProcessorQueue &queue)
@@ -308,21 +319,20 @@ class Pong : public core::Game
 
 	virtual void gameStart()
 	{
-
 		ecs::Entity
 			eTopWall{ EntityManager::getInstance()->create() },
 			eBottomWall{ EntityManager::getInstance()->create() };
 
 		m_ball = EntityManager::getInstance()->create();
 
-		TransformComponent::Register(eTopWall);
-		TransformComponent::Register(eBottomWall);
-
-		TransformComponent::Position(eTopWall) = bedrock::Vector3::UP * 58.0f;
-		TransformComponent::Position(eBottomWall) = bedrock::Vector3::DOWN * 58.0f;
-
 		resources::Resource ballTpl = resources::Resource(bedrock::typeID<resources::Template>(), PP_ID(ball.tpl));
 		ballTpl.get<resources::Template>()->applyTo(m_ball);
+
+		resources::Resource wallTpl = resources::Resource(bedrock::typeID<resources::Template>(), PP_ID(wall.tpl));
+		wallTpl.get<resources::Template>()->applyTo(eTopWall);
+		TransformComponent::Position(eTopWall) = bedrock::Vector3::UP * 58.0f;
+		wallTpl.get<resources::Template>()->applyTo(eBottomWall);
+		TransformComponent::Position(eBottomWall) = bedrock::Vector3::DOWN * 58.0f;
 
 		resources::Resource img = resources::Resource(bedrock::typeID<resources::Image>(), PP_ID(pong_all.png));
 
@@ -336,44 +346,8 @@ class Pong : public core::Game
 			{ .125f, .5f },
 			{ .125f, .5f });
 
-		resources::Sprite *sprBlock = new resources::Sprite(
-			img,
-			{ .25f, .5f },
-			{ .25f, .25f });
-
-		graphics::SpriteComponent::Register(eTopWall);
-		graphics::SpriteComponent::SpriteData(eTopWall) = *sprBlock;
-		graphics::SpriteComponent::Size(eTopWall) = { 160, 4 };
-		graphics::SpriteComponent::Offset(eTopWall) = { -80, -2 };
-		graphics::SpriteComponent::FPS(eTopWall) = 1.0f;
-
-		graphics::SpriteComponent::Register(eBottomWall);
-		graphics::SpriteComponent::SpriteData(eBottomWall) = *sprBlock;
-		graphics::SpriteComponent::Size(eBottomWall) = { 160, 4 };
-		graphics::SpriteComponent::Offset(eBottomWall) = { -80, -2 };
-		graphics::SpriteComponent::FPS(eBottomWall) = 1.0f;
-
-		physics::ColliderComponent::Register(eTopWall);
-		physics::ColliderComponent::SetMaskRectangle(eTopWall, bedrock::AARectangle({ 160, 4 }));
-
-		physics::ColliderComponent::Register(eBottomWall);
-		physics::ColliderComponent::SetMaskRectangle(eBottomWall, bedrock::AARectangle({ 160, 4 }));
-
-		physics::PhysicsComponent::Register(eTopWall);
-		physics::PhysicsComponent::MakeStaticCollider(eTopWall);
-
-		physics::PhysicsComponent::Register(eBottomWall);
-		physics::PhysicsComponent::MakeStaticCollider(eBottomWall);
-
 		createBat(-78, sprPlayer1, false);
 		createBat(78, sprPlayer2, true);
-
-		// Serialization debug
-		serialization::YAMLSerializer yaml;
-		yaml.m_reverse = &ecs::FieldTable::Reverse;
-		ecs::FieldTable::getInstance()->serialize(yaml, eTopWall);
-		yaml.dump();
-		
 
 		for (int32_t i = 0; i < 2; ++i)
 		{
@@ -424,11 +398,23 @@ class Pong : public core::Game
 			PP_ID(ball.spr),
 			bedrock::typeID<resources::Sprite>());
 
+		resources::ResourceManager::RegisterResource(
+			"wall.spr",
+			resources::ResourceManager::RLS_AUTO_REF,
+			PP_ID(wall.spr),
+			bedrock::typeID<resources::Sprite>());
+
 		// TEMPLATES
 		resources::ResourceManager::RegisterResource(
 			"ball.tpl",
 			resources::ResourceManager::RLS_AUTO_USE,
 			PP_ID(ball.tpl),
+			bedrock::typeID<resources::Template>());
+
+		resources::ResourceManager::RegisterResource(
+			"wall.tpl",
+			resources::ResourceManager::RLS_AUTO_USE,
+			PP_ID(wall.tpl),
 			bedrock::typeID<resources::Template>());
 	}
 

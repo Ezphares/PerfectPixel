@@ -130,11 +130,13 @@ void Game::run()
 
 void Game::focus(bool hasFocus)
 {
+	(void)hasFocus;
 	m_inputManager.clearState();
 }
 
 void Game::windowResized(graphics::IWindow &window, unsigned width, unsigned height)
 {
+	(void)window;
 	m_graphicsManager.setWindowSize({ static_cast<int32_t>(width), static_cast<int32_t>(height) });
 }
 
