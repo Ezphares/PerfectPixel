@@ -1,7 +1,7 @@
 #pragma once
 
 #include <graphics/WindowSettings.h>
-#include <resources/Image.h>
+#include <Resources/Image.h>
 
 #include <Bedrock/InputCallback.h>
 

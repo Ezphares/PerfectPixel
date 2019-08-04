@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <algorithm>
 #include <array>
+#include <cmath>
 
 namespace perfectpixel { 
 
@@ -86,7 +87,7 @@ struct Vector
 
 	float magnitude() const
 	{
-		return sqrtf(dot(*this, *this));
+		return std::sqrt(dot(*this, *this));
 	}
 
 	Vector<D> normal() const

@@ -42,7 +42,7 @@ namespace perfectpixel {
 					GL_FLOAT, // Element type
 					GL_FALSE, // Normalize?
 					stride, // Bytes between start of elements
-					(GLvoid*)offset); // Offset of first element
+					reinterpret_cast<GLvoid*>(offset)); // Offset of first element
 
 				if (interleavedBuffer)
 				{

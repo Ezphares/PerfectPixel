@@ -1,5 +1,3 @@
-#pragma once
-
 #include <Resources/Resource.h>
 
 #include <Resources/ResourceManager.h>
@@ -7,7 +5,7 @@
 #include <EntityComponentSystem/EcsReflection.h>
 
 #include <Bedrock/Hash.h>
-#include <Bedrock/Defines.h>
+#include <Bedrock/defines.h>
 
 namespace perfectpixel { namespace resources {
 

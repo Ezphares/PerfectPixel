@@ -1,6 +1,5 @@
-#pragma once
-
 #include <physics/IntegratorProcessor.h>
+
 #include <physics/PhysicsComponent.h>
 
 #include <EntityComponentSystem/QueryHelper.h>

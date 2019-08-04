@@ -6,4 +6,6 @@
 #include <Windows.h>
 #include <GL/glew.h>
 #include <GL/wglew.h>
+#else
+#include <GL/glew.h>
 #endif

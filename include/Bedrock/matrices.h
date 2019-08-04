@@ -8,6 +8,7 @@
 namespace perfectpixel {
 	namespace bedrock {
 
+		
 		template<unsigned W, unsigned H>
 		struct Matrix
 		{
@@ -35,7 +36,7 @@ namespace perfectpixel {
 				return m_data[x * H + y];
 			}
 
-			const float m(unsigned x, unsigned y) const
+			float m(unsigned x, unsigned y) const
 			{
 				return m_data[x * H + y];
 			}
@@ -87,7 +88,7 @@ namespace perfectpixel {
 				return result;
 			}
 
-			template <typename T = Matrix<H,H>>
+			template<typename T = Matrix<H, W>>
 			EnableIfSquare<T> &operator*=(const Matrix<H, W> &r)
 			{
 				return *this = *this * r;

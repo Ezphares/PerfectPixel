@@ -67,8 +67,10 @@ void GraphicsManager::initialize()
 	glewInit();
 
 	// DEBUG
+#if _WIN32
 	wglewInit();
 	wglSwapIntervalEXT(0);
+#endif
 	// /DEBUG
 
 	glEnable(GL_BLEND);
@@ -193,17 +195,23 @@ void GraphicsManager::drawAll(double deltaT)
 		switch (element->m_type)
 		{
 		case (DQET_UI_TEXT):
-			UITextDrawQueueElement *textElement = static_cast<UITextDrawQueueElement *>(element);
-
-			// FIXME default font for now
-			if (!textElement->m_font)
 			{
-				textElement->m_font = m_font;
-			}
+				UITextDrawQueueElement *textElement = static_cast<UITextDrawQueueElement *>(element);
 
-			textElement->m_font->writeBuffer(textElement->m_position, textElement->m_fontSize, textElement->m_text, &text);
+				// FIXME default font for now
+				if (!textElement->m_font)
+				{
+					textElement->m_font = m_font;
+				}
+	
+				textElement->m_font->writeBuffer(textElement->m_position, textElement->m_fontSize, textElement->m_text, &text);
+			}
+			break;
+		default:
+			// TODO
 			break;
 		}
+
 
 		DrawQueueElementFactory::getInstance()->deallocate(element);
 	}

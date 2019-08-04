@@ -2,6 +2,8 @@
 
 #include <Bedrock/File.h>
 
+#include <cstring>
+
 namespace perfectpixel { namespace resources {
 
 

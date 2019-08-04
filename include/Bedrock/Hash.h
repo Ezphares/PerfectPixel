@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <string>
+#include <cstring>
 
 namespace perfectpixel { namespace bedrock {
 
@@ -116,7 +117,7 @@ namespace perfectpixel { namespace bedrock {
 
 #if PP_FULL_REFLECTION_ENABLED
 #define PP_KEY(str) #str
-#define PP_KEY_EQUAL(key, num) (static_cast<int32_t>(::perfectpixel::bedrock::crc32(key, strlen(key))) == num)
+#define PP_KEY_EQUAL(key, num) (static_cast<int32_t>(::perfectpixel::bedrock::crc32(key, std::strlen(key))) == num)
 #else
 #define PP_KEY(str) PP_ID(str)
 #define PP_KEY_EQUAL(key, num) (key == num)

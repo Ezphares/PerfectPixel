@@ -2,6 +2,8 @@
 
 #include <Bedrock/File.h>
 
+#include <cstring>
+
 namespace perfectpixel { namespace resources {
 
 	void PNGImage::PNGImageLoaderFunction(char *data, size_t dataSize, void **target, const bedrock::Opaque &userData)
@@ -50,8 +52,8 @@ namespace perfectpixel { namespace resources {
 	PNGImage::PNGImage()
 		: m_bitDepth(0)
 		, m_colorType(0)
-		, m_h(0)
 		, m_w(0)
+		, m_h(0)
 		, m_channels(0)
 		, m_buffer()
 		, m_textureHint(~0u)
@@ -102,14 +104,17 @@ namespace perfectpixel { namespace resources {
 		}
 
 		// TODO: USe error callbacks instead
+#if _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 4611)
-		if (setjmp(png_jmpbuf(readStruct.m_png)))
+#endif
+	 	if (setjmp(png_jmpbuf(readStruct.m_png)))
 		{
 			throw bedrock::PpException("Could not set jump");
 		}
+#if _MSC_VER
 #pragma warning(pop)
-
+#endif
 
 		png_set_read_fn(readStruct.m_png, &pngReadBuffer, &ReadFromSimpleBuffer);
 		png_set_sig_bytes(readStruct.m_png, 8);

@@ -7,6 +7,7 @@
 #include <Bedrock/Logger.h>
 
 #include <set>
+#include <cmath>
 
 namespace perfectpixel { namespace physics {
 

@@ -6,8 +6,8 @@
 #include <EntityComponentSystem/LifecycleComponents.h>
 #include <EntityComponentSystem/DebugProcessor.h>
 
-#include <Physics/IntegratorProcessor.h>
-#include <Physics/CollisionProcessor.h>
+#include <physics/IntegratorProcessor.h>
+#include <physics/CollisionProcessor.h>
 
 #include <graphics/IWindow.h>
 #include <graphics/UIProcessor.h>
@@ -23,12 +23,13 @@ namespace perfectpixel {
 namespace core {
 
 	Game::Game()
-		: m_shouldExit(false)
+		: m_splashFilename("splash.png")
+		, m_shouldExit(false)
+		, m_processorQueue()
 		, m_inputManager()
 		, m_graphicsManager()
-		, m_targetUps(100)
-		, m_splashFilename("splash.png")
 		, m_fileResourceLocator()
+		, m_targetUps(100.0)
 	{
 	}
 
