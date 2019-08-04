@@ -131,40 +131,33 @@ namespace perfectpixel {
 				return result;
 			}
 
-			template <unsigned D>
-			struct ImplDeterminant
+			template<unsigned D>
+			static float getDeterminant(const Matrix<D, D> &mat)
 			{
-				static float get(const Matrix<D, D> &mat)
+				float accumulator{ 0.0f };
+				bool add = true;
+
+				for (unsigned i = 0; i < D; i++)
 				{
-					float accumulator{ 0.0f };
-					bool add = true;
+					float recurse = mat.m(i, 0) * getDeterminant(mat.minor(i, 0));
 
-					for (unsigned i = 0; i < D; i++)
-					{
-						float recurse = mat.m(i, 0) * ImplDeterminant<D - 1>::get(mat.minor(i, 0));
+					accumulator += add ? recurse : -recurse;
 
-						accumulator += add ? recurse : -recurse;
-
-						add = !add;
-					}
-
-					return accumulator;
+					add = !add;
 				}
-			};
 
-			template <>
-			struct ImplDeterminant<2>
+				return accumulator;
+			}
+
+			static float getDeterminant(const Matrix<2, 2> &mat)
 			{
-				static float get(const Matrix<2, 2> &mat)
-				{
-					return mat.m_data[0] * mat.m_data[3] - mat.m_data[1] * mat.m_data[2];
-				}
-			};
+				return mat.m_data[0] * mat.m_data[3] - mat.m_data[1] * mat.m_data[2];
+			}
 
 			template<typename T = float>
 			EnableIfSquare<T> determinant()
 			{
-				return ImplDeterminant<H>::get(*this);
+				return Matrix<H, H>::getDeterminant(*this);
 			}
 
 
