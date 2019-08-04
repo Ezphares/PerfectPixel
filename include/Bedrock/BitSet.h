@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <cstdint>
 
 namespace perfectpixel {
 	namespace bedrock {
@@ -29,8 +30,8 @@ namespace perfectpixel {
 			~BitSet() {}
 
 		public:
-			inline std::size_t size() const { return m_bitSize; } 
-			inline std::size_t capacity() const { return m_data.capacity() * 8u; }
+			inline size_t size() const { return m_bitSize; } 
+			inline size_t capacity() const { return m_data.capacity() * 8u; }
 			void resize(size_t size, bool val = false);
 
 			void append(bool val);

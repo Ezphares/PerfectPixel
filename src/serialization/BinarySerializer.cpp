@@ -2,6 +2,7 @@
 #include <serialization/BinarySerializer.h>
 
 #include <numeric>
+#include <cstring>
 
 namespace perfectpixel { namespace serialization {
 

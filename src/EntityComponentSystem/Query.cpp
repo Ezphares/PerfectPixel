@@ -5,8 +5,8 @@ namespace perfectpixel
 	namespace ecs {
 
 		Query::Query(QueryFunction queryFunction)
-			: m_queryFunction(queryFunction)
-			, m_lastResult()
+			: m_lastResult()
+			, m_queryFunction(queryFunction)
 		{}
 
 		void Query::applyMask()

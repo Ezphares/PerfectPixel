@@ -36,11 +36,10 @@ namespace perfectpixel {
 			openLogStream();
 
 			std::time_t tval = std::time(nullptr);
-			std::tm tresult;
-			localtime_s(&tresult, &tval);
+			std::tm *result = std::localtime(&tval);
 
 			char strtime[40];
-			std::strftime(strtime, sizeof(strtime), /*"[%EY %b %d %H:%M:%S] " */ "[%H:%M:%S] ", &tresult);
+			std::strftime(strtime, sizeof(strtime), /*"[%EY %b %d %H:%M:%S] " */ "[%H:%M:%S] ", result);
 
 			m_logStream << strtime 
 				<< "[" << std::hex << std::setw(2) << std::setfill('0') << (int)updateIndex

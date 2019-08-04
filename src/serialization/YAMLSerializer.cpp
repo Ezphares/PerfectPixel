@@ -4,14 +4,16 @@
 #include <yaml-cpp/yaml.h>
 #include <yaml-cpp/node/convert.h>
 
+#include <cstring>
+
 #if PP_FULL_REFLECTION_ENABLED
 
 namespace perfectpixel { namespace serialization {
 
 	YAMLSerializer::YAMLSerializer()
-		: m_emitter(new YAML::Emitter())
-		, m_hash()
+		: m_hash()
 		, m_reverse()
+		, m_emitter(new YAML::Emitter())
 	{
 	}
 
@@ -206,8 +208,8 @@ namespace perfectpixel { namespace serialization {
 	uint32_t YAMLSerializer::readBinary(void *p, uint32_t maxSize)
 	{
 		std::string text = readVal().as<std::string>();
-		memcpy(p, text.c_str(), std::min(maxSize, text.size()));
-		return std::min(maxSize, text.size());
+		memcpy(p, text.c_str(), std::min(static_cast<std::size_t>(maxSize), text.size()));
+		return std::min(static_cast<std::size_t>(maxSize), text.size());
 	}
 
 	void YAMLSerializer::readMapBegin()

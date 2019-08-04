@@ -3,6 +3,8 @@
 
 #include <serialization/BinarySerializer.h>
 
+#include <cstring>
+
 namespace {
 	uint64_t pack754(long double f, unsigned bits, unsigned expbits)
 	{
