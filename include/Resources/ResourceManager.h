@@ -92,7 +92,7 @@ namespace perfectpixel { namespace resources {
 		void load(ResourceMetadata &metadata);
 		void unload(ResourceMetadata &metadata, bool now = false);
 		ResourceMetadata &getMetadata(int32_t type, int32_t id, uint32_t *ref_cacheHint);
-		ResourceLoader getLoader(const ResourceMetadata &metadata);
+		ResourceLoader &getLoader(const ResourceMetadata &metadata);
 		
 
 	private:

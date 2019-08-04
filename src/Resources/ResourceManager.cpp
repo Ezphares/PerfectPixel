@@ -4,19 +4,19 @@ namespace perfectpixel { namespace resources {
 
 	void ResourceManager::Take(int32_t type, int32_t id, uint32_t *ref_cacheHint)
 	{
-		ResourceManager *instance = getInstance();
-		ResourceMetadata &metadata = instance->getMetadata(type, id, ref_cacheHint);
+		ResourceManager *self = getInstance();
+		ResourceMetadata &metadata = self->getMetadata(type, id, ref_cacheHint);
 		if (metadata.m_refs == 0 && metadata.m_loadingStrategy == RLS_AUTO_REF)
 		{
-			instance->load(metadata);
+			self->load(metadata);
 		}
 		metadata.m_refs++;
 	}
 
 	void ResourceManager::Release(int32_t type, int32_t id, uint32_t *ref_cacheHint)
 	{
-		ResourceManager *instance = getInstance();
-		ResourceMetadata &metadata = instance->getMetadata(type, id, ref_cacheHint);
+		ResourceManager *self = getInstance();
+		ResourceMetadata &metadata = self->getMetadata(type, id, ref_cacheHint);
 		if (metadata.m_refs == 0)
 		{
 			throw "Ref corruption";
@@ -25,7 +25,7 @@ namespace perfectpixel { namespace resources {
 
 		if (metadata.m_refs == 0 && metadata.m_loadingStrategy == RLS_AUTO_REF)
 		{
-			instance->unload(metadata);
+			self->unload(metadata);
 		}
 	}
 
@@ -37,7 +37,7 @@ namespace perfectpixel { namespace resources {
 		int32_t variant,
 		const bedrock::Opaque &userData)
 	{
-		ResourceManager *instance = getInstance();
+		ResourceManager *self = getInstance();
 
 		ResourceMetadata metadata;
 		metadata.m_id = id;
@@ -48,23 +48,23 @@ namespace perfectpixel { namespace resources {
 		metadata.m_loadingStrategy = loadingStrategy;
 		metadata.m_userData = userData;
 
-		instance->insert(metadata);
-		instance->m_locator->insert(type, id, locator);
+		self->insert(metadata);
+		self->m_locator->insert(type, id, locator);
 
 		if (loadingStrategy == RLS_NONE)
 		{
-			instance->load(metadata);
+			self->load(metadata);
 		}
 	}
 
 	void * ResourceManager::GetData(int32_t type, int32_t id, bool *out_cache, uint32_t *ref_cacheHint)
 	{
-		ResourceManager *instance = getInstance();
-		ResourceMetadata &metadata = instance->getMetadata(type, id, ref_cacheHint);
+		ResourceManager *self = getInstance();
+		ResourceMetadata &metadata = self->getMetadata(type, id, ref_cacheHint);
 
 		if (!metadata.m_data && metadata.m_loadingStrategy == RLS_AUTO_USE)
 		{
-			instance->load(metadata);
+			self->load(metadata);
 		}
 
 		if (out_cache)
@@ -197,18 +197,19 @@ namespace perfectpixel { namespace resources {
 
 			if (it->m_id == id)
 			{
-				return *it;
 				if (ref_cacheHint)
 				{
 					*ref_cacheHint = idx;
 				}
+
+				return *it;
 			}
 		}
 
 		throw "Metadata not found";
 	}
 
-	ResourceManager::ResourceLoader ResourceManager::getLoader(const ResourceMetadata &metadata)
+	ResourceManager::ResourceLoader &ResourceManager::getLoader(const ResourceMetadata &metadata)
 	{
 		for (auto &loader : m_loaderLUT)
 		{

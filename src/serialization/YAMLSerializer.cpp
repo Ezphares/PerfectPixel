@@ -175,6 +175,7 @@ namespace perfectpixel { namespace serialization {
 
 	void YAMLSerializer::readMappedUInt32(uint32_t *val)
 	{
+		(void)val;
 		throw "Todo";
 	}
 
@@ -290,6 +291,8 @@ namespace perfectpixel { namespace serialization {
 
 	void YAMLSerializer::mapUInt32(uint32_t memory, uint32_t serialized)
 	{
+		(void)memory;
+		(void)serialized;
 		throw "Todo";
 	}
 

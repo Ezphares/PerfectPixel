@@ -7,7 +7,7 @@ namespace perfectpixel { namespace resources {
 
 
 	Template::Template(ecs::Entity entity)
-		: m_entity(ecs::NO_ENTITY)
+		: m_entity(entity)
 		, m_variantOf(bedrock::typeID<Template>())
 	{
 	}
