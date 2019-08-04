@@ -117,7 +117,7 @@ MAKE_GROUP("Resources" "Resources"
 	"Sprite.cpp" 
 )
 
-MAKE_GROUP("Input" "Input"
+MAKE_GROUP("Input" "input"
 	"InputManager.cpp" 
 )
 
