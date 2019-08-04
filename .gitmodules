@@ -7,8 +7,11 @@
 	ignore = dirty
 [submodule "depends/zlib"]
 	path = depends/zlib
-	url = https://github.com/madler/zlib
+	url = https://github.com/ezphares/zlib
 	ignore = dirty
 [submodule "depends/glew"]
 	path = depends/glew
 	url = https://github.com/Perlmint/glew-cmake
+[submodule "depends/googletest"]
+	path = depends/googletest
+	url = https://github.com/google/googletest
