@@ -113,7 +113,7 @@ namespace perfectpixel {
 			}
 
 			template <typename T=Matrix<H-1, H-1>>
-			EnableIfSquare<T> minor(unsigned x, unsigned y) const
+			EnableIfSquare<T> getMinor(unsigned x, unsigned y) const
 			{
 				T result;
 
@@ -139,7 +139,7 @@ namespace perfectpixel {
 
 				for (unsigned i = 0; i < D; i++)
 				{
-					float recurse = mat.m(i, 0) * getDeterminant(mat.minor(i, 0));
+					float recurse = mat.m(i, 0) * getDeterminant(mat.getMinor(i, 0));
 
 					accumulator += add ? recurse : -recurse;
 
