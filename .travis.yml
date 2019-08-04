@@ -1,9 +1,13 @@
 language: c++
 os:
   - linux
-  - osx
 compiler:
   - gcc
+before_install:
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+        sudo apt-get install libgl1-mesa-dev
+    fi
 before_script:
   - mkdir build
   - cd build
