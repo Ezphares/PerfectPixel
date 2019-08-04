@@ -15,7 +15,7 @@ before_script:
   - cmake ..
 script:
   - make RunTests
-  - make test
+  - ./RunTests
 matrix:
   include:
     - os: linux
