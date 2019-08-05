@@ -25,7 +25,7 @@ GTEST_TEST(test_BitSet, Create)
 	ASSERT_EQ(true,  alternate[3]);
 }
 
-GTEST_TEST(test_Bitset, Equality)
+GTEST_TEST(test_BitSet, Equality)
 {
 	BitSet a{ (uint8_t*)"\xaa", 8 };
 	BitSet b{ (uint8_t*)"\xaa", 8 };
@@ -59,7 +59,7 @@ GTEST_TEST(test_BitSet, Negate)
 	}
 }
 
-GTEST_TEST(test_Bitset, And)
+GTEST_TEST(test_BitSet, And)
 {
 	BitSet a{ (uint8_t*)"\xbe\xff", 16 };
 	BitSet b{ (uint8_t*)"\xff\xaf", 16 };
@@ -67,7 +67,7 @@ GTEST_TEST(test_Bitset, And)
 	ASSERT_TRUE((BitSet{ (uint8_t*)"\xbe\xaf", 16 }) == (a & b));
 }
 
-GTEST_TEST(test_Bitset, AndDifferentSizes)
+GTEST_TEST(test_BitSet, AndDifferentSizes)
 {
 	BitSet a{ (uint8_t*)"\xff\xff", 16 };
 	BitSet b{ (uint8_t*)"\xff", 8 };
