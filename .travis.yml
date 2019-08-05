@@ -13,19 +13,18 @@ before_script:
 script:
   - make RunTests
   - ./RunTests
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-7
+      - libgl1-mesa-dev
+      - freeglut3-dev 
+      - mesa-common-dev
+    update: true
 matrix:
   include:
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-7
-            - libgl1-mesa-dev
-            - freeglut3-dev 
-            - mesa-common-dev
-          update: true
     - compiler: gcc
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
