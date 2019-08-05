@@ -27,6 +27,7 @@ namespace perfectpixel {
 		public:
 			BitSet();
 			BitSet(std::size_t initialSize, bool initToOne = false);
+			BitSet(const uint8_t *raw, size_t bits);
 			~BitSet() {}
 
 		public:
@@ -45,6 +46,8 @@ namespace perfectpixel {
 
 			BitSet &negate();
 			BitSet operator~() const;
+
+			bool operator==(const BitSet &other) const;
 
 			void executeNegation();
 

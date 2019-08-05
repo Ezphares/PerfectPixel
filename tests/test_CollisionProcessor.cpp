@@ -26,7 +26,7 @@ protected:
 	CollisionProcessor *m_processor;
 };
 
-TEST_F(test_CollisionProcessor, test_CollisionProcessor_checkCollision_rect_rect)
+TEST_F(test_CollisionProcessor, RectRectCollision)
 {
 	ecs::Entity 
 		a{ ecs::EntityManager::getInstance()->create() }, 
@@ -72,7 +72,7 @@ TEST_F(test_CollisionProcessor, test_CollisionProcessor_checkCollision_rect_rect
 	//AssertFloatApprox(overlap->y(), 1);
 }
 		
-TEST_F(test_CollisionProcessor, test_CollisionProcessor_singleAxisReposition)
+TEST_F(test_CollisionProcessor, SingleAxisReposition)
 {
 	float magnitude1, magnitude2;
 
@@ -92,7 +92,7 @@ TEST_F(test_CollisionProcessor, test_CollisionProcessor_singleAxisReposition)
 	ASSERT_FLOAT_EQ(magnitude2, 4);
 }
 		
-TEST_F(test_CollisionProcessor, test_CollisionProcessor_singleAxisReposition_zeros)
+TEST_F(test_CollisionProcessor, SingleAxisReposition_Zeros)
 {
 	float magnitude1, magnitude2;
 
@@ -112,7 +112,7 @@ TEST_F(test_CollisionProcessor, test_CollisionProcessor_singleAxisReposition_zer
 	ASSERT_FLOAT_EQ(magnitude2, 0);
 }
 
-TEST_F(test_CollisionProcessor, test_CollisionProcessor_singleAxisRepositionty_infinity)
+TEST_F(test_CollisionProcessor, SingleAxisReposition_Infinity)
 {
 	float magnitude1, magnitude2;
 

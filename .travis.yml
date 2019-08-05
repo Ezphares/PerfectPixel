@@ -1,0 +1,29 @@
+language: c++
+before_install:
+  - eval "${MATRIX_EVAL}"
+before_script:
+  - mkdir build
+  - cd build
+  - cmake ..
+script:
+  - make RunTests
+  - ./RunTests
+env:
+  - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-7
+      - libgl1-mesa-dev
+      - freeglut3-dev 
+      - mesa-common-dev
+    update: true
+matrix:
+  include:
+    - os: linux
+      compiler: gcc
+      env:
+        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+        

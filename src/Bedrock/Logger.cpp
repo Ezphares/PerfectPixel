@@ -34,8 +34,13 @@ namespace perfectpixel {
 			openLogStream();
 
 			std::time_t tval = std::time(nullptr);
+#if _WIN32
+			std::tm _result;
+			std::tm *result = &_result;
+			localtime_s(result, &tval);
+#else
 			std::tm *result = std::localtime(&tval);
-
+#endif
 			char strtime[40];
 			std::strftime(strtime, sizeof(strtime), /*"[%EY %b %d %H:%M:%S] " */ "[%H:%M:%S] ", result);
 

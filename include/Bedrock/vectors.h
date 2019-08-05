@@ -39,6 +39,20 @@ private:
 	float m_rad;
 };
 
+enum SwizzlePosition : uint8_t
+{
+	X = 1 << 0,
+	Y = 1 << 1,
+	Z = 1 << 2,
+	W = 1 << 3,
+
+	N = 1 << 7,
+	N_X = N|X,
+	N_Y = N|Y,
+	N_Z = N|Z,
+	N_W = N|W,
+};
+
 template<unsigned D>
 struct Vector
 {
@@ -83,6 +97,23 @@ struct Vector
 	static float triple(const Vector<D> &a, const Vector<D> &b, const Vector<D> &c, typename std::enable_if<_ == 3, void>::type * = nullptr)
 	{
 		return dot(a, cross(b, c));
+	}
+
+	static Vector<D> swizzle(const Vector<D> &vec, const std::array<SwizzlePosition, D> &layout)
+	{
+		Vector<D> result;
+
+		for (size_t i = 0u; i < D; ++i)
+		{
+			SwizzlePosition s = layout[i];
+			bool negative = (s & SwizzlePosition::N) > 0u;
+			uint8_t src = (s & ~SwizzlePosition::N);
+			uint8_t srcIndex = 0;
+			while (src >>= 1) srcIndex++;
+			result.m_data[i] = negative ? -vec.m_data[srcIndex] : vec.m_data[srcIndex];
+		}
+
+		return result;
 	}
 
 	float magnitude() const
@@ -213,6 +244,7 @@ struct Vector3 : public Vector<3> {
 };
 
 struct Vector4 : public Vector<4> {
+	/* implicit */ Vector4(const Vector<4> &convert) : Vector<4>(convert) {}
 	Vector4() : Vector<4>() {}
 	Vector4(float x, float y, float z, float w) : Vector<4>(std::array<float, 4>{ x, y, z, w }) {}
 

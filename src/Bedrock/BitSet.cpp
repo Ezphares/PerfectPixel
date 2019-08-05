@@ -1,5 +1,7 @@
 #include <Bedrock/BitSet.h>
 
+#include <cstring>
+
 namespace perfectpixel {
 	namespace bedrock{
 
@@ -19,6 +21,16 @@ namespace perfectpixel {
 			: BitSet(0)
 		{
 
+		}
+
+		BitSet::BitSet(const uint8_t *raw, size_t bits)
+			: m_data()
+			, m_bitSize(bits)
+			, m_negated(false)
+		{
+			m_data.resize((bits + 7) / 8);
+			memcpy(m_data.data(), raw, m_data.size());
+			trim();
 		}
 
 		void BitSet::resize(size_t size, bool val /*= false*/)
@@ -105,6 +117,25 @@ namespace perfectpixel {
 			BitSet result = *this;
 			result.negate();
 			return result;
+		}
+
+		bool BitSet::operator==(const BitSet &other) const
+		{
+			if (m_bitSize != other.m_bitSize)
+			{
+				return false;
+			}
+
+			if (m_negated == other.m_negated)
+			{
+				return m_data == other.m_data;
+			}
+			else
+			{
+				BitSet tmp{ ~*this };
+				tmp.executeNegation();
+				return tmp.m_data == other.m_data;
+			}
 		}
 
 		void BitSet::executeNegation()
