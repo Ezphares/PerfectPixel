@@ -5,10 +5,6 @@ compiler:
   - gcc
 before_install:
   - eval "${MATRIX_EVAL}"
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        sudo apt-get update -qq && sudo apt-get install -qq libgl1-mesa-dev freeglut3-dev mesa-common-dev
-    fi
 before_script:
   - mkdir build
   - cd build
@@ -25,5 +21,9 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-7
+            - libgl1-mesa-dev
+            - freeglut3-dev 
+            - mesa-common-dev
+          update: true
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
