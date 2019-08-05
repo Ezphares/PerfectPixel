@@ -6,7 +6,7 @@ using namespace perfectpixel::bedrock;
 
 
 /// Multiplying a quaternion by it's inverse must result in the identity
-GTEST_TEST(Quaternion, test_invertibility)
+GTEST_TEST(test_Quaternion, Invertibility)
 {
 	Quaternion quat = Quaternion::rotate(Vector3::FORWARD, Angle::degrees(90));
 	Quaternion inv = quat.normalInverse();
@@ -15,7 +15,7 @@ GTEST_TEST(Quaternion, test_invertibility)
 	ExpectVectorEq(Quaternion::IDENTITY, res);
 }
 
-GTEST_TEST(Quaternion, test_create_is_normal)
+GTEST_TEST(test_Quaternion, CreateIsNormal)
 {
 	Quaternion qid = Quaternion::IDENTITY;
 	EXPECT_FLOAT_EQ(1.0f, qid.magnitude());
@@ -24,7 +24,7 @@ GTEST_TEST(Quaternion, test_create_is_normal)
 	EXPECT_FLOAT_EQ(1.0f, qrot.magnitude());
 }
 
-GTEST_TEST(Quaternion, test_invert_identity)
+GTEST_TEST(test_Quaternion, InvertIdentity)
 {
 	Quaternion id = Quaternion::IDENTITY;
 	Quaternion inv = id.normalInverse();
@@ -32,7 +32,7 @@ GTEST_TEST(Quaternion, test_invert_identity)
 	ExpectVectorEq(id, inv);
 }
 
-GTEST_TEST(Quaternion, test_rotate_identity)
+GTEST_TEST(test_Quaternion, RotateIdentity)
 {
 	Quaternion qid = Quaternion::IDENTITY;
 
@@ -46,7 +46,7 @@ GTEST_TEST(Quaternion, test_rotate_identity)
 	ExpectVectorEq(v_diag, v_res_diag);
 }
 
-GTEST_TEST(Quaternion, test_rotate_aligned)
+GTEST_TEST(test_Quaternion, RotateAligned)
 {
 	// Clockwise 90 degrees around the Z-axis
 	Quaternion qrot = Quaternion::rotate(Vector3::FORWARD, Angle::degrees(90));
@@ -62,7 +62,7 @@ GTEST_TEST(Quaternion, test_rotate_aligned)
 }
 
 /// Rotations of vectors along their own axis should not change them
-GTEST_TEST(Quaternion, test_rotation_along_self)
+GTEST_TEST(test_Quaternion, RotateAlongSelf)
 {
 	Vector3 axis = Vector3::UP * 2.0f + Vector3::BACK;
 

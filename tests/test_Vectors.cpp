@@ -6,7 +6,7 @@
 
 using namespace perfectpixel::bedrock;
 
-GTEST_TEST(Vector, cross)
+GTEST_TEST(test_Vector, Cross)
 {
 	Vector3 a = Vector3(3, 0, 0);
 	Vector3 b = Vector3(0, 5, 0);
@@ -16,7 +16,7 @@ GTEST_TEST(Vector, cross)
 	ExpectVectorEq(c_ab, Vector3(0, 0, 15));
 }
 
-GTEST_TEST(Vector, swizzle)
+GTEST_TEST(test_Vector, Swizzle)
 {
 	Vector4 base{ 1, 2, 3, 4 };
 

@@ -4,7 +4,7 @@
 
 using namespace perfectpixel::ecs;
 
-GTEST_TEST(Entity, test_entity_create_get)
+GTEST_TEST(test_Entity, CreateGet)
 {
 	Entity entity_0_0 = entityCreate(0, 0);
 	EXPECT_EQ(0u, entity_0_0.generation);
@@ -19,7 +19,7 @@ GTEST_TEST(Entity, test_entity_create_get)
 	EXPECT_EQ(25u, entity_0_25.index);
 }
 
-GTEST_TEST(Entity, test_entity_overflow)
+GTEST_TEST(test_Entity, Overflow)
 {
 	uint32_t generationMax = (1 << GENERATION_BITS) - 1;
 	Entity entity_1_0 = entityCreate(generationMax + 2, 0);

@@ -4,7 +4,7 @@
 
 using namespace perfectpixel::ecs;
 
-GTEST_TEST(EntityManager, test_entitymanager_create_kill_alive)
+GTEST_TEST(test_EntityManager, CreateAliveKill)
 {
 	EntityManager manager;
 
@@ -23,7 +23,7 @@ GTEST_TEST(EntityManager, test_entitymanager_create_kill_alive)
 
 }
 
-GTEST_TEST(EntityManager, test_entitymanager_reuse_default)
+GTEST_TEST(test_EntityManager, ReuseDefault)
 {
 	EntityManager manager;
 
@@ -33,7 +33,7 @@ GTEST_TEST(EntityManager, test_entitymanager_reuse_default)
 	ASSERT_NE(e1.index, e2.index);
 }
 
-GTEST_TEST(EntityManager, test_entitymanager_reuse_instant)
+GTEST_TEST(test_EntityManager, ReuseInstant)
 {
 	EntityManager manager(0);
 
@@ -45,7 +45,7 @@ GTEST_TEST(EntityManager, test_entitymanager_reuse_instant)
 	ASSERT_EQ(e_instant1.generation + 1, e_instant2.generation);
 }
 
-GTEST_TEST(EntityManager, test_entitymanager_reuse_settings)
+GTEST_TEST(test_EntityManager, ReuseSettings)
 {
 	EntityManager manager(10);
 

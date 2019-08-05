@@ -4,7 +4,7 @@
 
 using namespace perfectpixel::bedrock;
 
-GTEST_TEST(Matrix, test_determinant_2)
+GTEST_TEST(test_Matrix, Determinant2)
 {
 	Matrix<2, 2> mid2 = Matrix<2, 2>::generateIdentity();
 	EXPECT_FLOAT_EQ(1.0f, mid2.determinant());
@@ -14,7 +14,7 @@ GTEST_TEST(Matrix, test_determinant_2)
 	EXPECT_FLOAT_EQ(-2.0f, m1to4.determinant());
 }
 
-GTEST_TEST(Matrix, test_determinant_3)
+GTEST_TEST(test_Matrix, Determinant3)
 {
 	Matrix<3, 3> mid3 = Matrix<3, 3>::generateIdentity();
 	EXPECT_FLOAT_EQ(1.0f, mid3.determinant());
@@ -24,7 +24,7 @@ GTEST_TEST(Matrix, test_determinant_3)
 	EXPECT_FLOAT_EQ(0.0f, m1to9.determinant());
 }
 
-GTEST_TEST(Matrix, test_determinant_4)
+GTEST_TEST(test_Matrix, Determinant4)
 {
 
 	Matrix<4, 4> mid4 = Matrix<4, 4>::generateIdentity();
@@ -36,7 +36,7 @@ GTEST_TEST(Matrix, test_determinant_4)
 
 }
 
-GTEST_TEST(Matrix, test_mul3x3_identity)
+GTEST_TEST(test_Matrix, Mul3x3Identity)
 {
 	Matrix3x3 m1to9 = Matrix3x3({ 1,2,3,4,5,6,7,8,9 });
 	Matrix3x3 mid3 = Matrix3x3::IDENTITY;
