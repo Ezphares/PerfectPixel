@@ -1,9 +1,4 @@
 language: c++
-os:
-  - linux
-compiler:
-  - gcc
-  - clang
 before_install:
   - eval "${MATRIX_EVAL}"
 before_script:
@@ -13,6 +8,8 @@ before_script:
 script:
   - make RunTests
   - ./RunTests
+env:
+  - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
 addons:
   apt:
     sources:
@@ -25,6 +22,8 @@ addons:
     update: true
 matrix:
   include:
-    - compiler: gcc
+    - os: linux
+      compiler: gcc
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+        
