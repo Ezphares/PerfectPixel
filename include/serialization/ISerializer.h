@@ -52,6 +52,10 @@ namespace perfectpixel {
 		};
 } }
 
+template<typename Dummy>
+perfectpixel::serialization::ISerializer &operator<<(perfectpixel::serialization::ISerializer &, const Dummy &) {throw 0;}
+template<typename Dummy>
+perfectpixel::serialization::ISerializer &operator>>(perfectpixel::serialization::ISerializer &, Dummy &) {throw 0;}
 // TODO: Move these
 perfectpixel::serialization::ISerializer &operator<<(perfectpixel::serialization::ISerializer &ostream, const std::string &str);
 perfectpixel::serialization::ISerializer &operator>>(perfectpixel::serialization::ISerializer &istream, std::string &str);

@@ -107,7 +107,7 @@ namespace perfectpixel { namespace ecs {
 
 		void Set(Entity entity, const T& value)
 		{
-			m_data[Owner::Index(entity)] = false;
+			m_data[Owner::Index(entity)] = value;
 		}
 
 		// Raw access operator

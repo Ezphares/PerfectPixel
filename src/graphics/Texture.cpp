@@ -17,7 +17,7 @@ Texture::Texture(const resources::Image &image, int32_t imageResourceId)
 	: m_sourceImageId(imageResourceId)
 {
 	glGenTextures(1, &m_textureId);
-	if (&m_textureId == 0)
+	if (m_textureId == 0)
 	{
 		throw bedrock::PpException("Could not generate texture");
 	}
@@ -49,7 +49,7 @@ Texture::Texture(const bedrock::Point2 size)
 	, m_sourceImageId(0)
 {
 	glGenTextures(1, &m_textureId);
-	if (&m_textureId == 0)
+	if (m_textureId == 0)
 	{
 		throw bedrock::PpException("Could not generate texture");
 	}
@@ -83,7 +83,7 @@ Texture::Texture(const CBFGFontHeader& header, const char *raw)
 	: m_size(header.m_imageWidth, header.m_imageHeight)
 {
 	glGenTextures(1, &m_textureId);
-	if (&m_textureId == 0)
+	if (m_textureId == 0)
 	{
 		throw bedrock::PpException("Could not generate texture");
 	}

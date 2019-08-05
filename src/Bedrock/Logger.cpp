@@ -2,15 +2,13 @@
 #include <ctime>
 #include <iomanip>
 
+#ifdef _WIN32
 const char * basename(const char *path)
 {
-#ifdef _WIN32
 	const char *start = strrchr(path, '\\');
 	return start ? start + 1 : path;
-#else
-	return path;
-#endif // _WIN32
 }
+#endif
 
 namespace perfectpixel {
 	namespace bedrock {

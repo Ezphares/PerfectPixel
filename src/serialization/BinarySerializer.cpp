@@ -6,13 +6,6 @@
 
 namespace perfectpixel { namespace serialization {
 
-	namespace {
-		const unsigned char ARRAY_START = 0xf0;
-		const unsigned char ARRAY_END = 0xf1;
-		const unsigned char MAP_START = 0xf2;
-		const unsigned char MAP_END = 0xf3;
-	}
-
 	void BinarySerializer::writeText(const std::string &val)
 	{
 		uint32_t size = val.size();

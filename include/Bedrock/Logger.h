@@ -15,7 +15,9 @@
 #endif
 #endif
 
+#ifdef _WIN32
 const char *basename(const char *path);
+#endif
 
 namespace perfectpixel { namespace bedrock {
 

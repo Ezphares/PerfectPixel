@@ -19,7 +19,10 @@ namespace perfectpixel {
 
 		Entity entityCreate(std::uint32_t generation, std::uint32_t index)
 		{
-			return Entity{ generation = generation, index = index };
+			Entity entity;
+			entity.generation = generation;
+			entity.index = index;
+			return entity;
 			//return (generation << INDEX_BITS | index & INDEX_MASK);
 		}
 

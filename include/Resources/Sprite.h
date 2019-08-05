@@ -42,7 +42,7 @@ namespace perfectpixel { namespace resources {
 
 		Resource m_image;
 
-		bool m_valid;
+		//bool m_valid;
 	};
 
 

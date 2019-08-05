@@ -2,6 +2,7 @@
 
 #include <graphics/LocalGL.h>
 #include <graphics/CBFGFont.h>
+#include <graphics/SpriteComponent.h>
 
 #include <EntityComponentSystem/QueryHelper.h>
 #include <EntityComponentSystem/TransformComponent.h>
@@ -288,12 +289,6 @@ void GraphicsManager::queueDrawSingle(DrawQueueElement *element)
 
 void GraphicsManager::cleanup()
 {
-	for (auto entity : m_cleanup)
-	{
-		m_spriteComponents.erase(entity);
-	}
-
-	m_cleanup.clear();
 }
 
 void GraphicsManager::drawSpriteComponent(ecs::Entity entity)

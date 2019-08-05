@@ -1,7 +1,6 @@
 #pragma once
 
 #include <graphics/LocalGL.h>
-#include <graphics/SpriteComponent.h>
 #include <graphics/VAO.h>
 #include <graphics/BufferLayouts.h>
 #include <graphics/ShaderProgram.h>
@@ -10,6 +9,7 @@
 #include <graphics/Quad.h>
 #include <graphics/IFont.h>
 #include <graphics/DrawQueue.h>
+#include <graphics/RenderHint.h>
 
 #include <Resources/Resource.h>
 
@@ -38,7 +38,6 @@ namespace graphics {
 			ShaderProgram *m_program;
 		};
 
-		typedef std::map<ecs::Entity, SpriteComponent> SpriteComponents;
 		typedef std::vector<SpriteDrawInfo> SpriteDrawList;
 
 	public:
@@ -84,8 +83,6 @@ namespace graphics {
 	private:
 		ecs::Query m_spriteQuery;
 
-		SpriteComponents m_spriteComponents;
-
 		ShaderProgram *m_programSpriteHardAlpha;
 		ShaderProgram *m_programSpriteSoftAlpha;
 		ShaderProgram *m_programPostProcess;
@@ -93,7 +90,7 @@ namespace graphics {
 
 		FrameBuffer *m_frameBuffer;
 
-		GLuint m_ppbuffer;
+		// GLuint m_ppbuffer;
 
 		VAO *m_vaoDynamicSprites;
 		VAO *m_vaoPostProcess;

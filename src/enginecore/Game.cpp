@@ -2,6 +2,7 @@
 
 #include <Resources/PNGImage.h>
 #include <Resources/Template.h>
+#include <Resources/Sprite.h>
 
 #include <EntityComponentSystem/LifecycleComponents.h>
 #include <EntityComponentSystem/DebugProcessor.h>
