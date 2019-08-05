@@ -26,4 +26,5 @@ matrix:
       compiler: gcc
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
-        
+    - os: linux
+      compiler: clang
