@@ -8,8 +8,6 @@ before_script:
 script:
   - make RunTests
   - ./RunTests
-env:
-  - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
 addons:
   apt:
     sources:
