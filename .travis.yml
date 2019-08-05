@@ -3,6 +3,7 @@ os:
   - linux
 compiler:
   - gcc
+  - clang
 before_install:
   - eval "${MATRIX_EVAL}"
 before_script:
@@ -25,5 +26,6 @@ matrix:
             - freeglut3-dev 
             - mesa-common-dev
           update: true
+    - compiler: gcc
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
