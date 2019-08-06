@@ -7,6 +7,7 @@
 #include <graphics/UITextComponent.h>
 #include <graphics/IWindow.h>
 #include <graphics/Texture.h>
+#include <graphics/SpriteComponent.h>
 
 #include <physics/PhysicsComponent.h>
 #include <physics/ColliderComponent.h>
@@ -19,6 +20,7 @@
 #include <Resources/PNGImage.h>
 #include <Resources/Template.h>
 #include <Resources/Resource.h>
+#include <Resources/Sprite.h>
 
 #include <chrono>
 #include <thread>
