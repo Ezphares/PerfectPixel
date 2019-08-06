@@ -27,6 +27,10 @@ matrix:
     - os: linux
       compiler: clang
     - os: windows
+      language: cpp
+      env:
+        - MSBUILD_PATH="c:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin"
       script:
+        - export PATH=$MSBUILD_PATH:$PATH
         - MSBuild.exe PerfectPixel.sln
         - ./Debug/RunTests.exe
