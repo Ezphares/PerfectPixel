@@ -83,6 +83,11 @@ namespace perfectpixel {
 		BitSet & BitSet::operator&=(const BitSet &other)
 		{
 			executeNegation();
+			if (other.m_bitSize > m_bitSize)
+			{
+				resize(other.m_bitSize);
+			}
+
 			for (uint32_t i = 0; i < m_data.size(); ++i)
 			{
 				if (i < other.m_data.size())
@@ -102,6 +107,27 @@ namespace perfectpixel {
 		{
 			BitSet result = *this;
 			result &= other;
+			return result;
+		}
+
+		BitSet & BitSet::operator|=(const BitSet &other)
+		{
+			executeNegation();
+			if (other.m_bitSize > m_bitSize)
+			{
+				resize(other.m_bitSize);
+			}
+			for (uint32_t i = 0; i < other.m_data.size(); ++i)
+			{
+				m_data[i] |= other.m_data[i] ^ (other.m_negated ? 0xff : 0x00);
+			}
+			return *this;
+		}
+
+		BitSet BitSet::operator|(const BitSet &other) const
+		{
+			BitSet result = *this;
+			result |= other;
 			return result;
 		}
 
@@ -130,12 +156,16 @@ namespace perfectpixel {
 			{
 				return m_data == other.m_data;
 			}
-			else
+
+			for (uint32_t i = 0; i < m_data.size(); ++i)
 			{
-				BitSet tmp{ ~*this };
-				tmp.executeNegation();
-				return tmp.m_data == other.m_data;
+				if ((m_data[i] ^ 0xff) != other.m_data[i])
+				{
+					return false;
+				}
 			}
+
+			return true;
 		}
 
 		void BitSet::executeNegation()

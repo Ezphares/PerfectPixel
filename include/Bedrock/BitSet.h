@@ -44,6 +44,9 @@ namespace perfectpixel {
 			BitSet &operator&=(const BitSet &other);
 			BitSet operator&(const BitSet &other) const;
 
+			BitSet &operator|=(const BitSet &other);
+			BitSet operator|(const BitSet &other) const;
+
 			BitSet &negate();
 			BitSet operator~() const;
 

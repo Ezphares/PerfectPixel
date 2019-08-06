@@ -73,8 +73,9 @@ GTEST_TEST(test_BitSet, AndDifferentSizes)
 	BitSet b{ (uint8_t*)"\xff", 8 };
 
 	ASSERT_TRUE((BitSet{ (uint8_t*)"\xff\x00", 16 }) == (a & b));
+	ASSERT_TRUE((BitSet{ (uint8_t*)"\xff\x00", 16 }) == (b & a));
 }
-/* TODO: Or tests for when implemented
+
 GTEST_TEST(test_Bitset, Or)
 {
 	BitSet a{ (uint8_t*)"\xbe\x00", 16 };
@@ -89,5 +90,5 @@ GTEST_TEST(test_Bitset, OrDifferentSizes)
 	BitSet b{ (uint8_t*)"\xff", 8 };
 
 	ASSERT_TRUE((BitSet{ (uint8_t*)"\xff\xff", 16 }) == (a | b));
+	ASSERT_TRUE((BitSet{ (uint8_t*)"\xff\xff", 16 }) == (b | a));
 }
-*/
