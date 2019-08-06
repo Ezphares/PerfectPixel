@@ -1,6 +1,6 @@
 ![PerfectPixel](dist/splash.png)
 
-![](https://travis-ci.org/Ezphares/PerfectPixel.svg?branch=master)
+[![Build Status](https://travis-ci.org/Ezphares/PerfectPixel.svg?branch=master)](https://travis-ci.org/Ezphares/PerfectPixel)
 
 2D opengl game engine, based on an entity-component system.
 
