@@ -26,3 +26,7 @@ matrix:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
     - os: linux
       compiler: clang
+    - os: windows
+      script:
+        - MSBuild.exe PerfectPixel.sln
+        - ./Debug/RunTests.exe
