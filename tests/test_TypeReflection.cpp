@@ -15,9 +15,9 @@ using namespace perfectpixel::bedrock;
 
 GTEST_TEST(test_TypeReflection, Null)
 {
-	ASSERT_EQ(0, typeID<nullptr_t>());
+	ASSERT_EQ(0, typeID<std::nullptr_t>());
 #if PP_FULL_REFLECTION_ENABLED
-	ASSERT_EQ(std::string("nullptr_t"), typeName<nullptr_t>());
+	ASSERT_EQ(std::string("nullptr_t"), typeName<std::nullptr_t>());
 #endif
 }
 
