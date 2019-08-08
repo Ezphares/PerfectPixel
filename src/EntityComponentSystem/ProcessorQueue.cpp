@@ -51,11 +51,11 @@ void ProcessorQueue::processAll(float deltaT)
 		}
 	}
 
-	for (int32_t priority : m_priorities)
+	for (auto it = m_priorities.rbegin(); it != m_priorities.rend(); ++it)
 	{
-		for (Processor *processor : m_processors[priority])
+		for (auto jt = m_processors[*it].rbegin(); jt != m_processors[*it].rend(); ++jt)
 		{
-			processor->doDestroy();
+			(*jt)->doDestroy();
 		}
 	}
 

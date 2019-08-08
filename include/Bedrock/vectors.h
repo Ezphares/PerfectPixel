@@ -277,8 +277,10 @@ inline bool operator==(const Point2 &l, const Point2 &r) { return l.m_x == r.m_x
 }
 }
 
+namespace perfectpixel { namespace serialization {
+
 template<unsigned D>
-perfectpixel::serialization::ISerializer &operator<<(perfectpixel::serialization::ISerializer &ostream, const perfectpixel::bedrock::Vector<D> &vec)
+inline ISerializer &operator<<(ISerializer &ostream, const perfectpixel::bedrock::Vector<D> &vec)
 {
 	ostream.writeArrayStart(true);
 
@@ -292,7 +294,7 @@ perfectpixel::serialization::ISerializer &operator<<(perfectpixel::serialization
 }
 
 template<unsigned D>
-perfectpixel::serialization::ISerializer &operator>>(perfectpixel::serialization::ISerializer &istream, perfectpixel::bedrock::Vector <D> &vec)
+inline ISerializer &operator>>(ISerializer &istream, perfectpixel::bedrock::Vector <D> &vec)
 {
 	uint32_t datasize = istream.readArrayStart();
 
@@ -305,6 +307,9 @@ perfectpixel::serialization::ISerializer &operator>>(perfectpixel::serialization
 
 	return istream;
 }
+
+}}
+
 
 PP_TYPE_REFLECTION(::perfectpixel::bedrock::Vector2, Vector2);
 PP_TYPE_REFLECTION(::perfectpixel::bedrock::Vector3, Vector3);

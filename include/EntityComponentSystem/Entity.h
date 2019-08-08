@@ -53,10 +53,7 @@ PP_TYPE_REFLECTION(::perfectpixel::ecs::Entity, Entity);
 
 std::ostream &operator<<(std::ostream &stream, const perfectpixel::ecs::Entity &entity);
 
-perfectpixel::serialization::ISerializer &operator<<(
-	perfectpixel::serialization::ISerializer &serializer,
-	const perfectpixel::ecs::Entity &entity);
-
-perfectpixel::serialization::ISerializer &operator>>(
-	perfectpixel::serialization::ISerializer &serializer,
-	const perfectpixel::ecs::Entity &entity);
+namespace perfectpixel { namespace serialization {
+ISerializer &operator<<(ISerializer &serializer, const perfectpixel::ecs::Entity &entity);
+ISerializer &operator>>(ISerializer &serializer, perfectpixel::ecs::Entity &entity);
+}}

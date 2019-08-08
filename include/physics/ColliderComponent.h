@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Bedrock/AARectangle.h>
+#include <Bedrock/TypeReflection.h>
 #include <Bedrock/Circle.h>
 
 #include <EntityComponentSystem/Entity.h>

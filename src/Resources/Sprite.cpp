@@ -140,15 +140,16 @@ namespace perfectpixel { namespace resources {
 	}
 } }
 
-perfectpixel::serialization::ISerializer & operator<<(perfectpixel::serialization::ISerializer &serializer, const perfectpixel::resources::Sprite &sprite)
+namespace perfectpixel { namespace serialization {
+ISerializer & operator<<(ISerializer &serializer, const perfectpixel::resources::Sprite &sprite)
 {
 	sprite.serialize(serializer);
 	return serializer;
 }
 
-perfectpixel::serialization::ISerializer & operator>>(perfectpixel::serialization::ISerializer &serializer, perfectpixel::resources::Sprite &sprite)
+ISerializer & operator>>(ISerializer &serializer, perfectpixel::resources::Sprite &sprite)
 {
 	sprite.deserialize(serializer);
 	return serializer;
 }
-
+}}

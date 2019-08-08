@@ -46,5 +46,7 @@ namespace perfectpixel { namespace resources {
 
 PP_TYPE_REFLECTION(::perfectpixel::resources::Resource, Resource);
 
-perfectpixel::serialization::ISerializer &operator<<(perfectpixel::serialization::ISerializer &serializer, const perfectpixel::resources::Resource &resource);
-perfectpixel::serialization::ISerializer &operator>>(perfectpixel::serialization::ISerializer &serializer, perfectpixel::resources::Resource &resource);
+namespace perfectpixel { namespace serialization {
+ISerializer &operator<<(ISerializer &serializer, const perfectpixel::resources::Resource &resource);
+ISerializer &operator>>(ISerializer &serializer, perfectpixel::resources::Resource &resource);
+} }

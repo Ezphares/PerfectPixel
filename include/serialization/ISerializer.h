@@ -50,21 +50,18 @@ namespace perfectpixel {
 			virtual bool isValueNull() = 0;
 			virtual void mapUInt32(uint32_t memory, uint32_t serialized = -1) = 0;
 		};
-} }
 
-template<typename Dummy>
-perfectpixel::serialization::ISerializer &operator<<(perfectpixel::serialization::ISerializer &, const Dummy &) {throw 0;}
-template<typename Dummy>
-perfectpixel::serialization::ISerializer &operator>>(perfectpixel::serialization::ISerializer &, Dummy &) {throw 0;}
 // TODO: Move these
-perfectpixel::serialization::ISerializer &operator<<(perfectpixel::serialization::ISerializer &ostream, const std::string &str);
-perfectpixel::serialization::ISerializer &operator>>(perfectpixel::serialization::ISerializer &istream, std::string &str);
+ISerializer &operator<<(ISerializer &ostream, const std::string &str);
+ISerializer &operator>>(ISerializer &istream, std::string &str);
 
-perfectpixel::serialization::ISerializer &operator<<(perfectpixel::serialization::ISerializer &ostream, const float &num);
-perfectpixel::serialization::ISerializer &operator>>(perfectpixel::serialization::ISerializer &istream, float &num);
+ISerializer &operator<<(ISerializer &ostream, const float &num);
+ISerializer &operator>>(ISerializer &istream, float &num);
 
-perfectpixel::serialization::ISerializer &operator<<(perfectpixel::serialization::ISerializer &ostream, const uint32_t &uint);
-perfectpixel::serialization::ISerializer &operator>>(perfectpixel::serialization::ISerializer &istream, uint32_t &uint);
+ISerializer &operator<<(ISerializer &ostream, const uint32_t &uint);
+ISerializer &operator>>(ISerializer &istream, uint32_t &uint);
 
-perfectpixel::serialization::ISerializer &operator<<(perfectpixel::serialization::ISerializer &ostream, const int32_t &num);
-perfectpixel::serialization::ISerializer &operator>>(perfectpixel::serialization::ISerializer &istream, int32_t &num);
+ISerializer &operator<<(ISerializer &ostream, const int32_t &num);
+ISerializer &operator>>(ISerializer &istream, int32_t &num);
+
+} }

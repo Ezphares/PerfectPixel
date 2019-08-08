@@ -136,30 +136,32 @@ namespace perfectpixel { namespace resources {
 
 } }
 
-perfectpixel::serialization::ISerializer & operator<<(perfectpixel::serialization::ISerializer &serializer, const perfectpixel::resources::Resource &resource)
-{
-	if (resource.isValid())
+namespace perfectpixel { namespace serialization {
+	ISerializer & operator<<(ISerializer &serializer, const perfectpixel::resources::Resource &resource)
 	{
-		serializer.writeIdentifier(resource.getId());
-	}
-	else
-	{
-		serializer.writeNull();
-	}
+		if (resource.isValid())
+		{
+			serializer.writeIdentifier(resource.getId());
+		}
+		else
+		{
+			serializer.writeNull();
+		}
 
-	return serializer;
-}
-
-perfectpixel::serialization::ISerializer & operator>>(perfectpixel::serialization::ISerializer &serializer, perfectpixel::resources::Resource &resource)
-{
-	resource.set();
-
-	if (!serializer.isValueNull())
-	{
-		int32_t id;
-		serializer.readIdentifier(&id);
-		resource.set(id);
+		return serializer;
 	}
 
-	return serializer;
-}
+	ISerializer & operator>>(ISerializer &serializer, perfectpixel::resources::Resource &resource)
+	{
+		resource.set();
+
+		if (!serializer.isValueNull())
+		{
+			int32_t id;
+			serializer.readIdentifier(&id);
+			resource.set(id);
+		}
+
+		return serializer;
+	}
+} }

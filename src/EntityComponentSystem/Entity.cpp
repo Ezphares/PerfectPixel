@@ -29,20 +29,24 @@ namespace perfectpixel {
 	}
 }
 
-perfectpixel::serialization::ISerializer & operator<<(perfectpixel::serialization::ISerializer &serializer, const perfectpixel::ecs::Entity &entity)
-{
-	serializer.writeMappedUInt32(*((uint32_t*)&entity));
-	return serializer;
-}
-
 std::ostream & operator<<(std::ostream &stream, const perfectpixel::ecs::Entity &entity)
 {
 	stream << *((uint32_t*)&entity);
 	return stream;
 }
 
-perfectpixel::serialization::ISerializer & operator>>(perfectpixel::serialization::ISerializer &serializer, const perfectpixel::ecs::Entity &entity)
+namespace perfectpixel { namespace serialization {
+
+ISerializer & operator<<(ISerializer &serializer, const perfectpixel::ecs::Entity &entity)
+{
+	serializer.writeMappedUInt32(*((uint32_t*)&entity));
+	return serializer;
+}
+
+ISerializer & operator>>(ISerializer &serializer, perfectpixel::ecs::Entity &entity)
 {
 	serializer.readMappedUInt32((uint32_t*)&entity);
 	return serializer;
 }
+
+}}

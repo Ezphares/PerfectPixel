@@ -49,7 +49,12 @@ namespace perfectpixel { namespace ecs {
 	template <typename Owner, typename T>
 	class Field : public IField
 	{
-
+	private:
+		struct FieldTypeInfo
+		{
+			int32_t ownerId;
+			int32_t selfId;
+		};
 	public:
 		Field(FieldTable::ReflectionHint)
 			: m_data()
@@ -65,6 +70,9 @@ namespace perfectpixel { namespace ecs {
 			: m_data()
 			, m_default(defaultValue)
 		{
+			m_typeInfo.ownerId = ownerId;
+			m_typeInfo.selfId = selfId;
+
 			if (Owner::AddField(selfId, this))
 			{
 				FieldTable::getInstance()->add<Owner>(ownerId, selfId, typeId);
@@ -83,6 +91,9 @@ namespace perfectpixel { namespace ecs {
 			: m_data()
 			, m_default(defaultValue)
 		{
+			m_typeInfo.ownerId = ownerId;
+			m_typeInfo.selfId = selfId;
+
 			if (Owner::AddField(selfId, this))
 			{
 				FieldTable::getInstance()->add<Owner>(ownerName, ownerId, selfName, selfId, typeName, typeId);
@@ -165,6 +176,7 @@ namespace perfectpixel { namespace ecs {
 	private:
 		std::vector<T> m_data;
 		T m_default;
+		FieldTypeInfo m_typeInfo;
 	};
 
 	template <typename Owner, typename T, std::uint32_t Capacity>
