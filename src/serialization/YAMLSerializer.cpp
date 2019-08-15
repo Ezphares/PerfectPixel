@@ -221,7 +221,7 @@ namespace perfectpixel { namespace serialization {
 			throw "YAML Decoding error";
 		}
 
-		push(node);
+		push(node); 
 	}
 
 	bool YAMLSerializer::readMapKey(int32_t *val)

@@ -80,6 +80,9 @@ namespace perfectpixel { namespace resources {
 		);
 		static void *GetData(int32_t type, int32_t id, bool *out_cache, uint32_t *ref_cacheHint);
 
+		static void Shutdown();
+		static void UnloadAll();
+
 		void setResourceLocator(IResourceLocator *locator);
 		void processUnloads();
 

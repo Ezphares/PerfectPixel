@@ -321,19 +321,18 @@ class Pong : public core::Game
 
 	virtual void gameStart()
 	{
-		ecs::Entity
-			eTopWall{ EntityManager::getInstance()->create() },
-			eBottomWall{ EntityManager::getInstance()->create() };
 
-		m_ball = EntityManager::getInstance()->create();
 
 		resources::Resource ballTpl = resources::Resource(bedrock::typeID<resources::Template>(), PP_ID(ball.tpl));
-		ballTpl.get<resources::Template>()->applyTo(m_ball);
+
+		m_ball = ballTpl.get<resources::Template>()->spawn();
 
 		resources::Resource wallTpl = resources::Resource(bedrock::typeID<resources::Template>(), PP_ID(wall.tpl));
-		wallTpl.get<resources::Template>()->applyTo(eTopWall);
+		ecs::Entity
+			eTopWall{ wallTpl.get<resources::Template>()->spawn() },
+			eBottomWall{ wallTpl.get<resources::Template>()->spawn() };
+
 		TransformComponent::Position(eTopWall) = bedrock::Vector3::UP * 58.0f;
-		wallTpl.get<resources::Template>()->applyTo(eBottomWall);
 		TransformComponent::Position(eBottomWall) = bedrock::Vector3::DOWN * 58.0f;
 
 		resources::Resource img = resources::Resource(bedrock::typeID<resources::Image>(), PP_ID(pong_all.png));

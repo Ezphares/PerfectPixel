@@ -75,6 +75,30 @@ namespace perfectpixel { namespace resources {
 		return metadata.m_data;
 	}
 
+	void ResourceManager::Shutdown()
+	{
+		UnloadAll();
+
+		ResourceManager *self = getInstance();
+
+		self->m_metadata.clear();
+		self->m_loaderLUT.clear();
+		self->m_offsets.clear();
+	}
+
+	void ResourceManager::UnloadAll()
+	{
+		ResourceManager *self = getInstance();
+
+		// Empty queued unloads
+		self->processUnloads();
+
+		for (auto it = self->m_metadata.begin(); it != self->m_metadata.end(); ++it)
+		{
+			self->unload(*it, true);
+		}
+	}
+
 	void ResourceManager::insert(const ResourceMetadata &metadata)
 	{
 		auto it = m_metadata.begin();

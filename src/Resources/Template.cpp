@@ -5,23 +5,45 @@
 
 namespace perfectpixel { namespace resources {
 
+	namespace {
+		const auto KEY_ENTITIES = PP_KEY(Entities);
+	}
 
-	Template::Template(ecs::Entity entity)
-		: m_entity(entity)
+
+	Template::Template()
+		: m_entities()
 		, m_variantOf(bedrock::typeID<Template>())
 	{
 	}
 
-	void Template::applyTo(ecs::Entity target)
+	perfectpixel::ecs::Entity Template::spawn()
 	{
-		// Apply parent first, so we overwrite parent values
-		if (m_variantOf.isValid())
+		// TODO: Parent
+		ecs::Entity rval = ecs::NO_ENTITY;
+
+		ecs::EntityManager *manager = ecs::EntityManager::getInstance();
+		ecs::FieldTable *table = ecs::FieldTable::getInstance();
+
+		std::vector<ecs::Entity> spawns = std::vector<ecs::Entity>(m_entities.size(), ecs::NO_ENTITY);
+
+		for (uint32_t i = 0; i < m_entities.size(); ++i)
 		{
-			Template *parent = m_variantOf.get<Template>();
-			parent->applyTo(target);
+			spawns[i] = manager->create();
+			table->copy(spawns[i], m_entities[i]);
 		}
 
-		ecs::FieldTable::getInstance()->copy(target, m_entity);
+		return spawns[0];
+	}
+
+	void Template::applyTo(std::vector<ecs::Entity> &target)
+	{
+		ecs::FieldTable *table = ecs::FieldTable::getInstance();
+
+		// TODO: Parent
+		for (uint32_t i = 0; i < m_entities.size(); ++i)
+		{
+			table->copy(target[i], m_entities[i]);
+		}
 	}
 
 	perfectpixel::resources::ResourceManager::ResourceLoaderFunction Template::CreateTemplateLoader(std::function<serialization::ISerializer*()> provider)
@@ -30,11 +52,30 @@ namespace perfectpixel { namespace resources {
 			serialization::ISerializer *serializer = provider();
 			serializer->loadBuffer(data, dataSize);
 			
-			Template *tpl = new Template(ecs::EntityManager::getInstance()->create());
-			tpl->m_entity = ecs::EntityManager::getInstance()->create();
-			
-			ecs::InactiveComponent::Register(tpl->m_entity);
-			ecs::FieldTable::getInstance()->deserialize(*serializer, tpl->m_entity);
+			Template *tpl = new Template();
+
+			serializer->readMapBegin();
+			int32_t key;
+			while (serializer->readMapKey(&key))
+			{
+				if (PP_KEY_EQUAL(KEY_ENTITIES, key))
+				{
+					uint32_t entityCount = serializer->readArrayStart();
+					tpl->m_entities.reserve(entityCount);
+
+					for (uint32_t i = 0; i < entityCount; ++i)
+					{
+						ecs::Entity entity = ecs::EntityManager::getInstance()->create();
+						ecs::InactiveComponent::Register(entity);
+
+						ecs::FieldTable::getInstance()->deserialize(*serializer, entity);
+
+						tpl->m_entities.push_back(entity);
+					}
+
+					serializer->readArrayEnd();
+				}
+			}
 
 			*target = tpl;
 			delete serializer;
@@ -44,8 +85,12 @@ namespace perfectpixel { namespace resources {
 	void Template::TemplateUnloader(void **data)
 	{
 		Template *tpl = static_cast<Template *>(*data);
+		ecs::EntityManager *manager = ecs::EntityManager::getInstance();
 
-		ecs::EntityManager::getInstance()->kill(tpl->m_entity);
+		for (ecs::Entity entity : tpl->m_entities)
+		{
+			manager->kill(entity);
+		}
 
 		delete tpl;
 	}

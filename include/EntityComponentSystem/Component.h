@@ -173,6 +173,9 @@ namespace perfectpixel { namespace ecs {
 
 			while (serializer.readMapKey(&k))
 			{
+				if (serializer.isValueNull())
+					continue;
+
 				fields[k]->deserialize(serializer, idx);
 			}
 			
