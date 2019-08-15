@@ -19,8 +19,6 @@ namespace perfectpixel { namespace resources {
 	perfectpixel::ecs::Entity Template::spawn()
 	{
 		// TODO: Parent
-		ecs::Entity rval = ecs::NO_ENTITY;
-
 		ecs::EntityManager *manager = ecs::EntityManager::getInstance();
 		ecs::FieldTable *table = ecs::FieldTable::getInstance();
 
