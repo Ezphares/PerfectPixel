@@ -91,15 +91,15 @@ class Field : public IField
     // Raw access operator
     T &operator()(Entity entity) { return m_data[Owner::Index(entity)]; }
 
-    T &operator()(typename Owner::Reference &reference)
+    T &operator()(typename Owner::Reference &ref)
     {
-        if (reference.m_index == ~0u)
+        if (ref.m_index == ~0u)
         {
-            reference.m_index = Owner::Index(entity);
+            ref.m_index = Owner::Index(ref.m_entity);
         }
 
         DEBUG_ASSERT(
-            Owner::getInstance()->at(reference.m_index) == reference.m_entity);
+            Owner::getInstance()->at(ref.m_index) == ref.m_entity);
 
         return m_data.at(ref.m_index);
     }
@@ -109,15 +109,15 @@ class Field : public IField
         return m_data.at(Owner::Index(entity));
     }
 
-    T &operator()(typename Owner::Reference &reference) const
+    T &operator()(typename Owner::Reference &ref) const
     {
-        if (reference.m_index == ~0u)
+        if (ref.m_index == ~0u)
         {
-            reference.m_index = Owner::Index(entity);
+            ref.m_index = Owner::Index(ref.m_entity);
         }
 
         DEBUG_ASSERT(
-            Owner::getInstance()->at(reference.m_index) == reference.m_entity);
+            Owner::getInstance()->at(ref.m_index) == ref.m_entity);
 
         return m_data.at(ref.m_index);
     }
