@@ -7,11 +7,11 @@
 #include <EntityComponentSystem/LifecycleComponents.h>
 #include <EntityComponentSystem/DebugProcessor.h>
 
-#include <physics/IntegratorProcessor.h>
-#include <physics/CollisionProcessor.h>
+#include <physics/IntegratorSystem.h>
+#include <physics/CollisionSystem.h>
 
 #include <graphics/IWindow.h>
-#include <graphics/UIProcessor.h>
+#include <graphics/UISystem.h>
 
 #include <serialization/YAMLSerializer.h>
 
@@ -185,10 +185,10 @@ void Game::exit()
 void Game::setupProcessors()
 {
 	m_processorQueue.registerProcessor(new ecs::DebugProcessor(), 200, true);
-	m_processorQueue.registerProcessor(new physics::IntegratorProcessor(), 240, true);
-	m_processorQueue.registerProcessor(new physics::CollisionProcessor(), 250, true);
+	m_processorQueue.registerProcessor(new physics::IntegratorSystem(), 240, true);
+	m_processorQueue.registerProcessor(new physics::CollisionSystem(), 250, true);
 
-	graphics::UIProcessor *ui = new graphics::UIProcessor();
+	graphics::UISystem *ui = new graphics::UISystem();
 	ui->m_gm = &m_graphicsManager;
 	m_processorQueue.registerProcessor(ui, 250, true);
 

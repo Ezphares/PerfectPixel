@@ -19,6 +19,18 @@ namespace serialization {
 }
 namespace physics {
 
+enum ColliderMaskType : uint32_t
+{
+    CMT_UNSET,
+    CMT_AA_RECTANGLE,
+    CMT_CIRCLE
+};
+
+}}
+
+PP_TYPE_REFLECTION(::perfectpixel::physics::ColliderMaskType, ColliderMaskType);
+
+namespace perfectpixel { namespace physics {
 	class AARectangleColliderMask
 		: public ecs::Component<AARectangleColliderMask>
 		, public ecs::MapComponentStorage
@@ -41,13 +53,6 @@ namespace physics {
 		: public ecs::Component<ColliderComponent>
 		, public ecs::LinearScanComponentStorage
 	{
-	public:
-		enum ColliderMaskType : uint32_t {
-			UNSET,
-			RECTANGLE,
-			CIRCLE
-		};
-
 	public:
 		static void ClearMask(ecs::Entity entity);
 

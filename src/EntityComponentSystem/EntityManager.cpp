@@ -9,7 +9,6 @@ EntityManager::EntityManager(
 {
 }
 
-
 EntityManager::~EntityManager()
 {
 }
@@ -59,7 +58,8 @@ Entity EntityManager::at(std::uint32_t index)
 	return m_entities[index];
 }
 
-void EntityManager::expandMask(bedrock::BitSet bits, std::vector<Entity> *out_entities, EntityFunc callback)
+void EntityManager::expandMask(
+    bedrock::BitSet bits, EntityList *out_entities, EntityFunc callback)
 {
 	if (out_entities) out_entities->clear();
 

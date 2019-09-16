@@ -11,3 +11,5 @@
 #else
 #define PP_CLEANUP_CALLBACKS_ENABLED 0
 #endif
+
+#define DEBUG_ASSERT(stmt)

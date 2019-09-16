@@ -18,7 +18,7 @@ namespace perfectpixel { namespace ecs {
 	typedef bool(*HasLookup)(Entity);
 	typedef void(*SerializeLookup)(serialization::ISerializer&, Entity);
 	typedef void(*DeserializeLookup)(serialization::ISerializer&, Entity);
-	typedef void(*RegisterLookup)(Entity);
+	typedef UntypedReference(*RegisterLookup)(Entity);
 	typedef void(*DeleteLookup)(Entity);
 	typedef void(*CopyLookup)(Entity, Entity);
 
@@ -105,11 +105,12 @@ namespace perfectpixel { namespace ecs {
 			return typeName.substr(it + 1);
 		}
 
-		std::string reverse(int32_t id)
+		std::string reverse(int32_t id) const
 		{
-			if (m_reverseHash.find(id) != m_reverseHash.end())
+			auto it = m_reverseHash.find(id);
+			if (it != m_reverseHash.end())
 			{
-				return m_reverseHash[id];
+				return it->second;
 			}
 
 			return "";

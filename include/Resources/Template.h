@@ -20,8 +20,17 @@ namespace perfectpixel { namespace resources {
 		static void TemplateUnloader(void **data);
 
 	private:
+		void prepare(std::vector<ecs::Entity> &all);
+		void spawnPrepared();
+
+		struct Preparation
+		{
+			uint32_t m_start;
+			std::vector<uint32_t> m_idxMap;
+		};
+
 		std::vector<ecs::Entity> m_entities;
-		Resource m_variantOf;
+		std::vector<Resource> m_subTemplates;
 	};
 
 } }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="perfectpixel::ecs::Field&lt;*&gt;">
+    <Expand>
+      <CustomListItems>
+        <Variable Name="current" InitialValue="perfectpixel::ecs::FieldTable::instance->m_reverseHash._Mypair._Myval2._Myval2._Myhead->_Parent" />
+        <Variable Name="stack" InitialValue="1"/> <!-- Have a 1 at the top of the "stack" so we can push zeros -->
+        <Loop>
+          <Break Condition="current->_Isnil"/>
+          <Loop>
+            <Item Condition="current->_Myval.first == m_typeInfo.selfId" Name="[Field]">current->_Myval.second</Item>
+            <Item Condition="current->_Myval.first == m_typeInfo.ownerId" Name="[Component]">current->_Myval.second</Item>
+            <Exec>stack *= 2</Exec> <!-- "Push" a zero to the stack. Indicating we have visited the left child -->
+            <Break Condition="current->_Left->_Isnil"/>
+            <Exec>current = current->_Left</Exec>
+          </Loop>
+          <Loop>
+            <Break Condition="current->_Isnil"/>
+            <If Condition="stack % 2 == 0"> <!-- if the "top" of the stack is zero, we have only visited the left child, so go right-->
+              <If Condition="!current->_Right->_Isnil">
+                <Exec>current = current->_Right</Exec>
+                <Exec>stack += 1</Exec> <!-- "Pop" a zero and push a one, indicating the right chhild has been visited --> 
+                <Break/>
+              </If>
+            </If>
+            <Exec>current = current->_Parent</Exec>
+            <Exec>stack /= 2</Exec> <!-- "Pop" -->
+          </Loop>
+        </Loop>
+      </CustomListItems>
+      <Item Name="[Type]">"$T2"</Item>
+      <Item Name="[T2]">perfectpixel::ecs::FieldTable::instance->reverse(m_typeInfo.selfId)</Item>
+    </Expand>
+  </Type>
+</AutoVisualizer>

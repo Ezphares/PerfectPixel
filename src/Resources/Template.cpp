@@ -7,18 +7,18 @@ namespace perfectpixel { namespace resources {
 
 	namespace {
 		const auto KEY_ENTITIES = PP_KEY(Entities);
+		const auto KEY_SUBTEMPLATES = PP_KEY(SubTemplates);
 	}
 
 
 	Template::Template()
 		: m_entities()
-		, m_variantOf(bedrock::typeID<Template>())
+		, m_subTemplates()
 	{
 	}
 
 	perfectpixel::ecs::Entity Template::spawn()
 	{
-		// TODO: Parent
 		ecs::EntityManager *manager = ecs::EntityManager::getInstance();
 		ecs::FieldTable *table = ecs::FieldTable::getInstance();
 
@@ -37,7 +37,6 @@ namespace perfectpixel { namespace resources {
 	{
 		ecs::FieldTable *table = ecs::FieldTable::getInstance();
 
-		// TODO: Parent
 		for (uint32_t i = 0; i < m_entities.size(); ++i)
 		{
 			table->copy(target[i], m_entities[i]);
@@ -72,6 +71,19 @@ namespace perfectpixel { namespace resources {
 					}
 
 					serializer->readArrayEnd();
+				}
+
+				if (PP_KEY_EQUAL(KEY_SUBTEMPLATES, key))
+				{
+					uint32_t subCount = serializer->readArrayStart();
+					tpl->m_subTemplates.reserve(subCount);
+
+					for (uint32_t i = 0; i < subCount; ++i)
+					{
+						int32_t tplId;
+						serializer->readIdentifier(&tplId);
+						tpl->m_subTemplates.emplace_back(bedrock::typeID<Template>(), tplId);
+					}
 				}
 			}
 

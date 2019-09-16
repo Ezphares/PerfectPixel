@@ -1,46 +1,58 @@
 #pragma once
 
-#include <EntityComponentSystem/Entity.h>
 #include <Bedrock/BitSet.h>
 #include <Bedrock/Singleton.h>
+#include <EntityComponentSystem/Entity.h>
 
 #include <functional>
 
-#include <vector>
 #include <queue>
+#include <vector>
 
-namespace perfectpixel {
-	namespace ecs {
+namespace perfectpixel { namespace ecs {
 
-		class EntityManager : public bedrock::Singleton<EntityManager>
-		{
-		public:
-			typedef std::function<void(Entity)> EntityFunc;
+struct UntypedReference
+{
+    inline UntypedReference(Entity entity = NO_ENTITY, uint32_t index = ~0u)
+        : m_entity(entity)
+        , m_index(index)
+    {}
 
-		public:
-			EntityManager(
-				std::uint32_t indexReuseDelay = 1024);
-			~EntityManager();
+    Entity m_entity;
+    uint32_t m_index;
+};
 
-		public:
-			Entity create();
-			bool isAlive(Entity entity);
-			void kill(Entity entity);
+class EntityManager : public bedrock::Singleton<EntityManager>
+{
+public:
+    typedef void (*EntityFunc)(Entity);
+    typedef std::vector<Entity> EntityList;
 
-			Entity at(std::uint32_t index);
+public:
+    EntityManager(std::uint32_t indexReuseDelay = 1024);
+    ~EntityManager();
 
-			void expandMask(bedrock::BitSet bits, std::vector<Entity> *out_entities, EntityFunc callback);
-			bedrock::BitSet all() const;
+public:
+    Entity create();
+    bool isAlive(Entity entity);
+    void kill(Entity entity);
 
-			void addKillCallback(EntityFunc callback);
+    Entity at(std::uint32_t index);
 
-		private:
-			std::uint32_t m_indexReuseDelay;
-			std::vector<Entity> m_entities;
-			std::queue<uint32_t> m_indexReuse;
+    void expandMask(
+        bedrock::BitSet bits,
+		EntityList *out_entities,
+        EntityFunc callback);
+    bedrock::BitSet all() const;
 
-			std::vector<EntityFunc> m_onKill;
-		};
+    void addKillCallback(EntityFunc callback);
 
-	}
-}
+private:
+    std::uint32_t m_indexReuseDelay;
+    std::vector<Entity> m_entities;
+    std::queue<uint32_t> m_indexReuse;
+
+    std::vector<EntityFunc> m_onKill;
+};
+
+}} // namespace perfectpixel::ecs

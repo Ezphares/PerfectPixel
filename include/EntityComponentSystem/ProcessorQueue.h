@@ -1,6 +1,6 @@
 #pragma once
 
-#include <EntityComponentSystem/Processor.h>
+#include <EntityComponentSystem/System.h>
 
 #include <Bedrock/numbers.h>
 
@@ -22,12 +22,12 @@ namespace perfectpixel {
 		void processAll(float deltaT);
 		void renderAll(float deltaT);
 
-		void registerProcessor(Processor *processor, int32_t priority, bool managed);
+		void registerProcessor(System *processor, int32_t priority, bool managed);
 
 	private:
-		std::map<int32_t, std::vector<Processor*>> m_processors;
+		std::map<int32_t, std::vector<System*>> m_processors;
 		std::vector<int32_t> m_priorities;
-		std::vector<Processor *> m_managedProcessors;
+		std::vector<System *> m_managedProcessors;
 	};
 
 } }

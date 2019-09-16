@@ -12,10 +12,10 @@ namespace perfectpixel {
 		{
 			switch (MaskType(entity))
 			{
-			case ColliderMaskType::RECTANGLE:
+			case ColliderMaskType::CMT_AA_RECTANGLE:
 				AARectangleColliderMask::Delete(entity);
 				break;
-			case ColliderMaskType::CIRCLE:
+			case ColliderMaskType::CMT_CIRCLE:
 				CircleColliderMask::Delete(entity);
 				break;
 			default:
@@ -25,10 +25,10 @@ namespace perfectpixel {
 
 		void ColliderComponent::SetMaskRectangle(ecs::Entity entity, const bedrock::AARectangle &rectangle)
 		{
-			if (ColliderComponent::MaskType(entity) != RECTANGLE)
+			if (ColliderComponent::MaskType(entity) != CMT_AA_RECTANGLE)
 			{
 				ClearMask(entity);
-				ColliderComponent::MaskType(entity) = RECTANGLE;
+				ColliderComponent::MaskType(entity) = CMT_AA_RECTANGLE;
 				AARectangleColliderMask::Register(entity);
 			}
 			AARectangleColliderMask::Center(entity) = rectangle.m_center;
@@ -37,7 +37,7 @@ namespace perfectpixel {
 
 		bedrock::AARectangle ColliderComponent::GetMaskRectangle(ecs::Entity entity)
 		{
-			if (ColliderComponent::MaskType(entity) != RECTANGLE)
+			if (ColliderComponent::MaskType(entity) != CMT_AA_RECTANGLE)
 			{
 				bedrock::PpException("Invalid mask type");
 			}
@@ -50,10 +50,10 @@ namespace perfectpixel {
 
 		void ColliderComponent::SetMaskCircle(ecs::Entity entity, const bedrock::Circle &circle)
 		{
-			if (ColliderComponent::MaskType(entity) != CIRCLE)
+			if (ColliderComponent::MaskType(entity) != CMT_CIRCLE)
 			{
 				ClearMask(entity);
-				ColliderComponent::MaskType(entity) = CIRCLE;
+				ColliderComponent::MaskType(entity) = CMT_CIRCLE;
 				CircleColliderMask::Register(entity);
 			}
 			CircleColliderMask::Center(entity) = circle.m_center;
@@ -62,7 +62,7 @@ namespace perfectpixel {
 
 		const perfectpixel::bedrock::Circle ColliderComponent::GetMaskCircle(ecs::Entity entity)
 		{
-			if (ColliderComponent::MaskType(entity) != CIRCLE)
+			if (ColliderComponent::MaskType(entity) != CMT_CIRCLE)
 			{
 				bedrock::PpException("Invalid mask type");
 			}

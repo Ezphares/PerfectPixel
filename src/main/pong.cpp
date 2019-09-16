@@ -85,28 +85,33 @@ public:
 	PPField(ScoreUIComponent, int32_t, PlayerIndex);
 };
 
-class BatProcessor : public Processor
+class BatSystem : public System
 {
 	typedef QueryHelper<With< BatComponent, TransformComponent>> BatQuery;
 public:
-	BatProcessor()
-		: Processor(BatQuery::build())
-	{}
-
-	virtual void onCreate(const std::vector<Entity> &entities)
+    BatSystem()
+		: System(BatQuery::build())
 	{
-		for (auto entity : entities)
+        m_onCreate = &onCreate;
+        m_onUpdate = &onUpdate;
+	}
+
+	static void onCreate(const RangeLimit &begin, const RangeLimit &end)
+	{
+		for (auto it = begin; it != end; ++it)
 		{
-			BatComponent::MaxSpeed(entity) = 35.0f;
-			BatComponent::CurrentDirection(entity) = 0.0f;
+			BatComponent::MaxSpeed(*it) = 35.0f;
+			BatComponent::CurrentDirection(*it) = 0.0f;
 		}
 	}
 
-	virtual void onUpdate(const std::vector<Entity> &entities, float deltaT)
+	static void
+        onUpdate(const RangeLimit &begin, const RangeLimit &end, float deltaT)
 	{
 		(void)deltaT;
-	    for (auto entity : entities)
+            for (auto it = begin; it != end; ++it)
 		{
+            Entity entity = *it;
 			TransformComponent::Velocity(entity) = 
 				bedrock::Vector3::UP *
 				BatComponent::MaxSpeed(entity) * 
@@ -115,71 +120,87 @@ public:
 	}
 };
 
-class PlayerProcessor : public Processor
+class PlayerSystem : public System
 {
 	typedef QueryHelper<With< PlayerComponent, BatComponent >> PlayerQuery;
 public:
-	PlayerProcessor()
-		: Processor(PlayerQuery::build())
-	{}
+        PlayerSystem()
+		: System(PlayerQuery::build())
+	{
+            m_onUpdate = &onUpdate;
+		}
 
-	virtual void onUpdate(const std::vector<Entity> &entities, float deltaT)
+	static void
+        onUpdate(const RangeLimit &begin, const RangeLimit &end, float deltaT)
 	{
 		(void)deltaT;
-		for (auto entity : entities)
+		for (auto it = begin; it != end; ++it)
 		{
-			BatComponent::CurrentDirection(entity) =
-				m_Input->getAxisState(PlayerComponent::InputAxis(entity));
+			BatComponent::CurrentDirection(*it) =
+				m_Input->getAxisState(PlayerComponent::InputAxis(*it));
 		}
 	}
 
 	// TODO:
 	static input::InputManager *m_Input;
 };
-input::InputManager *PlayerProcessor::m_Input = nullptr;
+input::InputManager *PlayerSystem::m_Input = nullptr;
 
-class AIProcessor : public Processor
+class AISystem : public System
 {
-	typedef QueryHelper<With< AIComponent, BatComponent >> AIQuery;
-public:
-	AIProcessor()
-		: Processor(AIQuery::build())
-	{}
+    typedef QueryHelper<With<AIComponent, BatComponent>> AIQuery;
 
-	virtual void onUpdate(const std::vector<Entity> &entities, float deltaT)
-	{
-		(void)deltaT;
-		for (auto entity : entities)
-		{
-			BatComponent::CurrentDirection(entity) =
-				TransformComponent::Position(entity).y() <
-				TransformComponent::Position(AIComponent::BallToTrack(entity)).y() ?
-				1.0f : -1.0f;
-		}
-	}
+public:
+    AISystem()
+        : System(AIQuery::build())
+    {
+        m_onUpdate = &onUpdate;
+    }
+
+    static void
+    onUpdate(const RangeLimit &begin, const RangeLimit &end, float deltaT)
+    {
+        (void)deltaT;
+        for (auto it = begin; it != end; ++it)
+        {
+            Entity entity = *it;
+            BatComponent::CurrentDirection(entity)
+                = TransformComponent::Position(entity).y()
+                          < TransformComponent::Position(
+                                AIComponent::BallToTrack(entity))
+                                .y()
+                      ? 1.0f
+                      : -1.0f;
+        }
+    }
 };
 
-class BallProcessor : public Processor
+class BallSystem : public System
 {
 	typedef QueryHelper<With< BallComponent, TransformComponent>> BallQuery;
 public:
-	BallProcessor() 
-		: Processor(BallQuery::build())
-	{}
-
-	virtual void onCreate(const std::vector<Entity> &entities)
+	BallSystem() 
+		: System(BallQuery::build())
 	{
-		for (auto entity : entities)
+            m_onCreate = &onCreate;
+            m_onUpdate = &onUpdate;
+	}
+
+	static void onCreate(const RangeLimit &begin, const RangeLimit &end)
+	{
+		for (auto it = begin; it != end; ++it)
 		{
-			BallComponent::Reset(entity);
+			BallComponent::Reset(*it);
 		}
 	}
 
-	virtual void onUpdate(const std::vector<Entity> &entities, float deltaT)
+	static void
+        onUpdate(const RangeLimit &begin, const RangeLimit &end, float deltaT)
 	{
 		(void)deltaT;
-		for (auto entity : entities)
+		for (auto it = begin; it != end; ++it)
 		{
+                    Entity entity    = *it;
 			bool shouldReset = false;
 
 			if (TransformComponent::Position(entity).x() < -80)
@@ -210,17 +231,23 @@ public:
 	}
 };
 
-class ScoreUIProcessor : public Processor
+class ScoreUISystem : public System
 {
 	typedef QueryHelper<With<ScoreUIComponent, graphics::UITextComponent>> ScoreUIQuery;
 public:
-	ScoreUIProcessor() : Processor(ScoreUIQuery::build()) {};
+        ScoreUISystem()
+            : System(ScoreUIQuery::build())
+        {
+            m_onUpdate = &onUpdate;
+        };
 
-	virtual void onUpdate(const std::vector<Entity> &entities, float deltaT)
+	static void
+        onUpdate(const RangeLimit &begin, const RangeLimit &end, float deltaT)
 	{
 		(void)deltaT;
-		for (auto entity : entities)
+		for (auto it = begin; it != end; ++it)
 		{
+                    Entity entity = *it;
 			std::stringstream textStream;
 			textStream <<
 				((ScoreUIComponent::PlayerIndex(entity) == 1)
@@ -264,7 +291,7 @@ class Pong : public core::Game
 		physics::PhysicsComponent::Register(e);
 		physics::PhysicsComponent::Bounciness(e) = 0.0f;
 		physics::PhysicsComponent::Mass(e) = 1.0f;
-		physics::PhysicsComponent::SimulationType(e) = physics::PhysicsComponent::FULL;
+		physics::PhysicsComponent::SimulationType(e) = physics::PST_FULL;
 
 		physics::ColliderComponent::Register(e);
 		physics::ColliderComponent::SetMaskRectangle(e, bedrock::AARectangle({ 4, 16 }));
@@ -310,13 +337,13 @@ class Pong : public core::Game
 		m_inputManager.bindButton("Jump", 0x5A); // Z
 		m_inputManager.bindButton("Info", VK_F1);
 
-		queue.registerProcessor(new PlayerProcessor(), 10, true);
-		queue.registerProcessor(new AIProcessor(), 10, true);
-		queue.registerProcessor(new BatProcessor(), 15, true);
-		queue.registerProcessor(new BallProcessor(), 15, true);
-		queue.registerProcessor(new ScoreUIProcessor(), 15, true);
+		queue.registerProcessor(new PlayerSystem(), 10, true);
+		queue.registerProcessor(new AISystem(), 10, true);
+		queue.registerProcessor(new BatSystem(), 15, true);
+		queue.registerProcessor(new BallSystem(), 15, true);
+		queue.registerProcessor(new ScoreUISystem(), 15, true);
 
-		PlayerProcessor::m_Input = &m_inputManager;
+		PlayerSystem::m_Input = &m_inputManager;
 	}
 
 	virtual void gameStart()

@@ -11,7 +11,7 @@ namespace perfectpixel { namespace ecs {
 
 	ProcessorQueue::~ProcessorQueue()
 	{
-		for (Processor *processor : m_managedProcessors)
+		for (System *processor : m_managedProcessors)
 		{
 			delete processor;
 		}
@@ -21,15 +21,15 @@ void ProcessorQueue::processAll(float deltaT)
 {
 	for (int32_t priority : m_priorities)
 	{
-		for (Processor *processor : m_processors[priority])
+		for (System *processor : m_processors[priority])
 		{
-			processor->doQuery(Processor::QF_CORE | Processor::QF_CREATE);
+			processor->doQuery(System::QF_CORE | System::QF_CREATE);
 		}
 	}
 
 	for (int32_t priority : m_priorities)
 	{
-		for (Processor *processor : m_processors[priority])
+		for (System *processor : m_processors[priority])
 		{
 			processor->doCreate();
 		}
@@ -37,7 +37,7 @@ void ProcessorQueue::processAll(float deltaT)
 
 	for (int32_t priority : m_priorities)
 	{
-		for (Processor *processor : m_processors[priority])
+		for (System *processor : m_processors[priority])
 		{
 			processor->doProcess(deltaT);
 		}
@@ -45,9 +45,9 @@ void ProcessorQueue::processAll(float deltaT)
 
 	for (int32_t priority : m_priorities)
 	{
-		for (Processor *processor : m_processors[priority])
+		for (System *processor : m_processors[priority])
 		{
-			processor->doQuery(Processor::QF_DESTROY);
+			processor->doQuery(System::QF_DESTROY);
 		}
 	}
 
@@ -65,19 +65,19 @@ void ProcessorQueue::renderAll(float deltaT)
 {
 	for (int32_t priority : m_priorities)
 	{
-		for (Processor *processor : m_processors[priority])
+		for (System *processor : m_processors[priority])
 		{
 			processor->doRender(deltaT);
 		}
 	}
 }
 
-void ProcessorQueue::registerProcessor(Processor *processor, int32_t priority, bool managed)
+void ProcessorQueue::registerProcessor(System *processor, int32_t priority, bool managed)
 {
 	auto it = m_processors.find(priority);
 	if (it == m_processors.end())
 	{
-		it = m_processors.insert(std::pair<int32_t, std::vector<Processor*>>(priority, std::vector<Processor*>())).first;
+		it = m_processors.insert(std::pair<int32_t, std::vector<System*>>(priority, std::vector<System*>())).first;
 		m_priorities.push_back(priority);
 		std::sort(m_priorities.begin(), m_priorities.end());
 	}

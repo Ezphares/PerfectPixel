@@ -124,8 +124,8 @@ MAKE_GROUP("Input" "input"
 MAKE_GROUP("Physics" "physics"
 	"ColliderComponent.cpp" 
 	"PhysicsComponent.cpp" 
-	"CollisionProcessor.cpp" 
-	"IntegratorProcessor.cpp"
+	"CollisionSystem.cpp" 
+	"IntegratorSystem.cpp"
 )
 
 MAKE_GROUP("Graphics" "graphics"
@@ -137,7 +137,7 @@ MAKE_GROUP("Graphics" "graphics"
 	"FrameBuffer.cpp" 
 	"windows/Win32Window.cpp" 
 	"CBFGFont.cpp"
-	"UIProcessor.cpp"
+	"UISystem.cpp"
 )
 
 MAKE_GROUP("Bedrock" "Bedrock"
@@ -157,7 +157,7 @@ MAKE_GROUP("EntityComponentSystem" "EntityComponentSystem"
 	"Entity.cpp"
 	"EntityManager.cpp" 
 	"Query.cpp" 
-	"Processor.cpp" 
+	"System.cpp" 
 	"ProcessorQueue.cpp"
 )
 
@@ -176,7 +176,7 @@ list(APPEND UNIT_TEST_FILES
 	
 	"${CMAKE_CURRENT_SOURCE_DIR}/tests/test_Entity.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/tests/test_EntityManager.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/tests/test_CollisionProcessor.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/tests/test_CollisionSystem.cpp"
 	
 	"${CMAKE_CURRENT_SOURCE_DIR}/tests/testutil.h"
 )

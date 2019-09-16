@@ -1,0 +1,49 @@
+BasedOnStyle: LLVM
+Language: Cpp
+Standard: Cpp11
+
+IndentWidth: 4
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+  # AfterCaseLabel: true
+  AfterClass: true
+  AfterControlStatement: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: false
+  AfterObjCDeclaration: true
+  AfterStruct: true
+  AfterUnion: true
+  AfterExternBlock: true
+  BeforeCatch: true
+  BeforeElse: true
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+  
+DerivePointerAlignment: false
+PointerAlignment: Right
+
+AlignConsecutiveAssignments: true
+# AlignConsecutiveMacros: true
+AlignOperands: true
+
+# IndentPPDirectives: BeforeHash
+  
+CompactNamespaces: true
+FixNamespaceComments: true
+NamespaceIndentation: None
+
+AccessModifierOffset: -4
+
+BreakConstructorInitializers: BeforeComma
+# BreakInheritanceList: BeforeComma
+AlwaysBreakTemplateDeclarations: true
+BreakBeforeBinaryOperators: All
+BreakBeforeTernaryOperators: true
+
+AlignAfterOpenBracket: AlwaysBreak
+BinPackArguments: false
+BinPackParameters: false

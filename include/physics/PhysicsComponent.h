@@ -9,27 +9,33 @@
 
 namespace perfectpixel { namespace physics {
 
-	class PhysicsComponent
-		: public ecs::Component<PhysicsComponent>
-		, public ecs::LinearScanComponentStorage
-	{
-	public:
-		enum PhysicsSimulationType : uint32_t
-		{
-			TRIGGER,
-			KINEMATIC,
-			FULL
-		};
+enum PhysicsSimulationType : uint32_t
+{
+    PST_TRIGGER,
+    PST_KINEMATIC,
+    PST_FULL
+};
+}} // namespace perfectpixel::physics
 
-		PPField(PhysicsComponent, float, Mass);
-		PPField(PhysicsComponent, float, Bounciness);
-		PPField(PhysicsComponent, PhysicsSimulationType, SimulationType);
-		PPArrayField(PhysicsComponent, physics::Force, 8u, ActiveForces);
+PP_TYPE_REFLECTION(
+    ::perfectpixel::physics::PhysicsSimulationType,
+    PhysicsSimulationType);
 
-		static void MakeStaticCollider(ecs::Entity entity);
-		static void ActivateForce(ecs::Entity entity, const Force &force);
-		static void DeactivateForce(ecs::Entity entity, int32_t forceId);
-	};
+namespace perfectpixel { namespace physics {
 
-} }
+class PhysicsComponent : public ecs::Component<PhysicsComponent>,
+                         public ecs::LinearScanComponentStorage
+{
+public:
+    PPField(PhysicsComponent, float, Mass);
+    PPField(PhysicsComponent, float, Bounciness);
+    PPField(PhysicsComponent, PhysicsSimulationType, SimulationType);
+    PPArrayField(PhysicsComponent, physics::Force, 8u, ActiveForces);
+
+    static void MakeStaticCollider(ecs::Entity entity);
+    static void ActivateForce(ecs::Entity entity, const Force &force);
+    static void DeactivateForce(ecs::Entity entity, int32_t forceId);
+};
+}
+}
 

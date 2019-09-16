@@ -8,7 +8,7 @@ namespace perfectpixel { namespace physics {
 	{
 		Bounciness(entity) = 0.0f;
 		Mass(entity) = bedrock::Infinity;
-		SimulationType(entity) = PhysicsComponent::KINEMATIC;
+		SimulationType(entity) = PhysicsSimulationType::PST_KINEMATIC;
 	}
 
 	/*
