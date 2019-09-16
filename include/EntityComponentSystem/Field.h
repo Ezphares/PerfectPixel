@@ -91,35 +91,9 @@ class Field : public IField
     // Raw access operator
     T &operator()(Entity entity) { return m_data[Owner::Index(entity)]; }
 
-    T &operator()(typename Owner::Reference &ref)
-    {
-        if (ref.m_index == ~0u)
-        {
-            ref.m_index = Owner::Index(ref.m_entity);
-        }
-
-        DEBUG_ASSERT(
-            Owner::getInstance()->at(ref.m_index) == ref.m_entity);
-
-        return m_data.at(ref.m_index);
-    }
-
     const T &operator()(Entity entity) const
     {
         return m_data.at(Owner::Index(entity));
-    }
-
-    T &operator()(typename Owner::Reference &ref) const
-    {
-        if (ref.m_index == ~0u)
-        {
-            ref.m_index = Owner::Index(ref.m_entity);
-        }
-
-        DEBUG_ASSERT(
-            Owner::getInstance()->at(ref.m_index) == ref.m_entity);
-
-        return m_data.at(ref.m_index);
     }
 
     virtual void reset(uint32_t index) override
