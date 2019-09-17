@@ -18,7 +18,7 @@ namespace perfectpixel { namespace ecs {
 	typedef bool(*HasLookup)(Entity);
 	typedef void(*SerializeLookup)(serialization::ISerializer&, Entity);
 	typedef void(*DeserializeLookup)(serialization::ISerializer&, Entity);
-	typedef UntypedReference(*RegisterLookup)(Entity);
+	typedef void(*RegisterLookup)(Entity);
 	typedef void(*DeleteLookup)(Entity);
 	typedef void(*CopyLookup)(Entity, Entity);
 
@@ -66,7 +66,7 @@ namespace perfectpixel { namespace ecs {
 			componentLookup.m_has = &ComponentType::Has;
 			componentLookup.m_serialize = &ComponentType::Serialize;
 			componentLookup.m_deserialize = &ComponentType::Deserialize;
-			componentLookup.m_register = &ComponentType::Register;
+			componentLookup.m_register = &ComponentType::VoidRegister;
 			componentLookup.m_delete = &ComponentType::Delete;
 			componentLookup.m_fields = &ComponentType::Lookup;
 			componentLookup.m_copy = &ComponentType::Copy;

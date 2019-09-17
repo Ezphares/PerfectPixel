@@ -14,9 +14,19 @@ namespace perfectpixel { namespace ecs {
 template <typename T>
 class Component : public bedrock::Singleton<T>
 {
+public:
+    // Sub-classing Reference by component improves type-safety by letting the
+    // compiler error if attempts to cross-use references are made
+    struct Reference : public UntypedReference
+    {
+        Reference(Entity entity = NO_ENTITY, uint32_t index = ~0u)
+            : UntypedReference(entity, index)
+        {}
+    };
+
     using bedrock::Singleton<T>::getInstance;
 
-    protected:
+protected:
     Component()
     {
 #if defined(PP_CLEANUP_CALLBACKS)
@@ -24,13 +34,13 @@ class Component : public bedrock::Singleton<T>
 #endif
     }
 
-    private:
+private:
     uint32_t objects;
     uint32_t lastIndex;
     std::map<int32_t, IField *> fields;
 
-    protected:
-    static Field<Component<T>, Entity> Owner;
+protected:
+    PPTransientField(Component<T>, Entity, _Entity);
 
     virtual void purge(uint32_t idx) { (void)idx; };
     virtual void initialize(uint32_t idx)
@@ -41,10 +51,8 @@ class Component : public bedrock::Singleton<T>
         }
     };
 
-    public:
-    typedef UntypedReference Reference;
-
-    static Entity at(uint32_t idx) { return Owner.at(idx); }
+public:
+    static Entity at(uint32_t idx) { return _Entity.at(idx); }
 
     static bool AddField(int32_t id, IField *field)
     {
@@ -70,7 +78,7 @@ class Component : public bedrock::Singleton<T>
 
     static Reference Register(Entity entity)
     {
-        T *self = getInstance();
+        T *self      = getInstance();
         uint32_t idx = self->_register(entity, self->lastIndex);
 
         if (idx >= self->lastIndex)
@@ -78,13 +86,19 @@ class Component : public bedrock::Singleton<T>
             self->lastIndex++;
         }
 
-        Owner.reset(idx);
-        Owner._set(idx, entity);
+        _Entity.reset(idx);
+        _Entity._set(idx, entity);
         self->initialize(idx);
         self->objects++;
 
         return Reference(entity, idx);
     }
+
+	// Reference-discarding version of register to be used for lookups
+	static void VoidRegister(Entity entity)
+	{ 
+		Register(entity);
+	}
 
     static Reference GetRef(Entity entity)
     {
@@ -146,7 +160,7 @@ class Component : public bedrock::Singleton<T>
         {
             serializer.writeMapStart();
 
-            auto fields = getInstance()->fields;
+            auto fields  = getInstance()->fields;
             uint32_t idx = Index(entity);
 
             for (auto it = fields.begin(); it != fields.end(); ++it)
@@ -181,15 +195,21 @@ class Component : public bedrock::Singleton<T>
             fields[k]->deserialize(serializer, idx);
         }
     }
-};
 
-template <typename T>
-Field<Component<T>, Entity> Component<T>::Owner = {FieldTable::NoReflection};
+	static inline void _fixRef(Reference &ref)
+	{
+		if (ref.m_index == ~0u)
+		{
+                    ref.m_index = Index(ref.m_entity);
+		}
+	}
+
+};
 
 template <typename T>
 class HintComponent : public Component<T>, public IComponentStorage
 {
-    public:
+public:
     virtual bool _has(Entity entity) const
     {
         uint32_t idx = entity.index;
@@ -227,7 +247,7 @@ class HintComponent : public Component<T>, public IComponentStorage
 
     virtual void _clean() {}
 
-    private:
+private:
     bedrock::BitSet m_mask;
 };
 

@@ -16,37 +16,39 @@ namespace perfectpixel { namespace ecs {
 
 class IField
 {
-    public:
+public:
     virtual void reset(uint32_t index = 0) = 0;
     virtual void
-    serialize(serialization::ISerializer &serializer, uint32_t index) = 0;
+    serialize(serialization::ISerializer &serializer, uint32_t index)
+        = 0;
     virtual void
-    deserialize(serialization::ISerializer &serializer, uint32_t index) = 0;
+    deserialize(serialization::ISerializer &serializer, uint32_t index)
+        = 0;
     virtual void copy(uint32_t dstIndex, uint32_t srcIndex) = 0;
 };
 
-template <typename Owner, typename T>
-class Field : public IField
+template <typename Owner, typename OwnerRef, typename T>
+class FieldImpl : public IField
 {
-    private:
+private:
     struct FieldTypeInfo
     {
         int32_t ownerId;
         int32_t selfId;
     };
 
-    public:
-    Field(FieldTable::ReflectionHint)
+public:
+    FieldImpl(FieldTable::ReflectionHint)
         : m_data()
         , m_default()
     {}
 
-    Field(int32_t ownerId, int32_t selfId, int32_t typeId, T defaultValue)
+    FieldImpl(int32_t ownerId, int32_t selfId, int32_t typeId, T defaultValue)
         : m_data()
         , m_default(defaultValue)
     {
         m_typeInfo.ownerId = ownerId;
-        m_typeInfo.selfId = selfId;
+        m_typeInfo.selfId  = selfId;
 
         if (Owner::AddField(selfId, this))
         {
@@ -55,7 +57,7 @@ class Field : public IField
     }
 
 #if PP_FULL_REFLECTION_ENABLED
-    Field(
+    FieldImpl(
         const std::string &ownerName,
         int32_t ownerId,
         const std::string &selfName,
@@ -67,7 +69,7 @@ class Field : public IField
         , m_default(defaultValue)
     {
         m_typeInfo.ownerId = ownerId;
-        m_typeInfo.selfId = selfId;
+        m_typeInfo.selfId  = selfId;
 
         if (Owner::AddField(selfId, this))
         {
@@ -88,13 +90,25 @@ class Field : public IField
         m_data[Owner::Index(entity)] = value;
     }
 
-    // Raw access operator
+    // Raw access operators
     T &operator()(Entity entity) { return m_data[Owner::Index(entity)]; }
-
     const T &operator()(Entity entity) const
     {
         return m_data.at(Owner::Index(entity));
     }
+
+    T &operator()(OwnerRef &ref)
+    {
+        DEBUG_ASSERT(Owner::Has(ref.m_entity));
+        Owner::_fixRef(ref);
+        return m_data[ref.m_index];
+    }
+    const T &operator()(OwnerRef &ref) const 
+	{
+        DEBUG_ASSERT(Owner::Has(ref.m_entity));
+        Owner::_fixRef(ref);
+        return m_data.at(ref.m_index);
+	}
 
     virtual void reset(uint32_t index) override
     {
@@ -142,7 +156,7 @@ class Field : public IField
         m_data[index] = static_cast<T>(temp);
     }
 
-    private:
+private:
     std::vector<T> m_data;
     T m_default;
     FieldTypeInfo m_typeInfo;
@@ -151,7 +165,7 @@ class Field : public IField
 template <typename Owner, typename T, std::uint32_t Capacity>
 class ArrayField : public IField
 {
-    public:
+public:
     // FIXME Use a better container type
     typedef std::vector<T> Container;
 
@@ -261,7 +275,7 @@ class ArrayField : public IField
         m_data[dstIndex] = m_data[srcIndex];
     }
 
-    private:
+private:
     std::vector<std::vector<T>> m_data;
     T m_default;
 };

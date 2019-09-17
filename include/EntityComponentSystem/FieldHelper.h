@@ -2,7 +2,8 @@
 
 #include <EntityComponentSystem/Field.h>
 
-#define PPFIELDTYPE(Owner, T) ::perfectpixel::ecs::Field<Owner, T>
+#define PPFIELDTYPE(Owner, T)                                                  \
+    ::perfectpixel::ecs::FieldImpl<Owner, Owner::Reference, T>
 #define PPARRAYFIELDTYPE(Owner, T, C)                                          \
     ::perfectpixel::ecs::ArrayField<Owner, T, C>
 
@@ -52,6 +53,6 @@
 #define PPRefField(Owner, ComponentT, Name)                                    \
     PPField(Owner, ComponentT::Reference, Name)
 
-#define _InternalField(Owner, T, Name)                                         \
+#define PPTransientField(Owner, T, Name)                                         \
     inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T)(          \
         ::perfectpixel::ecs::FieldTable::NoReflection);
