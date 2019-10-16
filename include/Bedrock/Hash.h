@@ -93,9 +93,6 @@ inline static int32_t crc32(const std::string &str)
 struct ID
 {
     int32_t m_hash;
-#if PP_FULL_REFLECTION_ENABLED
-    std::string m_reverse;
-#endif // PP_FULL_REFLECTION_ENABLED
 };
 
 #if PP_FULL_REFLECTION_ENABLED
@@ -108,12 +105,11 @@ struct ID
 template <int32_t H>
 struct ConstID
 {
-    constexpr inline static ID value(PP_ID_STR_FORWARD(const std::string str))
+    constexpr inline static ID value()
     {
         return ID
         {
-            H,
-			PP_ID_STR_FORWARD(str)
+            H
         };
     }
 };

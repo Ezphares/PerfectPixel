@@ -8,6 +8,11 @@ template <typename T>
 class PriorityVector
 {
 public:
+	PriorityVector()
+		: m_data()
+        , m_priorities()
+	{}
+
     void insert(uint16_t priority, const T &element)
     {
         if (m_priorities.empty() || m_priorities.back() <= priority)
@@ -24,6 +29,8 @@ public:
             {
                 m_priorities.insert(m_priorities.begin() + index, priority);
                 m_data.insert(m_data.begin() + index, element);
+
+				return;
             }
         }
     }
