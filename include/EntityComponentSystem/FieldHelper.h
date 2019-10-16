@@ -53,6 +53,6 @@
 #define PPRefField(Owner, ComponentT, Name)                                    \
     PPField(Owner, ComponentT::Reference, Name)
 
-#define PPTransientField(Owner, T, Name)                                         \
+#define PPTransientField(Owner, T, Name)                                       \
     inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T)(          \
         ::perfectpixel::ecs::FieldTable::NoReflection);

@@ -9,17 +9,15 @@
 #include <Bedrock/defines.h>
 
 #if PP_FULL_REFLECTION_ENABLED
-#define PP_TYPENAME_IMPL(T, TSHORT) template <> inline std::string typeName<T>() { return #TSHORT; }
+#define PP_TYPENAME_IMPL(T, TSHORT) template <> inline std::string perfectpixel::bedrock::typeName<T>() { return #TSHORT; }
 #else
 #define PP_TYPENAME_IMPL(T, TSHORT)
 #endif // PP_FULL_REFLECTION_ENABLED
 
 
 #define PP_TYPE_REFLECTION(T, TSHORT) \
-namespace perfectpixel { namespace bedrock { \
-template <> inline int32_t typeID<T>() { return PP_ID(TSHORT); } \
-PP_TYPENAME_IMPL(T, TSHORT) \
-} }
+template <> inline int32_t perfectpixel::bedrock::typeID<T>() { return PP_ID(TSHORT); } \
+PP_TYPENAME_IMPL(T, TSHORT) 
 
 namespace perfectpixel { namespace bedrock {
 

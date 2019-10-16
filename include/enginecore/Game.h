@@ -3,7 +3,7 @@
 #include <enginecore/IInitializer.h>
 
 #include <EntityComponentSystem/EntityManager.h>
-#include <EntityComponentSystem/ProcessorQueue.h>
+#include <EntityComponentSystem/SystemQueue.h>
 #include <graphics/GraphicsManager.h>
 #include <input/InputManager.h>
 #include <Resources/ResourceManager.h>
@@ -38,7 +38,7 @@ public:
 	virtual void gameStart() = 0;
 	virtual void step() {};
 	virtual void splashScreenUpdate(bool &closeSplash);
-	virtual void setupCustomProcessors(ecs::ProcessorQueue &queue) { (void)queue; };
+	virtual void setupCustomProcessors(ecs::SystemQueue &queue) { (void)queue; };
 
 protected:
 	graphics::IWindow *createWindow(const graphics::WindowSettings &settings);
@@ -63,7 +63,7 @@ private:
 	bool m_shouldExit;
 
 protected:
-	ecs::ProcessorQueue m_processorQueue;
+	ecs::SystemQueue m_processorQueue;
 	input::InputManager m_inputManager;
 	graphics::GraphicsManager m_graphicsManager;
 	resources::FileResourceLocator m_fileResourceLocator;

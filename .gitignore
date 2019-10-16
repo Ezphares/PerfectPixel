@@ -36,6 +36,7 @@
 **/Release
 **/x64
 build
+build-clang
 
 # External libraries
 dist/*.dll

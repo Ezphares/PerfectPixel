@@ -158,7 +158,7 @@ MAKE_GROUP("EntityComponentSystem" "EntityComponentSystem"
 	"EntityManager.cpp" 
 	"Query.cpp" 
 	"System.cpp" 
-	"ProcessorQueue.cpp"
+	"SystemQueue.cpp"
 )
 
 MAKE_GROUP("Serialization" "serialization"

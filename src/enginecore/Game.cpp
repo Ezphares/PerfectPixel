@@ -184,13 +184,13 @@ void Game::exit()
 
 void Game::setupProcessors()
 {
-	m_processorQueue.registerProcessor(new ecs::DebugProcessor(), 200, true);
-	m_processorQueue.registerProcessor(new physics::IntegratorSystem(), 240, true);
-	m_processorQueue.registerProcessor(new physics::CollisionSystem(), 250, true);
+	m_processorQueue.registerSystem(new ecs::DebugProcessor(), 200, true);
+	m_processorQueue.registerSystem(new physics::IntegratorSystem(), 240, true);
+	m_processorQueue.registerSystem(new physics::CollisionSystem(), 250, true);
 
 	graphics::UISystem *ui = new graphics::UISystem();
 	ui->m_gm = &m_graphicsManager;
-	m_processorQueue.registerProcessor(ui, 250, true);
+	m_processorQueue.registerSystem(ui, 250, true);
 
 	setupCustomProcessors(m_processorQueue);
 }

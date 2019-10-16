@@ -314,7 +314,7 @@ class Pong : public core::Game
 		yaml.dump();
 	}
 
-	virtual void setupCustomProcessors(ecs::ProcessorQueue &queue)
+	virtual void setupCustomProcessors(ecs::SystemQueue &queue)
 	{
 
 		m_inputManager.registerButton("Left");
@@ -337,11 +337,11 @@ class Pong : public core::Game
 		m_inputManager.bindButton("Jump", 0x5A); // Z
 		m_inputManager.bindButton("Info", VK_F1);
 
-		queue.registerProcessor(new PlayerSystem(), 10, true);
-		queue.registerProcessor(new AISystem(), 10, true);
-		queue.registerProcessor(new BatSystem(), 15, true);
-		queue.registerProcessor(new BallSystem(), 15, true);
-		queue.registerProcessor(new ScoreUISystem(), 15, true);
+		queue.registerSystem(new PlayerSystem(), 10, true);
+		queue.registerSystem(new AISystem(), 10, true);
+		queue.registerSystem(new BatSystem(), 15, true);
+		queue.registerSystem(new BallSystem(), 15, true);
+		queue.registerSystem(new ScoreUISystem(), 15, true);
 
 		PlayerSystem::m_Input = &m_inputManager;
 	}

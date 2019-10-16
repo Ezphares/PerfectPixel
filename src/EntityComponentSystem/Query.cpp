@@ -2,9 +2,11 @@
 
 namespace perfectpixel { namespace ecs {
 
-Query::Query(QueryFunction queryFunction)
+Query::Query(
+    QueryFunction queryFunction, DirtyCheck dirtyCheck)
     : m_lastResult()
     , m_queryFunction(queryFunction)
+    , m_isDirty(dirtyCheck)
 {}
 
 void Query::applyMask()
@@ -15,15 +17,20 @@ void Query::applyMask()
     }
 }
 
+bool Query::defaultDirtyCheck() { return true; }
+
 void Query::executeMaskOnly()
 {
-    executeMaskOnly(EntityManager::getInstance()->all());
+	executeMaskOnly(EntityManager::getInstance()->all());
 }
 
-void Query::executeMaskOnly(const bedrock::BitSet &start)
+void Query::executeMaskOnly(const bedrock::BitSet &start, bool ignoreDirtyCheck /* = false */)
 {
-    m_lastResult = start;
-    applyMask();
+	if (ignoreDirtyCheck || isDirty())
+	{
+		m_lastResult = start;
+		applyMask();
+	}
 }
 
 EntityManager::EntityList Query::execute(EntityManager::EntityFunc callback)
@@ -50,6 +57,11 @@ Query::finalize(EntityManager::EntityFunc callback /*= 0*/)
 const perfectpixel::bedrock::BitSet &Query::getLastResult() const
 {
     return m_lastResult;
+}
+
+bool Query::isDirty() const 
+{ 
+	return m_isDirty == nullptr || m_isDirty(); 
 }
 
 }} // namespace perfectpixel::ecs

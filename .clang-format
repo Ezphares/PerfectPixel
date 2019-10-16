@@ -47,3 +47,6 @@ BreakBeforeTernaryOperators: true
 AlignAfterOpenBracket: AlwaysBreak
 BinPackArguments: false
 BinPackParameters: false
+
+AllowShortFunctionsOnASingleLine: None
+
