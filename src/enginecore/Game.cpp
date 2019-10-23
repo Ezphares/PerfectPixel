@@ -5,6 +5,7 @@
 #include <Resources/Sprite.h>
 
 #include <EntityComponentSystem/LifecycleComponents.h>
+#include <EntityComponentSystem/LifeCycleSystem.h>
 #include <EntityComponentSystem/DebugProcessor.h>
 
 #include <physics/IntegratorSystem.h>
@@ -184,6 +185,7 @@ void Game::exit()
 
 void Game::setupProcessors()
 {
+    m_processorQueue.registerSystem(new ecs::LifeCycleSystem(), 0, true);
 	m_processorQueue.registerSystem(new ecs::DebugProcessor(), 200, true);
 	m_processorQueue.registerSystem(new physics::IntegratorSystem(), 240, true);
 	m_processorQueue.registerSystem(new physics::CollisionSystem(), 250, true);

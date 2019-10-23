@@ -1,12 +1,13 @@
 #pragma once
 
 #include <EntityComponentSystem/QueryHelper.h>
+#include <EntityComponentSystem/ISystem.h>
 
 #include <Bedrock/numbers.h>
 
 namespace perfectpixel { namespace ecs {
 
-class System
+class QuerySystem : public ISystem
 {
 public:
     typedef EntityManager::EntityList::iterator RangeLimit;
@@ -25,8 +26,16 @@ public:
         QF_ALL = QF_CORE | QF_CREATE | QF_DESTROY | QF_RENDER,
     };
 
-    System(Query query);
-    virtual ~System();
+    QuerySystem(Query query);
+    virtual ~QuerySystem() = default;
+
+public:
+    virtual void earlyAudit() override;
+	virtual void lateAudit() override;
+	virtual void init() override;
+	virtual void update(float deltaT) override;
+	virtual void clean() override;
+    virtual void render(float deltaT) override;
 
 public:
     void doQuery(int flags = QF_CORE);

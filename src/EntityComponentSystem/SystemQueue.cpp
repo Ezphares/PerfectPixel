@@ -12,7 +12,7 @@ SystemQueue::SystemQueue()
 
 SystemQueue::~SystemQueue()
 {
-	for (System *processor : m_managedProcessors)
+	for (ISystem *processor : m_managedProcessors)
 	{
 		delete processor;
 	}
@@ -20,41 +20,41 @@ SystemQueue::~SystemQueue()
 
 void SystemQueue::processAll(float deltaT)
 {
-	for (System *system : m_systems)
+	for (ISystem *system : m_systems)
 	{
-            system->doQuery(System::QF_CORE | System::QF_CREATE);
+        system->earlyAudit();
 	}
 
-	for (System *system : m_systems)
+	for (ISystem *system : m_systems)
     {
-            system->doCreate();
+        system->init();
 	}
 
-	for (System *system : m_systems)
+	for (ISystem *system : m_systems)
     {
-        system->doProcess(deltaT);
+        system->update(deltaT);
 	}
 
-	for (System *system : m_systems)
+	for (ISystem *system : m_systems)
     {
-        system->doQuery(System::QF_DESTROY);
+        system->lateAudit();
 	}
 
 	for (auto it = m_systems.rbegin(); it != m_systems.rend(); ++it)
 	{
-		(*it)->doDestroy();
+		(*it)->clean();
 	}
 }
 
 void SystemQueue::renderAll(float deltaT)
 {
-    for (System *system : m_systems)
+    for (ISystem *system : m_systems)
     {
-		system->doRender(deltaT);
+		system->render(deltaT);
 	}
 }
 
-void SystemQueue::registerSystem(System *system, int16_t priority, bool managed)
+void SystemQueue::registerSystem(ISystem *system, int16_t priority, bool managed)
 {
     m_systems.insert(priority, system);
 

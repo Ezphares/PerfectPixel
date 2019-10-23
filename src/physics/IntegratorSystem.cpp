@@ -14,7 +14,7 @@ const int32_t EULER_STEPS = 1;
 typedef ecs::QueryHelper<ecs::With<ecs::TransformComponent>> IntegratorQuery;
 
 IntegratorSystem::IntegratorSystem()
-    : ecs::System(IntegratorQuery::build())
+    : ecs::QuerySystem(IntegratorQuery::build())
 {
     m_onUpdate = &onUpdate;
 }

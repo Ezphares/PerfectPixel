@@ -5,9 +5,16 @@ namespace perfectpixel { namespace ecs {
 Query::Query(
     QueryFunction queryFunction, DirtyCheck dirtyCheck)
     : m_lastResult()
+	, m_lastResultTime()
     , m_queryFunction(queryFunction)
     , m_isDirty(dirtyCheck)
+	, m_mustBeDirty(true)
 {}
+
+Query Query::Null()
+{
+    return Query(nullptr);
+}
 
 void Query::applyMask()
 {
@@ -17,7 +24,11 @@ void Query::applyMask()
     }
 }
 
-bool Query::defaultDirtyCheck() { return true; }
+bool Query::defaultDirtyCheck(uint32_t referenceFrame)
+{
+    (void)referenceFrame;
+    return true;
+}
 
 void Query::executeMaskOnly()
 {
@@ -26,10 +37,21 @@ void Query::executeMaskOnly()
 
 void Query::executeMaskOnly(const bedrock::BitSet &start, bool ignoreDirtyCheck /* = false */)
 {
+    uint32_t tick = EntityManager::getInstance()->getTick(); 
+
+#if PP_TICK_WRAP_PROTECTION_ENABLED
+	if (tick < m_lastResultTime)
+	{
+        m_mustBeDirty = true;
+	}
+#endif
+
 	if (ignoreDirtyCheck || isDirty())
 	{
 		m_lastResult = start;
 		applyMask();
+
+		m_lastResultTime = tick;
 	}
 }
 
@@ -61,7 +83,7 @@ const perfectpixel::bedrock::BitSet &Query::getLastResult() const
 
 bool Query::isDirty() const 
 { 
-	return m_isDirty == nullptr || m_isDirty(); 
+	return m_mustBeDirty || m_isDirty == nullptr || m_isDirty(m_lastResultTime);
 }
 
 }} // namespace perfectpixel::ecs

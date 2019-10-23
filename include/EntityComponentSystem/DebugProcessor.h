@@ -1,6 +1,6 @@
 #pragma once
 
-#include <EntityComponentSystem/System.h>
+#include <EntityComponentSystem/QuerySystem.h>
 #include <EntityComponentSystem/LifecycleComponents.h>
 
 #include <Bedrock/Logger.h>
@@ -15,11 +15,11 @@ namespace perfectpixel {
 
 	typedef QueryHelper<With<DebugComponent>> DebugQuery;
 
-	class DebugProcessor : public System
+	class DebugProcessor : public QuerySystem
 	{
 	public:
 		DebugProcessor()
-			: System(DebugQuery::build())
+			: QuerySystem(DebugQuery::build())
 		{
 		}
 

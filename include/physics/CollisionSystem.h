@@ -3,7 +3,7 @@
 #include <physics/ColliderComponent.h>
 
 #include <EntityComponentSystem/QueryHelper.h>
-#include <EntityComponentSystem/System.h>
+#include <EntityComponentSystem/QuerySystem.h>
 #include <EntityComponentSystem/TransformComponent.h>
 
 #include <EntityComponentSystem/Entity.h>
@@ -13,7 +13,7 @@
 
 namespace perfectpixel { namespace physics {
 
-class CollisionSystem : public ecs::System
+class CollisionSystem : public ecs::QuerySystem
 {
 private:
     struct CollisionData

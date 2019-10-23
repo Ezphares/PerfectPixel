@@ -1,10 +1,10 @@
 #pragma once
 
-#include <EntityComponentSystem/System.h>
+#include <EntityComponentSystem/QuerySystem.h>
 
 namespace perfectpixel { namespace physics {
 
-class IntegratorSystem : public ecs::System
+class IntegratorSystem : public ecs::QuerySystem
 {
 public:
     IntegratorSystem();

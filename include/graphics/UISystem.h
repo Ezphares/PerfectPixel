@@ -6,14 +6,14 @@
 #include <graphics/UITextComponent.h>
 
 #include <EntityComponentSystem/QueryHelper.h>
-#include <EntityComponentSystem/System.h>
+#include <EntityComponentSystem/QuerySystem.h>
 #include <EntityComponentSystem/TransformComponent.h>
 
 // FIXME Very temporary
 
 namespace perfectpixel { namespace graphics {
 
-class UISystem : public ecs::System
+class UISystem : public ecs::QuerySystem
 {
     typedef ecs::QueryHelper<
         ecs::With<UITextComponent, ecs::TransformComponent>>
@@ -21,7 +21,7 @@ class UISystem : public ecs::System
 
 public:
     UISystem()
-        : System(UIQuery::build())
+        : QuerySystem(UIQuery::build())
     {
         m_onRender = &onRender;
     }

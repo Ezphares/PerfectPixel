@@ -2,6 +2,7 @@
 
 #include <EntityComponentSystem/TransformComponent.h>
 #include <EntityComponentSystem/Component.h>
+#include <EntityComponentSystem/QuerySystem.h>
 
 #include <graphics/LocalGL.h>
 #include <graphics/UITextComponent.h>
@@ -85,12 +86,12 @@ public:
 	PPField(ScoreUIComponent, int32_t, PlayerIndex);
 };
 
-class BatSystem : public System
+class BatSystem : public QuerySystem
 {
 	typedef QueryHelper<With< BatComponent, TransformComponent>> BatQuery;
 public:
     BatSystem()
-		: System(BatQuery::build())
+		: QuerySystem(BatQuery::build())
 	{
         m_onCreate = &onCreate;
         m_onUpdate = &onUpdate;
@@ -120,12 +121,12 @@ public:
 	}
 };
 
-class PlayerSystem : public System
+class PlayerSystem : public QuerySystem
 {
 	typedef QueryHelper<With< PlayerComponent, BatComponent >> PlayerQuery;
 public:
         PlayerSystem()
-		: System(PlayerQuery::build())
+		: QuerySystem(PlayerQuery::build())
 	{
             m_onUpdate = &onUpdate;
 		}
@@ -146,13 +147,13 @@ public:
 };
 input::InputManager *PlayerSystem::m_Input = nullptr;
 
-class AISystem : public System
+class AISystem : public QuerySystem
 {
     typedef QueryHelper<With<AIComponent, BatComponent>> AIQuery;
 
 public:
     AISystem()
-        : System(AIQuery::build())
+        : QuerySystem(AIQuery::build())
     {
         m_onUpdate = &onUpdate;
     }
@@ -175,12 +176,12 @@ public:
     }
 };
 
-class BallSystem : public System
+class BallSystem : public QuerySystem
 {
 	typedef QueryHelper<With< BallComponent, TransformComponent>> BallQuery;
 public:
 	BallSystem() 
-		: System(BallQuery::build())
+		: QuerySystem(BallQuery::build())
 	{
             m_onCreate = &onCreate;
             m_onUpdate = &onUpdate;
@@ -231,12 +232,12 @@ public:
 	}
 };
 
-class ScoreUISystem : public System
+class ScoreUISystem : public QuerySystem
 {
 	typedef QueryHelper<With<ScoreUIComponent, graphics::UITextComponent>> ScoreUIQuery;
 public:
         ScoreUISystem()
-            : System(ScoreUIQuery::build())
+            : QuerySystem(ScoreUIQuery::build())
         {
             m_onUpdate = &onUpdate;
         };

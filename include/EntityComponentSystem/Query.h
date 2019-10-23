@@ -12,9 +12,11 @@ class Query
 {
 public:
     typedef void (*QueryFunction)(bedrock::BitSet &);
-    typedef bool (*DirtyCheck)();
+    typedef bool (*DirtyCheck)(uint32_t);
 
     Query(QueryFunction func, DirtyCheck dirtyCheck = &defaultDirtyCheck);
+
+	static Query Null();
 
     void executeMaskOnly();
     void executeMaskOnly(const bedrock::BitSet &start, bool ignoreDirtyCheck = false);
@@ -29,11 +31,13 @@ public:
 private:
     void applyMask();
 	
-	static bool defaultDirtyCheck();
+	static bool defaultDirtyCheck(uint32_t referenceFrame);
 
 private:
     bedrock::BitSet m_lastResult;
+    uint32_t m_lastResultTime;
     QueryFunction m_queryFunction;
     DirtyCheck m_isDirty;
+    bool m_mustBeDirty;
 };
 }} // namespace perfectpixel::ecs

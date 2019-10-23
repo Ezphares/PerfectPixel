@@ -6,6 +6,7 @@ namespace perfectpixel {
 EntityManager::EntityManager(
 	std::uint32_t indexReuseDelay)
 	: m_indexReuseDelay(indexReuseDelay)
+	, m_tickIndex(0)
 {
 }
 
@@ -59,7 +60,7 @@ Entity EntityManager::at(std::uint32_t index)
 }
 
 void EntityManager::expandMask(
-    bedrock::BitSet bits, EntityList *out_entities, EntityFunc callback)
+    bedrock::BitSet bits, EntityList *out_entities, EntityFunc callback) const
 {
 	if (out_entities) out_entities->clear();
 
@@ -87,6 +88,16 @@ bedrock::BitSet EntityManager::all() const
 void EntityManager::addKillCallback(EntityFunc callback)
 {
 	m_onKill.push_back(callback);
+}
+
+void EntityManager::tick()
+{
+    ++m_tickIndex;
+}
+
+uint32_t EntityManager::getTick() const
+{
+    return m_tickIndex;
 }
 
 }}

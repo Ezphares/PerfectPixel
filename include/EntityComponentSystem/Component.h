@@ -28,6 +28,10 @@ public:
 
 protected:
     Component()
+        : objects(0)
+		, lastIndex(0)
+		, fields()
+		, m_dirtyFrame(0)
     {
 #if defined(PP_CLEANUP_CALLBACKS)
         EntityManager::getInstance()->addKillCallback(&SafeDelete);
@@ -38,6 +42,7 @@ private:
     uint32_t objects;
     uint32_t lastIndex;
     std::map<int32_t, IField *> fields;
+    uint32_t m_dirtyFrame;
 
 protected:
     PPTransientField(Component<T>, Entity, _Entity);
@@ -91,6 +96,8 @@ public:
         self->initialize(idx);
         self->objects++;
 
+		self->m_dirtyFrame = EntityManager::getInstance()->getTick();
+
         return Reference(entity, idx);
     }
 
@@ -112,6 +119,8 @@ public:
         uint32_t idx = getInstance()->_delete(entity);
 
         getInstance()->purge(idx);
+
+		getInstance()->m_dirtyFrame = EntityManager::getInstance()->getTick();
 
         getInstance()->objects--;
     }
@@ -196,6 +205,11 @@ public:
         }
     }
 
+    static uint32_t DirtyFrame()
+    {
+        return getInstance()->m_dirtyFrame;
+    }
+
 	static inline void _fixRef(Reference &ref)
 	{
 		if (ref.m_index == ~0u)
@@ -244,6 +258,11 @@ public:
     {
         mask &= (filterType == IComponentStorage::WITH) ? m_mask : ~m_mask;
     }
+
+	inline static bedrock::BitSet &Mask()
+	{
+        return getInstance()->m_mask;
+	}
 
     virtual void _clean() {}
 

@@ -20,7 +20,7 @@ typedef ecs::QueryHelper<ecs::With<ColliderComponent, ecs::TransformComponent>>
 } // namespace
 
 CollisionSystem::CollisionSystem()
-    : System(CollisionQuery::build())
+    : QuerySystem(CollisionQuery::build())
 {
     m_onUpdate = &onUpdate;
 }

@@ -1,7 +1,8 @@
 #include <EntityComponentSystem/EntityManager.h>
 #include <EntityComponentSystem/LifecycleComponents.h>
-#include <EntityComponentSystem/System.h>
+#include <EntityComponentSystem/QuerySystem.h>
 #include <EntityComponentSystem/TransformComponent.h>
+#include <EntityComponentSystem/FastUpdate.h>
 
 #include <functional>
 
@@ -14,7 +15,7 @@ typedef QueryHelper<With<DestroyedLifecycleComponent>> QueryHelperDestroy;
 typedef QueryHelper<With<CreationDoneLifecycleComponent>> QueryHelperRender;
 } // namespace
 
-System::System(Query query)
+QuerySystem::QuerySystem(Query query)
     : m_query(query)
     , m_queryCreate(QueryHelperCreate::build())
     , m_queryDestroy(QueryHelperDestroy::build())
@@ -25,9 +26,37 @@ System::System(Query query)
 	, m_onRender(nullptr)
 {}
 
-System::~System() {}
+void QuerySystem::earlyAudit()
+{
+    doQuery(QF_CORE | QF_CREATE);
+}
 
-void System::doQuery(int flags)
+void QuerySystem::lateAudit()
+{
+    doQuery(QF_DESTROY);
+}
+
+void QuerySystem::init()
+{
+    doCreate();
+}
+
+void QuerySystem::update(float deltaT)
+{
+    doProcess(deltaT);
+}
+
+void QuerySystem::clean()
+{
+    doDestroy();
+}
+
+void QuerySystem::render(float deltaT)
+{
+    doRender(deltaT);
+}
+
+void QuerySystem::doQuery(int flags)
 {
     if ((flags & QF_CORE) > 0)
     {
@@ -35,34 +64,27 @@ void System::doQuery(int flags)
         m_queryState = m_query.getLastResult();
     }
 
-	// FIXME Comment these back in when creation and destruction is handled by their own system
-    if (/*m_onCreate &&*/ (flags & QF_CREATE) > 0)
+    if (m_onCreate && (flags & QF_CREATE) > 0)
     {
         m_queryCreate.executeMaskOnly(m_queryState);
     }
 
-    if (/*m_onDestroy &&*/ (flags & QF_DESTROY) > 0)
+    if (m_onDestroy && (flags & QF_DESTROY) > 0)
     {
         m_queryDestroy.executeMaskOnly(m_queryState);
     }
 }
 
-void System::doCreate()
+void QuerySystem::doCreate()
 {
-    std::vector<Entity> entities = m_queryCreate.finalize();
     if (m_onCreate)
     {
+        std::vector<Entity> entities = m_queryCreate.finalize();
         m_onCreate(entities.begin(), entities.end());
-    }
-
-	// TODO: Move this to a specific system
-    for (Entity entity : entities)
-    {
-        CreationDoneLifecycleComponent::Register(entity);
     }
 }
 
-void System::doProcess(float deltaT)
+void QuerySystem::doProcess(float deltaT)
 {
     if (m_onUpdate)
     {
@@ -71,7 +93,7 @@ void System::doProcess(float deltaT)
     }
 }
 
-void System::doRender(float deltaT)
+void QuerySystem::doRender(float deltaT)
 {
 	if (m_onRender)
 	{
@@ -80,7 +102,7 @@ void System::doRender(float deltaT)
 	}
 }
 
-void System::doDestroy()
+void QuerySystem::doDestroy()
 {
 	if (m_onDestroy)
 	{
