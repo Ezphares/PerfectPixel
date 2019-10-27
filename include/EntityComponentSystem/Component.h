@@ -261,7 +261,7 @@ public:
 
 	inline static bedrock::BitSet &Mask()
 	{
-        return Singleton<T>::getInstance()->m_mask;
+        return bedrock::Singleton<T>::getInstance()->m_mask;
 	}
 
     virtual void _clean() {}
