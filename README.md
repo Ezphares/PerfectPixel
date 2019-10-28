@@ -21,5 +21,6 @@ Currently only Windows will run the sample project, but the unit tests should ru
 ## Todo
 
 Short term:
-* Rendering rework - Move sprite components off the old OO system, have the renderer query new components rather than pushing elements to the graphics manager
+* GUI code
+* Some editor utilites (level editor? template editor?)
 * Support for at least one more platform
