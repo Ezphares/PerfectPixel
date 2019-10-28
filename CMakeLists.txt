@@ -138,6 +138,9 @@ MAKE_GROUP("Graphics" "graphics"
 	"windows/Win32Window.cpp" 
 	"CBFGFont.cpp"
 	"UISystem.cpp"
+	"GUI.cpp"
+	"UIShadow.cpp"
+	"UILayoutTracker.cpp"
 )
 
 MAKE_GROUP("Bedrock" "Bedrock"
