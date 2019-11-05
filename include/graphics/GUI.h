@@ -19,35 +19,57 @@ public:
         AXIS_VER  = 0x2,
     };
 
-    struct Rectangle
+    enum PositionHelper
     {
-        Rectangle(
-            bedrock::Vector2 size = bedrock::Vector2(),
-            AxisFlags relative    = AXIS_NONE);
-        Rectangle(
-            bedrock::Vector2 start,
-            bedrock::Vector2 end,
-            AxisFlags relative = AXIS_NONE);
-
-        bedrock::Vector2 m_min, m_max;
-        AxisFlags m_relative;
+        ALIGN_TOP    = 0x1,
+        ALIGN_BOTTOM = 0x2,
+        ALIGN_LEFT   = 0x4,
+        ALIGN_RIGHT  = 0x8,
     };
 
-    struct Position
+    struct Anchor
     {
-        Position(Rectangle size = Rectangle(), Rectangle margin = Rectangle());
+        Anchor(bedrock::Vector2 point = bedrock::Vector2())
+            : m_left(point.x())
+            , m_right(point.x())
+            , m_bottom(point.y())
+            , m_top(point.y())
+        {}
 
-        Rectangle m_size, m_margin;
+        float m_left, m_right, m_bottom, m_top;
+    };
+
+    struct Rectangle
+    {
+        Rectangle()
+            : m_anchor()
+            , m_pivot()
+            , m_extend()
+        {}
+
+        static Rectangle absolute(
+            bedrock::Vector2 absSize,
+            PositionHelper position
+            = static_cast<PositionHelper>(ALIGN_LEFT | ALIGN_TOP));
+
+        Anchor m_anchor;
+        bedrock::Vector2 m_pivot;
+        bedrock::Vector2 m_extend;
     };
 
     struct LinearLayoutOptions
-    {};
+    {
+        LinearLayoutOptions()
+            : m_reverse(false)
+        {}
+        bool m_reverse;
+    };
 
     // RAII Layout system
     class HorizontalLayout
     {
         HorizontalLayout(
-            const Position &position,
+            const Rectangle &position,
             LinearLayoutOptions options = LinearLayoutOptions());
         ~HorizontalLayout();
 
@@ -58,19 +80,17 @@ public:
         HorizontalLayout operator=(const HorizontalLayout &&) = delete;
     };
 
+    static void Spacer(float size, bool relative = false);
+
 public:
     static void begin(const CameraSettings &camera);
     static void pushHorizontalLayout(
-        const Position &position, const LinearLayoutOptions &options);
+        const Rectangle &position, const LinearLayoutOptions &options);
     static void popLayout();
 
 private:
-    static void positionToSimpleRelative(
-        const Position &position,
-        Rectangle &outInner,
-        bedrock::Vector2 &outTotalConsumption);
-
-    static void rectToRelative(const Rectangle &in, Rectangle &out);
+    static void
+    positionToSimpleRelative(const Rectangle &position, Anchor &outInner);
 
 private:
     _internal::GUIInternal *m_internal;

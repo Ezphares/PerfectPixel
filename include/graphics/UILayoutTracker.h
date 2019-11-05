@@ -26,13 +26,20 @@ public:
         bedrock::Vector2 m_absMax;
         bedrock::Vector2 m_mouseLocal;
         bedrock::Vector2 m_cursor;
-        LayoutDirection m_direction;
+        bedrock::Vector2 m_cursorDirection;
     };
 
     void makeRoot(bedrock::Vector2 absSize);
 
+    void addLayout(
+        bedrock::Vector2 localRelMin,
+        bedrock::Vector2 localRelMax,
+        LayoutDirection direction,
+        float sign);
+
     bedrock::Vector2 absToRel(const bedrock::Vector2 &absolute);
     bedrock::Vector2 relToAbs(const bedrock::Vector2 &relative);
+    bedrock::Vector2 cursor();
 
     void pop();
 

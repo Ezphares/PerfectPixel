@@ -7,8 +7,7 @@
 #include <cstring>
 #include <string>
 
-namespace perfectpixel {
-namespace bedrock {
+namespace perfectpixel { namespace bedrock {
 
 static constexpr uint32_t crc_table[256]
     = {0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f,
@@ -102,17 +101,12 @@ struct ID
 #define PP_ID_STR_FORWARD(x)
 #endif
 
-
 template <int32_t H>
 struct ConstID
 {
     constexpr inline static ID value(PP_ID_STR_FORWARD(const char *str))
     {
-        return ID
-        {
-            H,
-			PP_ID_STR_FORWARD(str)
-        };
+        return ID{H, PP_ID_STR_FORWARD(str)};
     }
 };
 
@@ -131,6 +125,8 @@ struct ConstID
         ::perfectpixel::bedrock::dequalify(#str, sizeof(#str) - 1),            \
         ::perfectpixel::bedrock::dequalifiedSize(#str, sizeof(#str) - 1))))
 
+#define PP_UNIQUE PP_ID(__FILE__ ## __LINE__)
+
 #if PP_FULL_REFLECTION_ENABLED
 #define PP_KEY(str) #str
 #define PP_KEY_EQUAL(key, num)                                                 \
@@ -146,5 +142,4 @@ inline static int32_t PpId(const std::string &str)
 {
     return static_cast<int32_t>(::perfectpixel::bedrock::crc32(str));
 }
-}
-} // namespace perfectpixel::bedrock
+}} // namespace perfectpixel::bedrock

@@ -3,7 +3,8 @@
 #include "graphics/UILayoutTracker.h"
 #include "graphics/UIShadow.h"
 
-namespace perfectpixel { namespace graphics { namespace _internal {
+namespace perfectpixel { namespace graphics {
+namespace _internal {
 
 class GUIInternal
 {
@@ -12,13 +13,62 @@ public:
     UIShadow m_shadow;
 };
 
-}}} // namespace perfectpixel::graphics::_internal
+} // namespace _internal
+GUI::Rectangle GUI::Rectangle::absolute(
+    bedrock::Vector2 absSize,
+    PositionHelper
+        position /*= static_cast<PositionHelper>(ALIGN_LEFT | ALIGN_TOP)*/)
+{
+    Rectangle result;
+
+    result.m_extend = absSize;
+
+    float v = 0.5f;
+    float h = 0.5f;
+
+    if ((position & ALIGN_LEFT) > 0)
+    {
+        h = 0.0f;
+    }
+    else if ((position & ALIGN_RIGHT) > 0)
+    {
+        h = 1.0f;
+    }
+
+    if ((position & ALIGN_BOTTOM) > 0)
+    {
+        v = 0.0f;
+    }
+    else if ((position & ALIGN_TOP) > 0)
+    {
+        v = 1.0f;
+    }
+
+    result.m_anchor.m_left = result.m_anchor.m_right = result.m_pivot.x() = h;
+
+    result.m_anchor.m_top = result.m_anchor.m_bottom = result.m_pivot.y() = v;
+
+    return result;
+}
+
+}} // namespace perfectpixel::graphics
 
 perfectpixel::graphics::GUI::HorizontalLayout::HorizontalLayout(
-    const Position &position,
+    const Rectangle &position,
     LinearLayoutOptions options /*= LinearLayoutOptions()*/)
 {
     GUI::pushHorizontalLayout(position, options);
+}
+
+perfectpixel::graphics::GUI::HorizontalLayout::~HorizontalLayout()
+{
+    GUI::popLayout();
+}
+
+void perfectpixel::graphics::GUI::Spacer(float size, bool relative /*= false*/)
+{
+    (void)size; // TODO
+    (void)relative;
 }
 
 void perfectpixel::graphics::GUI::begin(const CameraSettings &camera)
@@ -30,14 +80,18 @@ void perfectpixel::graphics::GUI::begin(const CameraSettings &camera)
 }
 
 void perfectpixel::graphics::GUI::pushHorizontalLayout(
-    const Position &position, const LinearLayoutOptions &options)
+    const Rectangle &position, const LinearLayoutOptions &options)
 {
-    (void)position;
-    (void)options;
+    _internal::GUIInternal &guiInternal = *(getInstance()->m_internal);
 
-    //_internal::GUIInternal &guiInternal = *(getInstance()->m_internal);
+    Anchor outlineRel;
+    positionToSimpleRelative(position, outlineRel);
 
-    // guiInternal.m_tracker.addLayout() TODO;
+    guiInternal.m_tracker.addLayout(
+        {outlineRel.m_left, outlineRel.m_bottom},
+        {outlineRel.m_right, outlineRel.m_top},
+        _internal::UILayoutTracker::LayoutDirection::HORIZONTAL,
+        options.m_reverse ? -1.0f : 1.0f);
 }
 
 void perfectpixel::graphics::GUI::popLayout()
@@ -48,60 +102,24 @@ void perfectpixel::graphics::GUI::popLayout()
 }
 
 void perfectpixel::graphics::GUI::positionToSimpleRelative(
-    const Position &position,
-    Rectangle &outInner,
-    bedrock::Vector2 &outTotalConsumption)
+    const Rectangle &position, Anchor &outInner)
 {
-    Rectangle temp;
+    Anchor temp;
 
-    rectToRelative(position.m_size, outInner);
-    rectToRelative(position.m_margin, temp);
-
-    // FIXME: Calculations
-    (void)outTotalConsumption;
-}
-
-void perfectpixel::graphics::GUI::rectToRelative(
-    const Rectangle &in, Rectangle &out)
-{
     _internal::GUIInternal &guiInternal = *(getInstance()->m_internal);
 
-    memcpy(&out, &in, sizeof(Rectangle));
+    bedrock::Vector2 innerRel
+        = guiInternal.m_tracker.absToRel(position.m_extend);
 
-    out.m_relative = static_cast<AxisFlags>(AXIS_HOR | AXIS_VER);
+    temp.m_left   = innerRel.x() * position.m_pivot.x();
+    temp.m_right  = innerRel.x() * (1.0f - position.m_pivot.x());
+    temp.m_bottom = innerRel.y() * position.m_pivot.y();
+    temp.m_top    = innerRel.y() * (1.0f - position.m_pivot.y());
 
-    bedrock::Vector2 transformMin = guiInternal.m_tracker.absToRel(in.m_min);
-    bedrock::Vector2 transformMax = guiInternal.m_tracker.absToRel(in.m_max);
+    bedrock::Vector2 cursor = guiInternal.m_tracker.cursor();
 
-    if ((in.m_relative & AXIS_HOR) == 0)
-    {
-        out.m_min.x() = transformMin.x();
-        out.m_max.x() = transformMax.x();
-    }
-
-    if ((in.m_relative & AXIS_VER) == 0)
-    {
-        out.m_min.y() = transformMin.y();
-        out.m_max.y() = transformMax.y();
-    }
+    outInner.m_left   = position.m_anchor.m_left - temp.m_left + cursor.x();
+    outInner.m_right  = position.m_anchor.m_right - temp.m_right + cursor.x();
+    outInner.m_bottom = position.m_anchor.m_bottom - temp.m_bottom + cursor.y();
+    outInner.m_top    = position.m_anchor.m_top - temp.m_top + cursor.y();
 }
-
-perfectpixel::graphics::GUI::Rectangle::Rectangle(
-    bedrock::Vector2 start,
-    bedrock::Vector2 end,
-    AxisFlags relative /*= AXIS_NONE*/)
-    : m_min(start)
-    , m_max(end)
-    , m_relative(relative)
-{}
-
-perfectpixel::graphics::GUI::Rectangle::Rectangle(
-    bedrock::Vector2 size, AxisFlags relative /*= AXIS_NONE*/)
-    : GUI::Rectangle(size, bedrock::Vector2(), relative)
-{}
-
-perfectpixel::graphics::GUI::Position::Position(
-    Rectangle size /*= Rectangle()*/, Rectangle margin /*= Rectangle()*/)
-    : m_size(size)
-    , m_margin(margin)
-{}
