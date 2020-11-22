@@ -7,7 +7,7 @@ namespace perfectpixel { namespace bedrock {
 class Circle
 {
 public:
-    Circle(float radius, Vector2 center = Vector2());
+    Circle(float radius = 0.0f, Vector2 center = Vector2());
 
 public:
     float m_radius;

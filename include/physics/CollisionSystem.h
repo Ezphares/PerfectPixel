@@ -76,17 +76,20 @@ private:
     static bool checkCollision(
         ecs::Entity first, ecs::Entity second, CollisionData &out_collision);
     static bool collideRectRect(
-        ecs::Entity first,
         const bedrock::AARectangle &firstRect,
-        ecs::Entity second,
         const bedrock::AARectangle &secondRect,
         CollisionData &out_collision);
     static bool collideCircleCircle(
-        ecs::Entity first,
         const bedrock::Circle &firstCircle,
-        ecs::Entity second,
         const bedrock::Circle &secondCircle,
         CollisionData &out_collision);
+    static bool collideRectCircle(
+        const bedrock::AARectangle &firstRect,
+        const bedrock::Circle &secondCircle,
+        CollisionData &out_collision);
+
+    static bedrock::AARectangle createProxyAARectangle(ecs::Entity entity);
+    static bedrock::Circle createProxyCircle(ecs::Entity entity);
 
     static void resolveCollision(const CollisionData &collision);
 

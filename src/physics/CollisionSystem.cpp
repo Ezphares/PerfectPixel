@@ -101,10 +101,8 @@ bool CollisionSystem::checkCollision(
         && ColliderComponent::MaskType(second) == CMT_AA_RECTANGLE)
     {
         return collideRectRect(
-            first,
-            ColliderComponent::GetMaskRectangle(first),
-            second,
-            ColliderComponent::GetMaskRectangle(second),
+            createProxyAARectangle(first),
+            createProxyAARectangle(second),
             out_collision);
     }
     else if (
@@ -112,10 +110,25 @@ bool CollisionSystem::checkCollision(
         && ColliderComponent::MaskType(second) == CMT_CIRCLE)
     {
         return collideCircleCircle(
-            first,
-            ColliderComponent::GetMaskCircle(first),
-            second,
-            ColliderComponent::GetMaskCircle(second),
+            createProxyCircle(first), createProxyCircle(second), out_collision);
+    }
+    else if (
+        ColliderComponent::MaskType(first) == CMT_AA_RECTANGLE
+        && ColliderComponent::MaskType(second) == CMT_CIRCLE)
+    {
+        return collideRectCircle(
+            createProxyAARectangle(first),
+            createProxyCircle(second),
+            out_collision);
+    }
+    else if (
+        ColliderComponent::MaskType(first) == CMT_CIRCLE
+        && ColliderComponent::MaskType(second) == CMT_AA_RECTANGLE)
+    {
+        std::swap(out_collision.m_first, out_collision.m_second);
+        return collideRectCircle(
+            createProxyAARectangle(second),
+            createProxyCircle(first),
             out_collision);
     }
 
@@ -124,19 +137,11 @@ bool CollisionSystem::checkCollision(
 }
 
 bool CollisionSystem::collideRectRect(
-    ecs::Entity first,
     const bedrock::AARectangle &firstRect,
-    ecs::Entity second,
     const bedrock::AARectangle &secondRect,
     CollisionData &out_collision)
 {
-    bedrock::Vector2 firstPosition
-        = bedrock::Vector2(ecs::TransformComponent::Position(first)),
-        secondPosition
-        = bedrock::Vector2(ecs::TransformComponent::Position(second));
-
-    bedrock::Vector2 offset = (secondPosition + secondRect.m_center)
-                              - (firstPosition + firstRect.m_center);
+    bedrock::Vector2 offset = secondRect.m_center - firstRect.m_center;
 
     bedrock::Vector2 overlap{
         firstRect.m_halfSize.x() + secondRect.m_halfSize.x()
@@ -156,28 +161,17 @@ bool CollisionSystem::collideRectRect(
     out_collision.m_firstProxy.m_aaRect  = firstRect;
     out_collision.m_secondProxy.m_aaRect = secondRect;
 
-    out_collision.m_firstProxy.m_aaRect.m_center += firstPosition;
-    out_collision.m_secondProxy.m_aaRect.m_center += secondPosition;
-
     return true;
 }
 
 bool CollisionSystem::collideCircleCircle(
-    ecs::Entity first,
     const bedrock::Circle &firstCircle,
-    ecs::Entity second,
     const bedrock::Circle &secondCircle,
     CollisionData &out_collision)
 {
-    bedrock::Vector2 firstPosition
-        = bedrock::Vector2(ecs::TransformComponent::Position(first)),
-        secondPosition
-        = bedrock::Vector2(ecs::TransformComponent::Position(second));
-
-    bedrock::Vector2 offset = (secondPosition + secondCircle.m_center)
-                              - (firstPosition + firstCircle.m_center);
-    float squareDistance = bedrock::Vector2::dot(offset, offset);
-    float sumRadii       = firstCircle.m_radius + secondCircle.m_radius;
+    bedrock::Vector2 offset = secondCircle.m_center - firstCircle.m_center;
+    float squareDistance    = bedrock::Vector2::dot(offset, offset);
+    float sumRadii          = firstCircle.m_radius + secondCircle.m_radius;
 
     if (squareDistance
         > (sumRadii - COLLISON_LEEWAY) * (sumRadii - COLLISON_LEEWAY))
@@ -192,10 +186,77 @@ bool CollisionSystem::collideCircleCircle(
     out_collision.m_firstProxy.m_circle  = firstCircle;
     out_collision.m_secondProxy.m_circle = secondCircle;
 
-    out_collision.m_firstProxy.m_circle.m_center += firstPosition;
-    out_collision.m_secondProxy.m_circle.m_center += secondPosition;
-
     return true;
+}
+
+bool CollisionSystem::collideRectCircle(
+    const bedrock::AARectangle &firstRect,
+    const bedrock::Circle &secondCircle,
+    CollisionData &out_collision)
+{
+    // AABB overlap early out
+    bedrock::AARectangle circleToRect;
+    circleToRect.m_center = secondCircle.m_center;
+    circleToRect.m_halfSize
+        = bedrock::Vector2(secondCircle.m_radius, secondCircle.m_radius);
+    if (!collideRectRect(firstRect, circleToRect, out_collision))
+    {
+        return false;
+    }
+
+    // First check if the circle collides fully with the rectangle part of the
+    // AABB, in that case we can resolve as rectangle
+
+    circleToRect.m_halfSize = bedrock::Vector2(secondCircle.m_radius, 0.0f);
+    if (collideRectRect(firstRect, circleToRect, out_collision))
+    {
+        // Horizontal collision, ensure resolution on x axis
+        out_collision.m_data_RectRectOverlap.y() = bedrock::Infinity;
+        return true;
+    }
+
+    circleToRect.m_halfSize = bedrock::Vector2(0.0f, secondCircle.m_radius);
+    if (collideRectRect(firstRect, circleToRect, out_collision))
+    {
+        // Vertical collision, ensure resolution on y axis
+        out_collision.m_data_RectRectOverlap.x() = bedrock::Infinity;
+        return true;
+    }
+
+    // Otherwise check a circle collision against the nearest corner
+    bedrock::Circle rectToCircle;
+    rectToCircle.m_center.x()
+        = firstRect.m_center.x()
+          + (firstRect.m_center.x() > secondCircle.m_center.x()
+                 ? -firstRect.m_halfSize.x()
+                 : firstRect.m_halfSize.x());
+    rectToCircle.m_center.y()
+        = firstRect.m_center.y()
+          + (firstRect.m_center.y() > secondCircle.m_center.y()
+                 ? -firstRect.m_halfSize.y()
+                 : firstRect.m_halfSize.y());
+
+    return collideCircleCircle(rectToCircle, secondCircle, out_collision);
+}
+
+perfectpixel::bedrock::AARectangle
+CollisionSystem::createProxyAARectangle(ecs::Entity entity)
+{
+    bedrock::AARectangle result = ColliderComponent::GetMaskRectangle(entity);
+    result.m_center
+        += bedrock::Vector2(ecs::TransformComponent::Position(entity));
+
+    return result;
+}
+
+perfectpixel::bedrock::Circle
+CollisionSystem::createProxyCircle(ecs::Entity entity)
+{
+    bedrock::Circle result = ColliderComponent::GetMaskCircle(entity);
+    result.m_center
+        += bedrock::Vector2(ecs::TransformComponent::Position(entity));
+
+    return result;
 }
 
 void CollisionSystem::resolveCollision(const CollisionData &collision)
