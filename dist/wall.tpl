@@ -6,7 +6,6 @@ Entities:
       MaskType: 1
       EventTag: ""
     SpriteComponent:
-      FrameTimeAccumulator: 0
       DrawHint: 0
       FPS: 1
       CurrentFrame: 0

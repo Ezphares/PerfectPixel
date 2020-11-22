@@ -56,3 +56,12 @@
 #define PPTransientField(Owner, T, Name)                                       \
     inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T)(          \
         ::perfectpixel::ecs::FieldTable::NoReflection);
+
+#define PPRuleType(Owner) ::perfectpixel::ecs::SerializationRule<Owner>
+#define PPRuleName(Owner, Field) PPInternal__Rule_##Owner##Field
+#define PPDoNotSerialize(Owner, Field)                                         \
+    inline static PPRuleType(Owner) PPRuleName(Owner, Field) = PPRuleType(     \
+        Owner)(PP_ID(Field), &::perfectpixel::ecs::doNotSerialize);
+#define PPSerializeIf(Owner, Field, Condition)                                 \
+    inline static PPRuleType(Owner) PPRuleName(Owner, Field)                   \
+        = PPRuleType(Owner)(PP_ID(Field), Condition);

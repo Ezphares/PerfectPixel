@@ -17,6 +17,8 @@ namespace perfectpixel { namespace ecs {
 class IField
 {
 public:
+    typedef bool (*SerializationCondition)(Entity);
+
     virtual void reset(uint32_t index = 0) = 0;
     virtual void
     serialize(serialization::ISerializer &serializer, uint32_t index)
@@ -26,6 +28,20 @@ public:
         = 0;
     virtual void copy(uint32_t dstIndex, uint32_t srcIndex) = 0;
     virtual size_t size()                                   = 0;
+};
+
+inline bool doNotSerialize(Entity)
+{
+    return false;
+}
+
+template <typename Owner>
+struct SerializationRule
+{
+    SerializationRule(int32_t fieldId, IField::SerializationCondition condition)
+    {
+        Owner::AddSerializationRule(fieldId, condition);
+    }
 };
 
 template <typename Owner, typename OwnerRef, typename T>

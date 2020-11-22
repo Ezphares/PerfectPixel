@@ -33,7 +33,7 @@ public:
             data = malloc(getInstance()->m_size * capacity);
         }
 
-        for (auto field : getInstance()->fields)
+        for (auto field : getInstance()->m_fields)
         {
             // TODO
             // field->second->create(capacity, data);
@@ -45,19 +45,21 @@ public:
 
 protected:
     Component()
-        : objects(0)
-        , lastIndex(0)
-        , fields()
+        : m_objects(0)
+        , m_lastIndex(0)
+        , m_fields()
         , m_dirtyFrame(0)
         , m_size(0)
+        , m_serializationRules()
     {}
 
 private:
-    uint32_t objects;
-    uint32_t lastIndex;
-    std::map<int32_t, IField *> fields;
+    uint32_t m_objects;
+    uint32_t m_lastIndex;
+    std::map<int32_t, IField *> m_fields;
     uint32_t m_dirtyFrame;
     size_t m_size;
+    std::map<int32_t, IField::SerializationCondition> m_serializationRules;
 
 protected:
     PPTransientField(Component<T>, Entity, _Entity);
@@ -68,7 +70,7 @@ protected:
     };
     virtual void initialize(uint32_t idx)
     {
-        for (auto field : fields)
+        for (auto field : m_fields)
         {
             field.second->reset(idx);
         }
@@ -82,7 +84,7 @@ public:
 
     static bool AddField(int32_t id, IField *field)
     {
-        auto &fields = getInstance()->fields;
+        auto &fields = getInstance()->m_fields;
         // Inline statics are weird, we have to check for duplicates
         bool add = fields.find(id) == fields.end();
         if (add)
@@ -94,9 +96,15 @@ public:
         return add;
     }
 
+    static void
+    AddSerializationRule(int32_t id, IField::SerializationCondition rule)
+    {
+        getInstance()->m_serializationRules[id] = rule;
+    }
+
     static IField *Lookup(int32_t id)
     {
-        return getInstance()->fields[id];
+        return getInstance()->m_fields[id];
     }
 
     static bool Has(Entity entity)
@@ -112,17 +120,17 @@ public:
     static Reference Register(Entity entity)
     {
         T *self      = getInstance();
-        uint32_t idx = self->_register(entity, self->lastIndex);
+        uint32_t idx = self->_register(entity, self->m_lastIndex);
 
-        if (idx >= self->lastIndex)
+        if (idx >= self->m_lastIndex)
         {
-            self->lastIndex++;
+            self->m_lastIndex++;
         }
 
         _Entity.reset(idx);
         _Entity._set(idx, entity);
         self->initialize(idx);
-        self->objects++;
+        self->m_objects++;
 
         self->m_dirtyFrame = EntityManager::getInstance()->getTick();
 
@@ -150,7 +158,7 @@ public:
 
         getInstance()->m_dirtyFrame = EntityManager::getInstance()->getTick();
 
-        getInstance()->objects--;
+        getInstance()->m_objects--;
     }
 
     static void Copy(Entity destination, Entity source)
@@ -164,7 +172,7 @@ public:
         uint32_t srcIndex = Index(source);
 
         T *self = getInstance();
-        for (auto field : self->fields)
+        for (auto field : self->m_fields)
         {
             field.second->copy(dstIndex, srcIndex);
         }
@@ -200,11 +208,18 @@ public:
         {
             serializer.writeMapStart();
 
-            auto fields  = getInstance()->fields;
+            auto &fields = getInstance()->m_fields;
+            auto &rules  = getInstance()->m_serializationRules;
             uint32_t idx = Index(entity);
 
             for (auto it = fields.begin(); it != fields.end(); ++it)
             {
+                auto condition = rules.find(it->first);
+                if (condition != rules.end() && !condition->second(entity))
+                {
+                    continue;
+                }
+
 #if PP_FULL_REFLECTION_ENABLED
                 serializer.writeMapKey(
                     FieldTable::getInstance()->reverse(it->first));
@@ -224,7 +239,7 @@ public:
         Register(entity);
         uint32_t idx = Index(entity);
 
-        auto fields = getInstance()->fields;
+        auto fields = getInstance()->m_fields;
         int32_t k;
 
         while (serializer.readMapKey(&k))
