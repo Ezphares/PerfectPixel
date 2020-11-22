@@ -29,10 +29,10 @@ public:
     {
         if (data == nullptr)
         {
-            data = malloc(m_size * capacity);
+            data = malloc(getInstance()->m_size * capacity);
         }
 
-        for (auto field : fields)
+        for (auto field : getInstance()->fields)
         {
             // TODO
             // field->second->create(capacity, data);
