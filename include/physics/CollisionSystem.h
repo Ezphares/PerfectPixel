@@ -16,6 +16,17 @@ namespace perfectpixel { namespace physics {
 class CollisionSystem : public ecs::QuerySystem
 {
 private:
+    struct ProxyShape
+    {
+        inline ProxyShape(){};
+
+        union
+        {
+            bedrock::Circle m_circle;
+            bedrock::AARectangle m_aaRect;
+        };
+    };
+
     struct CollisionData
     {
         inline CollisionData(){};
@@ -26,6 +37,8 @@ private:
             bedrock::Vector2 m_data_RectRectOverlap;
             float m_data_CircCircOverlap;
         };
+
+        ProxyShape m_firstProxy, m_secondProxy;
     };
 
 public:

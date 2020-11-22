@@ -25,7 +25,8 @@ CollisionSystem::CollisionSystem()
     m_onUpdate = &onUpdate;
 }
 
-CollisionSystem::~CollisionSystem() {}
+CollisionSystem::~CollisionSystem()
+{}
 
 void CollisionSystem::onUpdate(
     const RangeLimit &begin, const RangeLimit &end, float deltaT)
@@ -42,7 +43,10 @@ void CollisionSystem::onUpdate(
     }
 }
 
-uint32_t CollisionSystem::getCollisionsLastUpdate() { return m_collisionCount; }
+uint32_t CollisionSystem::getCollisionsLastUpdate()
+{
+    return m_collisionCount;
+}
 
 void CollisionSystem::collideSingle(
     ecs::Entity entity, std::set<ecs::Entity> &cache)
@@ -147,10 +151,13 @@ bool CollisionSystem::collideRectRect(
     }
 
     out_collision.m_data_RectRectOverlap = overlap;
-    out_collision.m_maskTypeFirst
-        = CMT_AA_RECTANGLE;
-    out_collision.m_maskTypeSecond
-        = CMT_AA_RECTANGLE;
+    out_collision.m_maskTypeFirst        = CMT_AA_RECTANGLE;
+    out_collision.m_maskTypeSecond       = CMT_AA_RECTANGLE;
+    out_collision.m_firstProxy.m_aaRect  = firstRect;
+    out_collision.m_secondProxy.m_aaRect = secondRect;
+
+    out_collision.m_firstProxy.m_aaRect.m_center += firstPosition;
+    out_collision.m_secondProxy.m_aaRect.m_center += secondPosition;
 
     return true;
 }
@@ -180,9 +187,13 @@ bool CollisionSystem::collideCircleCircle(
     }
 
     out_collision.m_data_CircCircOverlap = sumRadii - std::sqrt(squareDistance);
-    out_collision.m_maskTypeFirst = ColliderMaskType::CMT_CIRCLE;
-    out_collision.m_maskTypeSecond
-        = ColliderMaskType::CMT_CIRCLE;
+    out_collision.m_maskTypeFirst        = ColliderMaskType::CMT_CIRCLE;
+    out_collision.m_maskTypeSecond       = ColliderMaskType::CMT_CIRCLE;
+    out_collision.m_firstProxy.m_circle  = firstCircle;
+    out_collision.m_secondProxy.m_circle = secondCircle;
+
+    out_collision.m_firstProxy.m_circle.m_center += firstPosition;
+    out_collision.m_secondProxy.m_circle.m_center += secondPosition;
 
     return true;
 }
@@ -207,10 +218,8 @@ void CollisionSystem::resolveCollision(const CollisionData &collision)
         PhysicsComponent::Bounciness(collision.m_first),
         PhysicsComponent::Bounciness(collision.m_second));
 
-    if (collision.m_maskTypeFirst
-            == ColliderMaskType::CMT_AA_RECTANGLE
-        && collision.m_maskTypeSecond
-               == ColliderMaskType::CMT_AA_RECTANGLE)
+    if (collision.m_maskTypeFirst == ColliderMaskType::CMT_AA_RECTANGLE
+        && collision.m_maskTypeSecond == ColliderMaskType::CMT_AA_RECTANGLE)
     {
         bedrock::Vector2 overlap = collision.m_data_RectRectOverlap;
         float newVel1, newVel2;
@@ -224,8 +233,8 @@ void CollisionSystem::resolveCollision(const CollisionData &collision)
                 &(resolution1.m_data[0]),
                 &(resolution2.m_data[0]));
 
-            if (absoluteCenter(collision.m_first).x()
-                > absoluteCenter(collision.m_second).x())
+            if (collision.m_firstProxy.m_aaRect.m_center.x()
+                > collision.m_secondProxy.m_aaRect.m_center.x())
             {
                 resolution2 *= -1;
             }
@@ -258,8 +267,8 @@ void CollisionSystem::resolveCollision(const CollisionData &collision)
                 overlap.y(),
                 &(resolution1.m_data[1]),
                 &(resolution2.m_data[1]));
-            if (absoluteCenter(collision.m_first).y()
-                > absoluteCenter(collision.m_second).y())
+            if (collision.m_firstProxy.m_aaRect.m_center.y()
+                > collision.m_secondProxy.m_aaRect.m_center.y())
             {
                 resolution2 *= -1;
             }
@@ -277,8 +286,9 @@ void CollisionSystem::resolveCollision(const CollisionData &collision)
                 &newVel1,
                 &newVel2);
 
-            bounce1 = {ecs::TransformComponent::Velocity(collision.m_first).x(),
-                       newVel1};
+            bounce1
+                = {ecs::TransformComponent::Velocity(collision.m_first).x(),
+                   newVel1};
             bounce2
                 = {ecs::TransformComponent::Velocity(collision.m_second).x(),
                    newVel2};
@@ -286,12 +296,12 @@ void CollisionSystem::resolveCollision(const CollisionData &collision)
     }
     else if (
         collision.m_maskTypeFirst == ColliderMaskType::CMT_CIRCLE
-        && collision.m_maskTypeSecond
-               == ColliderMaskType::CMT_CIRCLE)
+        && collision.m_maskTypeSecond == ColliderMaskType::CMT_CIRCLE)
     {
-        bedrock::Vector2 resolutionAxis = (absoluteCenter(collision.m_second)
-                                           - absoluteCenter(collision.m_first))
-                                              .normal();
+        bedrock::Vector2 resolutionAxis
+            = (collision.m_secondProxy.m_circle.m_center
+               - collision.m_firstProxy.m_circle.m_center)
+                  .normal();
 
         float magnitude1, magnitude2;
 
