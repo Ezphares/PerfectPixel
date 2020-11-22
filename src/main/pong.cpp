@@ -23,7 +23,6 @@
 #include <Resources/Sprite.h>
 #include <Resources/Template.h>
 
-#include "Bedrock/ValueProvider.h"
 #include <chrono>
 #include <sstream>
 #include <thread>

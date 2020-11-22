@@ -27,6 +27,7 @@ public:
     static Component<T>
     createManager(Entity group, uint32_t capacity, uint8_t *data = nullptr)
     {
+        (void)group;
         if (data == nullptr)
         {
             data = malloc(getInstance()->m_size * capacity);
