@@ -207,19 +207,26 @@ bool CollisionSystem::collideRectCircle(
     // First check if the circle collides fully with the rectangle part of the
     // AABB, in that case we can resolve as rectangle
 
+    bool rectCheck          = false;
+    float rectOverlapX      = bedrock::Infinity;
+    float rectOverlapY      = bedrock::Infinity;
     circleToRect.m_halfSize = bedrock::Vector2(secondCircle.m_radius, 0.0f);
     if (collideRectRect(firstRect, circleToRect, out_collision))
     {
-        // Horizontal collision, ensure resolution on x axis
-        out_collision.m_data_RectRectOverlap.y() = bedrock::Infinity;
-        return true;
+        rectOverlapX = out_collision.m_data_RectRectOverlap.x();
+        rectCheck    = true;
     }
 
     circleToRect.m_halfSize = bedrock::Vector2(0.0f, secondCircle.m_radius);
     if (collideRectRect(firstRect, circleToRect, out_collision))
     {
-        // Vertical collision, ensure resolution on y axis
-        out_collision.m_data_RectRectOverlap.x() = bedrock::Infinity;
+        rectOverlapY = out_collision.m_data_RectRectOverlap.y();
+        rectCheck    = true;
+    }
+
+    if (rectCheck)
+    {
+        out_collision.m_data_RectRectOverlap = {rectOverlapX, rectOverlapY};
         return true;
     }
 

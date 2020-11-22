@@ -15,7 +15,7 @@ namespace perfectpixel { namespace physics {
 
 class CollisionSystem : public ecs::QuerySystem
 {
-private:
+public:
     struct ProxyShape
     {
         inline ProxyShape(){};
@@ -66,7 +66,7 @@ public:
 
     static uint32_t getCollisionsLastUpdate();
 
-private:
+public:
     static void collideSingle(ecs::Entity entity, std::set<ecs::Entity> &cache);
     static void possibleCollisions(
         const ecs::Entity entity,

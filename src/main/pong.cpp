@@ -296,7 +296,7 @@ class Pong : public core::Game
 
         physics::ColliderComponent::Register(e);
         physics::ColliderComponent::SetMaskRectangle(
-            e, bedrock::AARectangle({4, 16}));
+            e, bedrock::AARectangle({2, 8}));
 
         if (!isAi)
         {
