@@ -14,12 +14,12 @@ public:
 };
 
 } // namespace _internal
-GUI::Rectangle GUI::Rectangle::absolute(
+GUI::AnchoredRegion GUI::AnchoredRegion::absolute(
     bedrock::Vector2 absSize,
     PositionHelper
         position /*= static_cast<PositionHelper>(ALIGN_LEFT | ALIGN_TOP)*/)
 {
-    Rectangle result;
+    AnchoredRegion result;
 
     result.m_extend = absSize;
 
@@ -54,7 +54,7 @@ GUI::Rectangle GUI::Rectangle::absolute(
 }} // namespace perfectpixel::graphics
 
 perfectpixel::graphics::GUI::HorizontalLayout::HorizontalLayout(
-    const Rectangle &position,
+    const AnchoredRegion &position,
     LinearLayoutOptions options /*= LinearLayoutOptions()*/)
 {
     GUI::pushHorizontalLayout(position, options);
@@ -80,7 +80,7 @@ void perfectpixel::graphics::GUI::begin(const CameraSettings &camera)
 }
 
 void perfectpixel::graphics::GUI::pushHorizontalLayout(
-    const Rectangle &position, const LinearLayoutOptions &options)
+    const AnchoredRegion &position, const LinearLayoutOptions &options)
 {
     _internal::GUIInternal &guiInternal = *(getInstance()->m_internal);
 
@@ -102,7 +102,7 @@ void perfectpixel::graphics::GUI::popLayout()
 }
 
 void perfectpixel::graphics::GUI::positionToSimpleRelative(
-    const Rectangle &position, Anchor &outInner)
+    const AnchoredRegion &position, Anchor &outInner)
 {
     Anchor temp;
 

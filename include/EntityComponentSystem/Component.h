@@ -24,30 +24,47 @@ public:
         {}
     };
 
+    static Component<T>
+    createManager(Entity group, uint32_t capacity, uint8_t *data = nullptr)
+    {
+        if (data == nullptr)
+        {
+            data = malloc(m_size * capacity);
+        }
+
+        for (auto field : fields)
+        {
+            // TODO
+            // field->second->create(capacity, data);
+            data += field->second->size() * capacity;
+        }
+    }
+
     using bedrock::Singleton<T>::getInstance;
 
 protected:
     Component()
         : objects(0)
-		, lastIndex(0)
-		, fields()
-		, m_dirtyFrame(0)
-    {
-#if defined(PP_CLEANUP_CALLBACKS)
-        EntityManager::getInstance()->addKillCallback(&SafeDelete);
-#endif
-    }
+        , lastIndex(0)
+        , fields()
+        , m_dirtyFrame(0)
+        , m_size(0)
+    {}
 
 private:
     uint32_t objects;
     uint32_t lastIndex;
     std::map<int32_t, IField *> fields;
     uint32_t m_dirtyFrame;
+    size_t m_size;
 
 protected:
     PPTransientField(Component<T>, Entity, _Entity);
 
-    virtual void purge(uint32_t idx) { (void)idx; };
+    virtual void purge(uint32_t idx)
+    {
+        (void)idx;
+    };
     virtual void initialize(uint32_t idx)
     {
         for (auto field : fields)
@@ -57,7 +74,10 @@ protected:
     };
 
 public:
-    static Entity at(uint32_t idx) { return _Entity.at(idx); }
+    static Entity at(uint32_t idx)
+    {
+        return _Entity.at(idx);
+    }
 
     static bool AddField(int32_t id, IField *field)
     {
@@ -67,14 +87,21 @@ public:
         if (add)
         {
             fields[id] = field;
+            getInstance()->m_size += field->size();
         }
 
         return add;
     }
 
-    static IField *Lookup(int32_t id) { return getInstance()->fields[id]; }
+    static IField *Lookup(int32_t id)
+    {
+        return getInstance()->fields[id];
+    }
 
-    static bool Has(Entity entity) { return getInstance()->_has(entity); }
+    static bool Has(Entity entity)
+    {
+        return getInstance()->_has(entity);
+    }
 
     static uint32_t Index(Entity entity)
     {
@@ -96,16 +123,16 @@ public:
         self->initialize(idx);
         self->objects++;
 
-		self->m_dirtyFrame = EntityManager::getInstance()->getTick();
+        self->m_dirtyFrame = EntityManager::getInstance()->getTick();
 
         return Reference(entity, idx);
     }
 
-	// Reference-discarding version of register to be used for lookups
-	static void VoidRegister(Entity entity)
-	{ 
-		Register(entity);
-	}
+    // Reference-discarding version of register to be used for lookups
+    static void VoidRegister(Entity entity)
+    {
+        Register(entity);
+    }
 
     static Reference GetRef(Entity entity)
     {
@@ -120,7 +147,7 @@ public:
 
         getInstance()->purge(idx);
 
-		getInstance()->m_dirtyFrame = EntityManager::getInstance()->getTick();
+        getInstance()->m_dirtyFrame = EntityManager::getInstance()->getTick();
 
         getInstance()->objects--;
     }
@@ -161,7 +188,10 @@ public:
         instance->initialize(instance->_index(entity));
     }
 
-    static void Clean() { getInstance()->_clean(); }
+    static void Clean()
+    {
+        getInstance()->_clean();
+    }
 
     static void Serialize(serialization::ISerializer &serializer, Entity entity)
     {
@@ -210,14 +240,13 @@ public:
         return getInstance()->m_dirtyFrame;
     }
 
-	static inline void _fixRef(Reference &ref)
-	{
-		if (ref.m_index == ~0u)
-		{
-                    ref.m_index = Index(ref.m_entity);
-		}
-	}
-
+    static inline void _fixRef(Reference &ref)
+    {
+        if (ref.m_index == ~0u)
+        {
+            ref.m_index = Index(ref.m_entity);
+        }
+    }
 };
 
 template <typename T>
@@ -230,7 +259,10 @@ public:
         return m_mask.size() > idx && m_mask[idx];
     }
 
-    virtual uint32_t _index(Entity entity) const { return entity.index; }
+    virtual uint32_t _index(Entity entity) const
+    {
+        return entity.index;
+    }
 
     virtual uint32_t _register(Entity entity, uint32_t currentSize)
     {
@@ -251,7 +283,10 @@ public:
         return 0;
     }
 
-    virtual uint32_t _safeDelete(Entity entity) { return _delete(entity); }
+    virtual uint32_t _safeDelete(Entity entity)
+    {
+        return _delete(entity);
+    }
 
     virtual void
     _filter(bedrock::BitSet &mask, ComponentStorageFilterType filterType) const
@@ -259,12 +294,13 @@ public:
         mask &= (filterType == IComponentStorage::WITH) ? m_mask : ~m_mask;
     }
 
-	inline static bedrock::BitSet &Mask()
-	{
+    inline static bedrock::BitSet &Mask()
+    {
         return bedrock::Singleton<T>::getInstance()->m_mask;
-	}
+    }
 
-    virtual void _clean() {}
+    virtual void _clean()
+    {}
 
 private:
     bedrock::BitSet m_mask;

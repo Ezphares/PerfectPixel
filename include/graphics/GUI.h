@@ -3,6 +3,8 @@
 #include "Bedrock/Singleton.h"
 #include "Bedrock/vectors.h"
 
+#include "Resources/Sprite.h"
+
 namespace perfectpixel { namespace graphics {
 
 struct CameraSettings;
@@ -39,15 +41,15 @@ public:
         float m_left, m_right, m_bottom, m_top;
     };
 
-    struct Rectangle
+    struct AnchoredRegion
     {
-        Rectangle()
+        AnchoredRegion()
             : m_anchor()
             , m_pivot()
             , m_extend()
         {}
 
-        static Rectangle absolute(
+        static AnchoredRegion absolute(
             bedrock::Vector2 absSize,
             PositionHelper position
             = static_cast<PositionHelper>(ALIGN_LEFT | ALIGN_TOP));
@@ -55,6 +57,11 @@ public:
         Anchor m_anchor;
         bedrock::Vector2 m_pivot;
         bedrock::Vector2 m_extend;
+    };
+
+    struct NineSlice
+    {
+        Anchor m_sprite, m_target;
     };
 
     struct LinearLayoutOptions
@@ -69,7 +76,7 @@ public:
     class HorizontalLayout
     {
         HorizontalLayout(
-            const Rectangle &position,
+            const AnchoredRegion &position,
             LinearLayoutOptions options = LinearLayoutOptions());
         ~HorizontalLayout();
 
@@ -80,17 +87,35 @@ public:
         HorizontalLayout operator=(const HorizontalLayout &&) = delete;
     };
 
+    // Primitives
     static void Spacer(float size, bool relative = false);
+    static void DrawSprite(
+        const resources::Sprite &sprite,
+        int32_t frame,
+        const AnchoredRegion &region);
+    static void DrawSprite(
+        const resources::Sprite &sprite,
+        int32_t frame,
+        const AnchoredRegion &region,
+        const NineSlice &nineSlice);
+    /* TODO fonts need to be moved to resources
+    static void DrawText(
+        const resources::Font &font,
+        const std::string &text,
+        const AnchoredRegion &position);
+        */
 
-public:
     static void begin(const CameraSettings &camera);
+
+private:
+    // Layout internals
     static void pushHorizontalLayout(
-        const Rectangle &position, const LinearLayoutOptions &options);
+        const AnchoredRegion &position, const LinearLayoutOptions &options);
     static void popLayout();
 
 private:
     static void
-    positionToSimpleRelative(const Rectangle &position, Anchor &outInner);
+    positionToSimpleRelative(const AnchoredRegion &position, Anchor &outInner);
 
 private:
     _internal::GUIInternal *m_internal;

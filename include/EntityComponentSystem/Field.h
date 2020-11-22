@@ -25,6 +25,7 @@ public:
     deserialize(serialization::ISerializer &serializer, uint32_t index)
         = 0;
     virtual void copy(uint32_t dstIndex, uint32_t srcIndex) = 0;
+    virtual size_t size()                                   = 0;
 };
 
 template <typename Owner, typename OwnerRef, typename T>
@@ -79,11 +80,20 @@ public:
     }
 #endif
 
-    T at(uint32_t idx) { return m_data[idx]; }
+    T at(uint32_t idx)
+    {
+        return m_data[idx];
+    }
 
-    void _set(uint32_t idx, const T &val) { m_data[idx] = val; }
+    void _set(uint32_t idx, const T &val)
+    {
+        m_data[idx] = val;
+    }
 
-    T Get(Entity entity) const { return m_data[Owner::Index(entity)]; }
+    T Get(Entity entity) const
+    {
+        return m_data[Owner::Index(entity)];
+    }
 
     void Set(Entity entity, const T &value)
     {
@@ -91,7 +101,10 @@ public:
     }
 
     // Raw access operators
-    T &operator()(Entity entity) { return m_data[Owner::Index(entity)]; }
+    T &operator()(Entity entity)
+    {
+        return m_data[Owner::Index(entity)];
+    }
     const T &operator()(Entity entity) const
     {
         return m_data.at(Owner::Index(entity));
@@ -103,12 +116,12 @@ public:
         Owner::_fixRef(ref);
         return m_data[ref.m_index];
     }
-    const T &operator()(OwnerRef &ref) const 
-	{
+    const T &operator()(OwnerRef &ref) const
+    {
         DEBUG_ASSERT(Owner::Has(ref.m_entity));
         Owner::_fixRef(ref);
         return m_data.at(ref.m_index);
-	}
+    }
 
     virtual void reset(uint32_t index) override
     {
@@ -156,6 +169,11 @@ public:
         m_data[index] = static_cast<T>(temp);
     }
 
+    virtual size_t size() override
+    {
+        return sizeof(T);
+    }
+
 private:
     std::vector<T> m_data;
     T m_default;
@@ -200,9 +218,15 @@ public:
     }
 #endif
 
-    T at(uint32_t idx) { return m_data[idx]; }
+    T at(uint32_t idx)
+    {
+        return m_data[idx];
+    }
 
-    const T &get(Entity entity) const { return m_data[Owner::Index(entity)]; }
+    const T &get(Entity entity) const
+    {
+        return m_data[Owner::Index(entity)];
+    }
 
     void set(Entity entity, const T &value)
     {
@@ -273,6 +297,11 @@ public:
     virtual void copy(uint32_t dstIndex, uint32_t srcIndex) override
     {
         m_data[dstIndex] = m_data[srcIndex];
+    }
+
+    virtual size_t size() override
+    {
+        return sizeof(T) * Capacity;
     }
 
 private:
