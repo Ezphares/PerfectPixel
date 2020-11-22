@@ -383,7 +383,32 @@ void CollisionSystem::resolveCollision(const CollisionData &collision)
         resolution1 = resolutionAxis * -magnitude1;
         resolution2 = resolutionAxis * magnitude2;
 
-        // FIXME bounce
+        const bedrock::Vector2 vel1 = bedrock::Vector2(
+            ecs::TransformComponent::Velocity(collision.m_first));
+        const bedrock::Vector2 vel2 = bedrock::Vector2(
+            ecs::TransformComponent::Velocity(collision.m_second));
+
+        const float dot1 = bedrock::Vector2::dot(vel1, resolutionAxis);
+        const float dot2 = bedrock::Vector2::dot(vel2, resolutionAxis);
+
+        float newVel1, newVel2;
+
+        singleAxisBounce(
+            bounciness,
+            PhysicsComponent::Mass(collision.m_first),
+            PhysicsComponent::Mass(collision.m_second),
+            dot1,
+            dot2,
+            &newVel1,
+            &newVel2);
+
+        const bedrock::Vector2 projection1 = resolutionAxis * dot1;
+        const bedrock::Vector2 projection2 = resolutionAxis * dot2;
+        const bedrock::Vector2 rejection1  = vel1 - projection1;
+        const bedrock::Vector2 rejection2  = vel2 - projection2;
+
+        bounce1 = rejection1 + projection1 * newVel1;
+        bounce2 = rejection2 + projection2 * newVel2;
     }
     else
     {
