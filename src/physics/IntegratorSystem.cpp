@@ -26,7 +26,7 @@ void IntegratorSystem::onUpdate(
     {
         ecs::Entity entity = *it;
 
-        bedrock::Vector3 &velocity = ecs::TransformComponent::Velocity(entity);
+        bedrock::Vector3 &velocity    = PhysicsComponent::Velocity(entity);
         bedrock::Vector3 acceleration = bedrock::Vector3();
 
         if (PhysicsComponent::Has(entity))
@@ -67,7 +67,7 @@ void IntegratorSystem::onUpdate(
         {
             velocity += acceleration * eulerDeltaT;
             ecs::TransformComponent::Position(entity)
-                += ecs::TransformComponent::Velocity(entity) * eulerDeltaT;
+                += PhysicsComponent::Velocity(entity) * eulerDeltaT;
         }
     }
 }

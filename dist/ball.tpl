@@ -20,9 +20,9 @@ Entities:
       ActiveForces:
       []
       SimulationType: 2
+      Velocity: [0, 0, 0]
     TransformComponent:
       Position: [0, 0, 0]
-      Velocity: [0, 0, 0]
     BallComponent:
       Score1: 0
       Score2: 0

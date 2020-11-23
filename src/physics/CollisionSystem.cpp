@@ -278,9 +278,8 @@ void CollisionSystem::resolveCollision(const CollisionData &collision)
     }
 
     bedrock::Vector2 resolution1{0, 0}, resolution2{0, 0};
-    bedrock::Vector2 bounce1{
-        ecs::TransformComponent::Velocity(collision.m_first)},
-        bounce2{ecs::TransformComponent::Velocity(collision.m_second)};
+    bedrock::Vector2 bounce1{PhysicsComponent::Velocity(collision.m_first)},
+        bounce2{PhysicsComponent::Velocity(collision.m_second)};
 
     float bounciness = std::max(
         PhysicsComponent::Bounciness(collision.m_first),
@@ -315,17 +314,15 @@ void CollisionSystem::resolveCollision(const CollisionData &collision)
                 bounciness,
                 PhysicsComponent::Mass(collision.m_first),
                 PhysicsComponent::Mass(collision.m_second),
-                ecs::TransformComponent::Velocity(collision.m_first).x(),
-                ecs::TransformComponent::Velocity(collision.m_second).x(),
+                PhysicsComponent::Velocity(collision.m_first).x(),
+                PhysicsComponent::Velocity(collision.m_second).x(),
                 &newVel1,
                 &newVel2);
 
             bounce1
-                = {newVel1,
-                   ecs::TransformComponent::Velocity(collision.m_first).y()};
+                = {newVel1, PhysicsComponent::Velocity(collision.m_first).y()};
             bounce2
-                = {newVel2,
-                   ecs::TransformComponent::Velocity(collision.m_first).y()};
+                = {newVel2, PhysicsComponent::Velocity(collision.m_first).y()};
         }
         else
         {
@@ -349,17 +346,15 @@ void CollisionSystem::resolveCollision(const CollisionData &collision)
                 bounciness,
                 PhysicsComponent::Mass(collision.m_first),
                 PhysicsComponent::Mass(collision.m_second),
-                ecs::TransformComponent::Velocity(collision.m_first).y(),
-                ecs::TransformComponent::Velocity(collision.m_second).y(),
+                PhysicsComponent::Velocity(collision.m_first).y(),
+                PhysicsComponent::Velocity(collision.m_second).y(),
                 &newVel1,
                 &newVel2);
 
             bounce1
-                = {ecs::TransformComponent::Velocity(collision.m_first).x(),
-                   newVel1};
+                = {PhysicsComponent::Velocity(collision.m_first).x(), newVel1};
             bounce2
-                = {ecs::TransformComponent::Velocity(collision.m_second).x(),
-                   newVel2};
+                = {PhysicsComponent::Velocity(collision.m_second).x(), newVel2};
         }
     }
     else if (
@@ -383,10 +378,10 @@ void CollisionSystem::resolveCollision(const CollisionData &collision)
         resolution1 = resolutionAxis * -magnitude1;
         resolution2 = resolutionAxis * magnitude2;
 
-        const bedrock::Vector2 vel1 = bedrock::Vector2(
-            ecs::TransformComponent::Velocity(collision.m_first));
-        const bedrock::Vector2 vel2 = bedrock::Vector2(
-            ecs::TransformComponent::Velocity(collision.m_second));
+        const bedrock::Vector2 vel1
+            = bedrock::Vector2(PhysicsComponent::Velocity(collision.m_first));
+        const bedrock::Vector2 vel2
+            = bedrock::Vector2(PhysicsComponent::Velocity(collision.m_second));
 
         const float dot1 = bedrock::Vector2::dot(vel1, resolutionAxis);
         const float dot2 = bedrock::Vector2::dot(vel2, resolutionAxis);
@@ -420,10 +415,8 @@ void CollisionSystem::resolveCollision(const CollisionData &collision)
     ecs::TransformComponent::Position(collision.m_second)
         += bedrock::Vector3(resolution2);
 
-    ecs::TransformComponent::Velocity(collision.m_first)
-        = bedrock::Vector3(bounce1);
-    ecs::TransformComponent::Velocity(collision.m_second)
-        = bedrock::Vector3(bounce2);
+    PhysicsComponent::Velocity(collision.m_first)  = bedrock::Vector3(bounce1);
+    PhysicsComponent::Velocity(collision.m_second) = bedrock::Vector3(bounce2);
 }
 
 void CollisionSystem::singleAxisReposition(

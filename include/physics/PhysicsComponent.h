@@ -18,8 +18,7 @@ enum PhysicsSimulationType : uint32_t
 }} // namespace perfectpixel::physics
 
 PP_TYPE_REFLECTION(
-    ::perfectpixel::physics::PhysicsSimulationType,
-    PhysicsSimulationType);
+    ::perfectpixel::physics::PhysicsSimulationType, PhysicsSimulationType);
 
 namespace perfectpixel { namespace physics {
 
@@ -30,12 +29,11 @@ public:
     PPField(PhysicsComponent, float, Mass);
     PPField(PhysicsComponent, float, Bounciness);
     PPField(PhysicsComponent, PhysicsSimulationType, SimulationType);
+    PPField(PhysicsComponent, bedrock::Vector3, Velocity);
     PPArrayField(PhysicsComponent, physics::Force, 8u, ActiveForces);
 
     static void MakeStaticCollider(ecs::Entity entity);
     static void ActivateForce(ecs::Entity entity, const Force &force);
     static void DeactivateForce(ecs::Entity entity, int32_t forceId);
 };
-}
-}
-
+}} // namespace perfectpixel::physics

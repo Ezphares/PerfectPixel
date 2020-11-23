@@ -20,6 +20,6 @@ Entities:
       ActiveForces:
       []
       SimulationType: 1
+      Velocity: [0, 0, 0]
     TransformComponent:
       Position: [0, 0, 0]
-      Velocity: [0, 0, 0]

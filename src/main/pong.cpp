@@ -64,7 +64,8 @@ public:
         bedrock::Vector3 &position = TransformComponent::Position(entity);
         position                   = {0, 0, position.z()};
 
-        bedrock::Vector3 &velocity = TransformComponent::Velocity(entity);
+        bedrock::Vector3 &velocity
+            = physics::PhysicsComponent::Velocity(entity);
 
         velocity.x()                      = velocity.x() > 0 ? -40.0f : 40.0f;
         velocity.y()                      = velocity.y() > 0 ? 35.0f : -35.0f;
@@ -108,7 +109,7 @@ public:
         for (auto it = begin; it != end; ++it)
         {
             Entity entity = *it;
-            TransformComponent::Velocity(entity)
+            physics::PhysicsComponent::Velocity(entity)
                 = bedrock::Vector3::UP * BatComponent::MaxSpeed(entity)
                   * BatComponent::CurrentDirection(entity);
         }
@@ -216,7 +217,8 @@ public:
                 BallComponent::Reset(entity);
             }
 
-            bedrock::Vector3 &velocity = TransformComponent::Velocity(entity);
+            bedrock::Vector3 &velocity
+                = physics::PhysicsComponent::Velocity(entity);
             // Speed up after batting
             if (BallComponent::DeltaXPrev(entity) > 0.0f != velocity.x() > 0.0f)
             {
