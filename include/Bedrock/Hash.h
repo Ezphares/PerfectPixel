@@ -89,17 +89,19 @@ inline static int32_t crc32(const std::string &str)
     return crc32(str.c_str(), str.size());
 }
 
-struct ID
-{
-    int32_t m_hash;
-    const char *m_reverse;
-};
-
 #if PP_FULL_REFLECTION_ENABLED
 #define PP_ID_STR_FORWARD(x) x
 #else
 #define PP_ID_STR_FORWARD(x)
 #endif
+
+struct ID
+{
+    int32_t m_hash;
+#if PP_FULL_REFLECTION_ENABLED
+    std::string m_reverse;
+#endif
+};
 
 template <int32_t H>
 struct ConstID
@@ -125,7 +127,7 @@ struct ConstID
         ::perfectpixel::bedrock::dequalify(#str, sizeof(#str) - 1),            \
         ::perfectpixel::bedrock::dequalifiedSize(#str, sizeof(#str) - 1))))
 
-#define PP_UNIQUE PP_ID(__FILE__ ## __LINE__)
+#define PP_UNIQUE PP_ID(__FILE__##__LINE__)
 
 #if PP_FULL_REFLECTION_ENABLED
 #define PP_KEY(str) #str

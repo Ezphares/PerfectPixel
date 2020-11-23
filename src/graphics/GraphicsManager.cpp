@@ -1,6 +1,7 @@
 #include <graphics/GraphicsManager.h>
 
 #include <graphics/CBFGFont.h>
+#include <graphics/CameraComponent.h>
 #include <graphics/LocalGL.h>
 #include <graphics/SpriteComponent.h>
 

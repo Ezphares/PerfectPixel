@@ -199,6 +199,11 @@ void YAMLSerializer::readIdentifier(std::string *val)
     readText(val);
 }
 
+std::string YAMLSerializer::reverse(int32_t id)
+{
+    return m_reverse ? m_reverse(id) : "";
+}
+
 uint32_t YAMLSerializer::readBinary(void *p, uint32_t maxSize)
 {
     std::string text = readVal().as<std::string>();

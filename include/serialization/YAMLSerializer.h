@@ -41,6 +41,7 @@ public:
     virtual void readIdentifier(int32_t *val) override;
 #if PP_FULL_REFLECTION_ENABLED
     virtual void readIdentifier(std::string *val) override;
+    virtual std::string reverse(int32_t id) override;
 #endif // PP_FULL_REFLECTION_ENABLED
     virtual uint32_t readBinary(void *p, uint32_t maxSize) override;
     virtual void readMapBegin() override;
