@@ -113,10 +113,11 @@ struct ConstID
     (::perfectpixel::bedrock::dequalify(#str, sizeof(#str) - 1))
 #define PP_DEQUALIFIED_SIZE(str)                                               \
     (::perfectpixel::bedrock::dequalifiedSize(#str, sizeof(#str) - 1))
-#define _PP_ID(str)                                                            \
-    (::perfectpixel::bedrock::ConstID<::perfectpixel::bedrock::crc32(          \
-         #str, sizeof(#str) - 1)>::value()
 #define PP_ID(str)                                                             \
+    (::perfectpixel::bedrock::ConstID<::perfectpixel::bedrock::crc32(          \
+         #str, sizeof(#str) - 1)>::value()                                     \
+         .m_hash)
+#define _PP_ID(str)                                                            \
     (static_cast<int32_t>(                                                     \
         ::perfectpixel::bedrock::crc32(#str, sizeof(#str) - 1)))
 #define PP_DQID(str)                                                           \
