@@ -98,17 +98,14 @@ inline static int32_t crc32(const std::string &str)
 struct ID
 {
     int32_t m_hash;
-#if PP_FULL_REFLECTION_ENABLED
-    std::string m_reverse;
-#endif
 };
 
 template <int32_t H>
 struct ConstID
 {
-    constexpr inline static ID value(PP_ID_STR_FORWARD(const char *str))
+    constexpr inline static ID value()
     {
-        return ID{H, PP_ID_STR_FORWARD(str)};
+        return ID{H};
     }
 };
 
@@ -118,7 +115,7 @@ struct ConstID
     (::perfectpixel::bedrock::dequalifiedSize(#str, sizeof(#str) - 1))
 #define _PP_ID(str)                                                            \
     (::perfectpixel::bedrock::ConstID<::perfectpixel::bedrock::crc32(          \
-         #str, sizeof(#str) - 1)>::value(PP_ID_STR_FORWARD(#str)))
+         #str, sizeof(#str) - 1)>::value()
 #define PP_ID(str)                                                             \
     (static_cast<int32_t>(                                                     \
         ::perfectpixel::bedrock::crc32(#str, sizeof(#str) - 1)))

@@ -61,9 +61,6 @@ perfectpixel::serialization::ISerializer &
 operator>>(ISerializer &istream, bedrock::ID &id)
 {
     istream.readIdentifier(&id.m_hash);
-#if PP_FULL_REFLECTION_ENABLED
-    id.m_reverse = istream.reverse(id.m_hash);
-#endif
     return istream;
 }
 
