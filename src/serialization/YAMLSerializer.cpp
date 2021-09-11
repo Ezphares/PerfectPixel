@@ -208,10 +208,8 @@ uint32_t YAMLSerializer::readBinary(void *p, uint32_t maxSize)
 {
     std::string text = readVal().as<std::string>();
     memcpy(
-        p,
-        text.c_str(),
-        std::min(static_cast<std::size_t>(maxSize), text.size()));
-    return std::min(static_cast<std::size_t>(maxSize), text.size());
+        p, text.c_str(), std::min(maxSize, static_cast<uint32_t>(text.size())));
+    return std::min(maxSize, static_cast<uint32_t>(text.size()));
 }
 
 void YAMLSerializer::readMapBegin()
@@ -270,7 +268,7 @@ uint32_t YAMLSerializer::readArrayStart()
 
     push(node);
     m_stack.top().second = new YAML::const_iterator(node.begin());
-    return node.size();
+    return static_cast<uint32_t>(node.size());
 }
 
 void YAMLSerializer::readArrayEnd()

@@ -248,7 +248,7 @@ void GraphicsManager::drawAll(double deltaT)
         text.data(),
         GL_STREAM_DRAW);
 
-    glDrawArrays(GL_TRIANGLES, 0, text.size());
+    glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(text.size()));
 }
 
 void GraphicsManager::postProcess()
@@ -448,7 +448,7 @@ void GraphicsManager::flushSpriteBuffer(SpriteBuffer *buffer)
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         m_vaoDynamicSprites->bindVAO();
-        glDrawArrays(GL_TRIANGLES, 0, buffer->size());
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(buffer->size()));
         glBindVertexArray(0);
     }
 
@@ -565,7 +565,7 @@ GraphicsManager::getImageTexture(resources::Resource imageResource)
     }
 
     // Attempt 3: Create
-    idx = m_managedTextures.size();
+    idx = static_cast<uint32_t>(m_managedTextures.size());
     m_managedTextures.emplace_back(*image, imageResource.getId());
     image->setTextureHint(idx);
     return m_managedTextures[idx];

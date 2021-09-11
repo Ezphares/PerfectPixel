@@ -51,7 +51,7 @@ public:
             m_maxEntityIndex = eidx;
         }
 
-        uint32_t idx = m_entities.size();
+        uint32_t idx = (uint32_t)m_entities.size();
         m_entities.push_back(entity);
         return idx;
     }
@@ -154,7 +154,7 @@ public:
     virtual void _clean()
     {
         EntityManager *em = EntityManager::getInstance();
-        for (size_t i = 0; i < m_mask.size(); ++i)
+        for (uint32_t i = 0; i < static_cast<uint32_t>(m_mask.size()); ++i)
         {
             if (m_mask[i] && !em->isAlive(T::at(i)))
             {

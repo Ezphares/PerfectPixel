@@ -9,7 +9,7 @@ project (PerfectPixel)
 set (PerfectPixel_VERSION_MAJOR 0)
 set (PerfectPixel_VERSION_MINOR 1)
 
-set (CMAKE_CXX_STANDARD 17)
+set (CMAKE_CXX_STANDARD 20)
 
 add_definitions(-DPP_CLEANUP_CALLBACKS)
 add_definitions(-DPP_FULL_REFLECTION)

@@ -86,7 +86,7 @@ constexpr inline static int32_t crc32(const char *str, int size)
 
 inline static int32_t crc32(const std::string &str)
 {
-    return crc32(str.c_str(), str.size());
+    return crc32(str.c_str(), (int)str.size());
 }
 
 #if PP_FULL_REFLECTION_ENABLED
@@ -130,8 +130,8 @@ struct ConstID
 #if PP_FULL_REFLECTION_ENABLED
 #define PP_KEY(str) #str
 #define PP_KEY_EQUAL(key, num)                                                 \
-    (static_cast<int32_t>(                                                     \
-         ::perfectpixel::bedrock::crc32(key, std::strlen(key)))                \
+    (static_cast<int32_t>(::perfectpixel::bedrock::crc32(                      \
+         key, static_cast<uint32_t>(std::strlen(key))))                        \
      == num)
 #else
 #define PP_KEY(str) PP_ID(str)

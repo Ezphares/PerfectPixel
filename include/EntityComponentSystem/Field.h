@@ -14,6 +14,13 @@
 
 namespace perfectpixel { namespace ecs {
 
+template <typename T, typename U>
+concept Accessor = requires(T a, U b)
+{
+    a = b;
+    b = a;
+};
+
 class IField
 {
 public:
@@ -44,7 +51,11 @@ struct SerializationRule
     }
 };
 
-template <typename Owner, typename OwnerRef, typename T>
+template <
+    typename Owner,
+    typename OwnerRef,
+    typename T,
+    Accessor<T> TAccessor = T &>
 class FieldImpl : public IField
 {
 private:
@@ -117,11 +128,11 @@ public:
     }
 
     // Raw access operators
-    T &operator()(Entity entity)
+    TAccessor &operator()(Entity entity)
     {
         return m_data[Owner::Index(entity)];
     }
-    const T &operator()(Entity entity) const
+    const TAccessor &operator()(Entity entity) const
     {
         return m_data.at(Owner::Index(entity));
     }
