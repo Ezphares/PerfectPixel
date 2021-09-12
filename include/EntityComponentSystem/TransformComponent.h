@@ -8,9 +8,8 @@
 
 namespace perfectpixel { namespace ecs {
 
-class TransformComponent : public Component<
-                               TransformComponent,
-                               FlatComponentStorage<TransformComponent>>
+class TransformComponent
+    : public Component<TransformComponent, FlatComponentStorage>
 {
 public:
     PPField(TransformComponent, bedrock::Vector3, Position);

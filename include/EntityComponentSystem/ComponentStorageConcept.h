@@ -20,6 +20,10 @@ concept ComponentStorage = requires(const T &cref, Entity entity, bool _)
 {
     _ = cref._index(entity);
 }
+&&requires(const T &cref, uint32_t index, Entity _)
+{
+    _ = cref._at(index);
+}
 &&requires(T &ref, Entity entity, uint32_t size, uint32_t _)
 {
     _ = ref._register(entity, size);

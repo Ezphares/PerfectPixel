@@ -1,24 +1,25 @@
 #pragma once
 
-#include <EntityComponentSystem/ComponentStorageConcept.h>
+#include <EntityComponentSystem/CoreComponentStorage.h>
 #include <EntityComponentSystem/EntityManager.h>
 #include <EntityComponentSystem/FieldHelper.h>
 
 #include <Bedrock/BitSet.h>
 #include <Bedrock/Singleton.h>
 
+#include <concepts>
 #include <map>
 
 namespace perfectpixel { namespace ecs {
 
-template <typename T, ComponentStorage TStorage>
+template <typename T, ComponentStorage TStorage = DefaultComponentStorage>
 class Component : public bedrock::Singleton<T>, public TStorage
 {
 public:
     typedef Component<T, TStorage> ComponentType;
 
-    // Sub-classing Reference by component improves type-safety by letting the
-    // compiler error if attempts to cross-use references are made
+    // Sub-classing Reference by component improves type-safety by letting
+    // the compiler error if attempts to cross-use references are made
     struct Reference : public UntypedReference
     {
         Reference(Entity entity = NO_ENTITY, uint32_t index = ~0u)
@@ -64,14 +65,13 @@ private:
     std::map<int32_t, IField::SerializationCondition> m_serializationRules;
 
 protected:
-    PPTransientField(ComponentType, Entity, _Entity);
-
     virtual void purge(uint32_t idx)
     {
         (void)idx;
     };
     virtual void initialize(uint32_t idx)
     {
+        static_assert(std::is_base_of_v<ComponentType, T>);
         for (auto field : m_fields)
         {
             field.second->reset(idx);
@@ -79,11 +79,6 @@ protected:
     };
 
 public:
-    static Entity at(uint32_t idx)
-    {
-        return _Entity.at(idx);
-    }
-
     static bool AddField(int32_t id, IField *field)
     {
         auto &fields = getInstance()->m_fields;
@@ -129,8 +124,6 @@ public:
             self->m_lastIndex++;
         }
 
-        _Entity.reset(idx);
-        _Entity._set(idx, entity);
         self->initialize(idx);
         self->m_objects++;
 
@@ -280,6 +273,15 @@ public:
         return entity.index;
     }
 
+    Entity _at(uint32_t index) const
+    {
+        if (m_mask[index])
+        {
+            return EntityManager::getInstance()->at(index);
+        }
+        return NO_ENTITY;
+    }
+
     uint32_t _register(Entity entity, uint32_t currentSize)
     {
         (void)currentSize;
@@ -287,7 +289,7 @@ public:
         uint32_t idx = entity.index;
         if (m_mask.size() <= idx)
         {
-            m_mask.resize(idx + 1);
+            m_mask.resize((idx + 1));
         }
         m_mask[idx] = true;
         return idx;
