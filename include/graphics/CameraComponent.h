@@ -8,8 +8,8 @@
 
 namespace perfectpixel { namespace graphics {
 
-class CameraComponent : public ecs::Component<CameraComponent>,
-                        public ecs::DefaultComponentStorage
+class CameraComponent
+    : public ecs::Component<CameraComponent, ecs::DefaultComponentStorage>
 {
 private:
 public:

@@ -30,29 +30,26 @@
 using namespace perfectpixel;
 using namespace perfectpixel::ecs;
 
-class BatComponent : public Component<BatComponent>,
-                     public LinearScanComponentStorage
+class BatComponent : public Component<BatComponent, LinearScanComponentStorage>
 {
 public:
     PPField(BatComponent, float, MaxSpeed);
     PPField(BatComponent, float, CurrentDirection);
 };
 
-class PlayerComponent : public Component<PlayerComponent>,
-                        public MapComponentStorage
+class PlayerComponent : public Component<PlayerComponent, MapComponentStorage>
 {
 public:
     PPField(PlayerComponent, int32_t, InputAxis);
 };
 
-class AIComponent : public Component<AIComponent>, public MapComponentStorage
+class AIComponent : public Component<AIComponent, MapComponentStorage>
 {
 public:
     PPField(AIComponent, Entity, BallToTrack);
 };
 
-class BallComponent : public Component<BallComponent>,
-                      public MapComponentStorage
+class BallComponent : public Component<BallComponent, MapComponentStorage>
 {
 public:
     PPField(BallComponent, float, DeltaXPrev);
@@ -73,8 +70,8 @@ public:
     }
 };
 
-class ScoreUIComponent : public Component<ScoreUIComponent>,
-                         public LinearScanComponentStorage
+class ScoreUIComponent
+    : public Component<ScoreUIComponent, LinearScanComponentStorage>
 {
 public:
     PPField(ScoreUIComponent, Entity, BallToTrack);

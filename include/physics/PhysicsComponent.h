@@ -22,8 +22,8 @@ PP_TYPE_REFLECTION(
 
 namespace perfectpixel { namespace physics {
 
-class PhysicsComponent : public ecs::Component<PhysicsComponent>,
-                         public ecs::LinearScanComponentStorage
+class PhysicsComponent
+    : public ecs::Component<PhysicsComponent, ecs::LinearScanComponentStorage>
 {
 public:
     PPField(PhysicsComponent, float, Mass);

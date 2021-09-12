@@ -9,7 +9,7 @@ namespace perfectpixel { namespace ecs {
 
 // Stores an array of idx->Entity and looks up using linear scan
 // Useful for semi uncommon components
-class LinearScanComponentStorage : public IComponentStorage
+class LinearScanComponentStorage
 {
 public:
     LinearScanComponentStorage()
@@ -17,7 +17,7 @@ public:
         , m_entities()
     {}
 
-    virtual bool _has(Entity entity) const
+    bool _has(Entity entity) const
     {
         for (uint32_t i = 0u; i < m_entities.size(); ++i)
         {
@@ -29,7 +29,7 @@ public:
         return false;
     }
 
-    virtual uint32_t _index(Entity entity) const
+    uint32_t _index(Entity entity) const
     {
         for (uint32_t i = 0u; i < m_entities.size(); ++i)
         {
@@ -41,7 +41,7 @@ public:
         return false;
     }
 
-    virtual uint32_t _register(Entity entity, uint32_t currentSize)
+    uint32_t _register(Entity entity, uint32_t currentSize)
     {
         (void)currentSize; // Not needed in LinearScan
 
@@ -56,7 +56,7 @@ public:
         return idx;
     }
 
-    virtual uint32_t _delete(Entity entity)
+    uint32_t _delete(Entity entity)
     {
         for (uint32_t i = 0u; i < m_entities.size(); ++i)
         {
@@ -69,25 +69,27 @@ public:
         return 0;
     }
 
-    virtual uint32_t _safeDelete(Entity entity)
+    uint32_t _safeDelete(Entity entity)
     {
         return _delete(entity);
     }
 
-    virtual void
+    void
     _filter(bedrock::BitSet &mask, ComponentStorageFilterType filterType) const
     {
         bedrock::BitSet localMask = bedrock::BitSet(
-            m_maxEntityIndex + 1, filterType == IComponentStorage::WITHOUT);
+            m_maxEntityIndex + 1,
+            filterType == ComponentStorageFilterType::WITHOUT);
         for (auto entity : m_entities)
         {
-            localMask[entity.index] = (filterType == IComponentStorage::WITH);
+            localMask[entity.index]
+                = (filterType == ComponentStorageFilterType::WITH);
         }
 
         mask &= localMask;
     }
 
-    virtual void _clean()
+    void _clean()
     {
         for (auto it = m_entities.begin(); it != m_entities.end(); ++it)
         {
@@ -107,21 +109,21 @@ private:
 // Stores component data at the same index as the entity
 // Useful for VERY common components
 template <typename T>
-class FlatComponentStorage : public IComponentStorage
+class FlatComponentStorage
 {
 public:
-    virtual bool _has(Entity entity) const
+    bool _has(Entity entity) const
     {
         uint32_t idx = entity.index;
         return m_mask.size() > idx && m_mask[idx] && T::at(idx) == entity;
     }
 
-    virtual uint32_t _index(Entity entity) const
+    uint32_t _index(Entity entity) const
     {
         return entity.index;
     }
 
-    virtual uint32_t _register(Entity entity, uint32_t currentSize)
+    uint32_t _register(Entity entity, uint32_t currentSize)
     {
         (void)currentSize; // Not needed in flat component storage
 
@@ -134,24 +136,25 @@ public:
         return idx;
     }
 
-    virtual uint32_t _delete(Entity entity)
+    uint32_t _delete(Entity entity)
     {
         m_mask[entity.index] = false;
         return entity.index;
     }
 
-    virtual uint32_t _safeDelete(Entity entity)
+    uint32_t _safeDelete(Entity entity)
     {
         return _delete(entity);
     }
 
-    virtual void
+    void
     _filter(bedrock::BitSet &mask, ComponentStorageFilterType filterType) const
     {
-        mask &= (filterType == IComponentStorage::WITH) ? m_mask : ~m_mask;
+        mask &= (filterType == ComponentStorageFilterType::WITH) ? m_mask
+                                                                 : ~m_mask;
     }
 
-    virtual void _clean()
+    void _clean()
     {
         EntityManager *em = EntityManager::getInstance();
         for (uint32_t i = 0; i < static_cast<uint32_t>(m_mask.size()); ++i)
@@ -168,25 +171,24 @@ private:
 };
 
 // Component storage using a map entity->index
-class MapComponentStorage : public IComponentStorage
+class MapComponentStorage
 {
 public:
     MapComponentStorage()
-        : IComponentStorage()
-        , m_maxEntityIndex(0u)
+        : m_maxEntityIndex(0u)
         , m_freeIndices()
         , m_indices()
     {}
 
-    virtual bool _has(Entity entity) const
+    bool _has(Entity entity) const
     {
         return m_indices.find(entity) != m_indices.end();
     }
-    virtual uint32_t _index(Entity entity) const
+    uint32_t _index(Entity entity) const
     {
         return m_indices.find(entity)->second;
     }
-    virtual uint32_t _register(Entity entity, uint32_t currentSize)
+    uint32_t _register(Entity entity, uint32_t currentSize)
     {
         uint32_t eidx = entity.index;
         if (eidx > m_maxEntityIndex)
@@ -208,7 +210,7 @@ public:
         }
     }
 
-    virtual uint32_t _delete(Entity entity)
+    uint32_t _delete(Entity entity)
     {
         auto it      = m_indices.find(entity);
         uint32_t idx = it->second;
@@ -217,27 +219,28 @@ public:
         return idx;
     }
 
-    virtual uint32_t _safeDelete(Entity entity)
+    uint32_t _safeDelete(Entity entity)
     {
         return _delete(entity);
     }
 
-    virtual void _filter(
-        bedrock::BitSet &mask,
-        IComponentStorage::ComponentStorageFilterType filterType) const
+    void
+    _filter(bedrock::BitSet &mask, ComponentStorageFilterType filterType) const
     {
         bedrock::BitSet localMask = bedrock::BitSet(
-            m_maxEntityIndex + 1, filterType == IComponentStorage::WITHOUT);
+            m_maxEntityIndex + 1,
+            filterType == ComponentStorageFilterType::WITHOUT);
 
         for (auto it : m_indices)
         {
-            localMask[it.first.index] = (filterType == IComponentStorage::WITH);
+            localMask[it.first.index]
+                = (filterType == ComponentStorageFilterType::WITH);
         }
 
         mask &= localMask;
     }
 
-    virtual void _clean()
+    void _clean()
     {
         EntityManager *em = EntityManager::getInstance();
         for (auto it = m_indices.cbegin(); it != m_indices.cend();)

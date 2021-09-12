@@ -12,9 +12,8 @@ struct ComponentTypeList;
 template <typename T, typename... Ts>
 struct ComponentTypeList<T, Ts...>
 {
-    static void execute(
-        bedrock::BitSet &mask,
-        IComponentStorage::ComponentStorageFilterType filterType)
+    static void
+    execute(bedrock::BitSet &mask, ComponentStorageFilterType filterType)
     {
         T::Filter(mask, filterType);
         ComponentTypeList<Ts...>::execute(mask, filterType);
@@ -34,9 +33,8 @@ struct ComponentTypeList<T, Ts...>
 template <>
 struct ComponentTypeList<>
 {
-    static void execute(
-        bedrock::BitSet &mask,
-        IComponentStorage::ComponentStorageFilterType filterType)
+    static void
+    execute(bedrock::BitSet &mask, ComponentStorageFilterType filterType)
     {
         (void)mask;
         (void)filterType;
@@ -46,7 +44,7 @@ struct ComponentTypeList<>
     {
         (void)referenceFrame;
         return false;
-	}
+    }
 };
 
 template <typename... Ts>
@@ -59,7 +57,8 @@ struct With
 
     static void execute(bedrock::BitSet &mask)
     {
-        ComponentTypeList<Ts...>::execute(mask, IComponentStorage::WITH);
+        ComponentTypeList<Ts...>::execute(
+            mask, ComponentStorageFilterType::WITH);
     }
 };
 
@@ -73,7 +72,8 @@ struct Without
 
     static void execute(bedrock::BitSet &mask)
     {
-        ComponentTypeList<Ts...>::execute(mask, IComponentStorage::WITHOUT);
+        ComponentTypeList<Ts...>::execute(
+            mask, ComponentStorageFilterType::WITHOUT);
     }
 };
 
@@ -85,27 +85,27 @@ struct QueryHelper
         if (onlyActive)
         {
             return Query(
-				[](bedrock::BitSet &mask) {
-					Without<InactiveComponent>::execute(mask);
-					WithComponents::execute(mask);
-					WithoutComponents::execute(mask);
-				}, 
-				[](uint32_t referenceFrame) {
+                [](bedrock::BitSet &mask) {
+                    Without<InactiveComponent>::execute(mask);
+                    WithComponents::execute(mask);
+                    WithoutComponents::execute(mask);
+                },
+                [](uint32_t referenceFrame) {
                     return Without<InactiveComponent>::dirty(referenceFrame)
                            || WithComponents::dirty(referenceFrame)
                            || WithoutComponents::dirty(referenceFrame);
-				});
+                });
         }
 
         return Query(
-			[](bedrock::BitSet &mask) {
-				WithComponents::execute(mask);
-				WithoutComponents::execute(mask);
-			},
-			[](uint32_t referenceFrame) {
+            [](bedrock::BitSet &mask) {
+                WithComponents::execute(mask);
+                WithoutComponents::execute(mask);
+            },
+            [](uint32_t referenceFrame) {
                 return WithComponents::dirty(referenceFrame)
                        || WithoutComponents::dirty(referenceFrame);
-			});
+            });
     }
 };
 

@@ -1,26 +1,45 @@
 #pragma once
 
-#include <EntityComponentSystem/Entity.h>
 #include <Bedrock/BitSet.h>
+#include <EntityComponentSystem/Entity.h>
 
-namespace perfectpixel{ namespace ecs {
+namespace perfectpixel { namespace ecs {
 
-	class IComponentStorage
-	{
-	public:
-		enum ComponentStorageFilterType
-		{
-			WITH,
-			WITHOUT,
-		};
+enum class ComponentStorageFilterType
+{
+    WITH,
+    WITHOUT,
+};
 
-		virtual bool _has(Entity entity) const = 0;
-		virtual uint32_t _index(Entity entity) const = 0;
-		virtual uint32_t _register(Entity entity, uint32_t currentSize) = 0;
-		virtual uint32_t _delete(Entity entity) = 0;
-		virtual uint32_t _safeDelete(Entity entity) = 0;
-		virtual void _filter(bedrock::BitSet &mask, ComponentStorageFilterType filterType) const = 0;
-		virtual void _clean() = 0;
-	};
-	
-}}
+template <typename T>
+concept ComponentStorage = requires(const T &cref, Entity entity, bool _)
+{
+    _ = cref._has(entity);
+}
+&&requires(const T &cref, Entity entity, uint32_t _)
+{
+    _ = cref._index(entity);
+}
+&&requires(T &ref, Entity entity, uint32_t size, uint32_t _)
+{
+    _ = ref._register(entity, size);
+}
+&&requires(T &ref, Entity entity, uint32_t _)
+{
+    _ = ref._delete(entity);
+}
+&&requires(T &ref, Entity entity, uint32_t _)
+{
+    _ = ref._safeDelete(entity);
+}
+&&requires(
+    const T &cref, bedrock::BitSet &mask, ComponentStorageFilterType filterType)
+{
+    cref._filter(mask, filterType);
+}
+&&requires(T &ref)
+{
+    ref._clean();
+};
+
+}} // namespace perfectpixel::ecs

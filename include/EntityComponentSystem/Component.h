@@ -11,10 +11,12 @@
 
 namespace perfectpixel { namespace ecs {
 
-template <typename T>
-class Component : public bedrock::Singleton<T>
+template <typename T, ComponentStorage TStorage>
+class Component : public bedrock::Singleton<T>, public TStorage
 {
 public:
+    typedef Component<T, TStorage> ComponentType;
+
     // Sub-classing Reference by component improves type-safety by letting the
     // compiler error if attempts to cross-use references are made
     struct Reference : public UntypedReference
@@ -24,7 +26,7 @@ public:
         {}
     };
 
-    static Component<T>
+    static Component<T, TStorage>
     createManager(Entity group, uint32_t capacity, uint8_t *data = nullptr)
     {
         (void)group;
@@ -62,7 +64,7 @@ private:
     std::map<int32_t, IField::SerializationCondition> m_serializationRules;
 
 protected:
-    PPTransientField(Component<T>, Entity, _Entity);
+    PPTransientField(ComponentType, Entity, _Entity);
 
     virtual void purge(uint32_t idx)
     {
@@ -184,9 +186,8 @@ public:
             Delete(entity);
     }
 
-    static void Filter(
-        bedrock::BitSet &mask,
-        IComponentStorage::ComponentStorageFilterType filterType)
+    static void
+    Filter(bedrock::BitSet &mask, ComponentStorageFilterType filterType)
     {
         getInstance()->_filter(mask, filterType);
     }
@@ -265,22 +266,21 @@ public:
     }
 };
 
-template <typename T>
-class HintComponent : public Component<T>, public IComponentStorage
+class HintComponentStorage
 {
 public:
-    virtual bool _has(Entity entity) const
+    bool _has(Entity entity) const
     {
         uint32_t idx = entity.index;
         return m_mask.size() > idx && m_mask[idx];
     }
 
-    virtual uint32_t _index(Entity entity) const
+    uint32_t _index(Entity entity) const
     {
         return entity.index;
     }
 
-    virtual uint32_t _register(Entity entity, uint32_t currentSize)
+    uint32_t _register(Entity entity, uint32_t currentSize)
     {
         (void)currentSize;
 
@@ -293,33 +293,39 @@ public:
         return idx;
     }
 
-    virtual uint32_t _delete(Entity entity)
+    uint32_t _delete(Entity entity)
     {
         m_mask[entity.index] = false;
         return 0;
     }
 
-    virtual uint32_t _safeDelete(Entity entity)
+    uint32_t _safeDelete(Entity entity)
     {
         return _delete(entity);
     }
 
-    virtual void
+    void
     _filter(bedrock::BitSet &mask, ComponentStorageFilterType filterType) const
     {
-        mask &= (filterType == IComponentStorage::WITH) ? m_mask : ~m_mask;
+        mask &= (filterType == ComponentStorageFilterType::WITH) ? m_mask
+                                                                 : ~m_mask;
     }
 
+    void _clean()
+    {}
+
+protected:
+    bedrock::BitSet m_mask;
+};
+
+template <typename T>
+class HintComponent : public Component<T, HintComponentStorage>
+{
+public:
     inline static bedrock::BitSet &Mask()
     {
         return bedrock::Singleton<T>::getInstance()->m_mask;
     }
-
-    virtual void _clean()
-    {}
-
-private:
-    bedrock::BitSet m_mask;
 };
 
 }} // namespace perfectpixel::ecs

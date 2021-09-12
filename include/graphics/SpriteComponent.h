@@ -12,8 +12,8 @@
 
 namespace perfectpixel { namespace graphics {
 
-class SpriteComponent : public ecs::Component<SpriteComponent>,
-                        public ecs::DefaultComponentStorage
+class SpriteComponent
+    : public ecs::Component<SpriteComponent, ecs::DefaultComponentStorage>
 {
 private:
 public:

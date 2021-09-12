@@ -30,24 +30,24 @@ enum ColliderMaskType : uint32_t
 PP_TYPE_REFLECTION(::perfectpixel::physics::ColliderMaskType, ColliderMaskType);
 namespace perfectpixel { namespace physics {
 
-class AARectangleColliderMask : public ecs::Component<AARectangleColliderMask>,
-                                public ecs::MapComponentStorage
+class AARectangleColliderMask
+    : public ecs::Component<AARectangleColliderMask, ecs::MapComponentStorage>
 {
 public:
     PPField(AARectangleColliderMask, bedrock::Vector2, Center);
     PPField(AARectangleColliderMask, bedrock::Vector2, HalfSize);
 };
 
-class CircleColliderMask : public ecs::Component<CircleColliderMask>,
-                           public ecs::MapComponentStorage
+class CircleColliderMask
+    : public ecs::Component<CircleColliderMask, ecs::MapComponentStorage>
 {
 public:
     PPField(CircleColliderMask, bedrock::Vector2, Center);
     PPField(CircleColliderMask, float, Radius);
 };
 
-class ColliderComponent : public ecs::Component<ColliderComponent>,
-                          public ecs::LinearScanComponentStorage
+class ColliderComponent
+    : public ecs::Component<ColliderComponent, ecs::LinearScanComponentStorage>
 {
 public:
     static void ClearMask(ecs::Entity entity);
@@ -67,5 +67,4 @@ public:
     PPField(ColliderComponent, ColliderMaskType, MaskType);
     PPField(ColliderComponent, std::string, EventTag);
 };
-}
-}
+}} // namespace perfectpixel::physics

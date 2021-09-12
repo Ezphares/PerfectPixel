@@ -11,13 +11,12 @@
 
 namespace perfectpixel { namespace graphics {
 
-	class UITextComponent
-		: public ecs::Component<UITextComponent>
-		, public ecs::LinearScanComponentStorage
-	{
-	public:
-		PPField(UITextComponent, std::string, Text);
-		PPField(UITextComponent, int32_t, Alignment);
-	};
+class UITextComponent
+    : public ecs::Component<UITextComponent, ecs::LinearScanComponentStorage>
+{
+public:
+    PPField(UITextComponent, std::string, Text);
+    PPField(UITextComponent, int32_t, Alignment);
+};
 
-} }
+}} // namespace perfectpixel::graphics

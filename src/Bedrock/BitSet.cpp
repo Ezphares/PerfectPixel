@@ -156,7 +156,7 @@ bool BitSet::operator==(const BitSet &other) const
 
     for (uint32_t i = 0; i < m_data.size(); ++i)
     {
-        if ((m_data[i] ^ 0xff) != other.m_data[i])
+        if ((~m_data[i]) != other.m_data[i])
         {
             return false;
         }
