@@ -8,7 +8,7 @@
 This project needs an installation of OpenGL. On (any modern) Windows this should always me present, on Linux an installation from [mesa](https://mesa3d.org/) or a proprietary driver is needed
 
 ## Building
-Requires a C++17 capable compiler, and cmake >= 3.8
+Requires a C++20 capable compiler, and cmake >= 3.8
 
 After cloning:
 * `mkdir build && cd build`
