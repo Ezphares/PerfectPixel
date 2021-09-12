@@ -1,6 +1,6 @@
 #pragma once
 
-#include <EntityComponentSystem/IComponentStorage.h>
+#include <EntityComponentSystem/ComponentStorageConcept.h>
 
 #include <queue>
 #include <unordered_map>

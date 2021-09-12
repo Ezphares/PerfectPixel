@@ -1,8 +1,8 @@
 #pragma once
 
+#include <EntityComponentSystem/ComponentStorageConcept.h>
 #include <EntityComponentSystem/EntityManager.h>
 #include <EntityComponentSystem/FieldHelper.h>
-#include <EntityComponentSystem/IComponentStorage.h>
 
 #include <Bedrock/BitSet.h>
 #include <Bedrock/Singleton.h>

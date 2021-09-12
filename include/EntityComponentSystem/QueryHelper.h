@@ -1,6 +1,6 @@
 #pragma once
 
-#include <EntityComponentSystem/IComponentStorage.h>
+#include <EntityComponentSystem/ComponentStorageConcept.h>
 #include <EntityComponentSystem/LifecycleComponents.h>
 #include <EntityComponentSystem/Query.h>
 
