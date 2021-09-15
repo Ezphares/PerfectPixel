@@ -12,8 +12,38 @@
 
 namespace perfectpixel { namespace ecs {
 
+class BaseComponent
+{
+public:
+    BaseComponent();
+    virtual ~BaseComponent();
+
+    void initialize(uint32_t idx);
+    void destroy(uint32_t idx);
+    virtual void prepare(uint32_t idx);
+    virtual void purge(uint32_t idx);
+
+    bool addField(int32_t id, IField *field);
+    void addSerializationRule(int32_t id, IField::SerializationCondition rule);
+    IField *lookup(int32_t id);
+
+    void serialize(
+        serialization::ISerializer &serializer, Entity entity, uint32_t idx);
+    void deserialize(serialization::ISerializer &serializer, uint32_t idx);
+
+protected:
+    uint32_t m_objects;
+    uint32_t m_lastIndex;
+    std::map<int32_t, IField *> m_fields;
+    uint32_t m_dirtyFrame;
+    size_t m_size;
+    std::map<int32_t, IField::SerializationCondition> m_serializationRules;
+};
+
 template <typename T, ComponentStorage TStorage = DefaultComponentStorage>
-class Component : public bedrock::Singleton<T>, public TStorage
+class Component : public bedrock::Singleton<T>,
+                  public BaseComponent,
+                  protected TStorage
 {
 public:
     typedef Component<T, TStorage> ComponentType;
@@ -27,7 +57,7 @@ public:
         {}
     };
 
-    static Component<T, TStorage>
+    static ComponentType
     createManager(Entity group, uint32_t capacity, uint8_t *data = nullptr)
     {
         (void)group;
@@ -48,60 +78,25 @@ public:
 
 protected:
     Component()
-        : m_objects(0)
-        , m_lastIndex(0)
-        , m_fields()
-        , m_dirtyFrame(0)
-        , m_size(0)
-        , m_serializationRules()
+        : BaseComponent()
     {}
-
-private:
-    uint32_t m_objects;
-    uint32_t m_lastIndex;
-    std::map<int32_t, IField *> m_fields;
-    uint32_t m_dirtyFrame;
-    size_t m_size;
-    std::map<int32_t, IField::SerializationCondition> m_serializationRules;
-
-protected:
-    virtual void purge(uint32_t idx)
-    {
-        (void)idx;
-    };
-    virtual void initialize(uint32_t idx)
-    {
-        static_assert(std::is_base_of_v<ComponentType, T>);
-        for (auto field : m_fields)
-        {
-            field.second->reset(idx);
-        }
-    };
 
 public:
     static bool AddField(int32_t id, IField *field)
     {
-        auto &fields = getInstance()->m_fields;
-        // Inline statics are weird, we have to check for duplicates
-        bool add = fields.find(id) == fields.end();
-        if (add)
-        {
-            fields[id] = field;
-            getInstance()->m_size += field->size();
-        }
-
-        return add;
+        static_assert(std::is_base_of_v<ComponentType, T>);
+        return getInstance()->addField(id, field);
     }
 
     static void
     AddSerializationRule(int32_t id, IField::SerializationCondition rule)
     {
-        getInstance()->m_serializationRules[id] = rule;
+        return getInstance()->addSerializationRule(id, rule);
     }
 
     static IField *Lookup(int32_t id)
     {
-        return getInstance()->m_fields[id];
+        return getInstance()->lookup(id);
     }
 
     static bool Has(Entity entity)
@@ -116,19 +111,11 @@ public:
 
     static Reference Register(Entity entity)
     {
+        DEBUG_ASSERT(!Has(entity));
+
         T *self      = getInstance();
         uint32_t idx = self->_register(entity, self->m_lastIndex);
-
-        if (idx >= self->m_lastIndex)
-        {
-            self->m_lastIndex++;
-        }
-
-        self->initialize(idx);
-        self->m_objects++;
-
-        self->m_dirtyFrame = EntityManager::getInstance()->getTick();
-
+        self->prepare(idx);
         return Reference(entity, idx);
     }
 
@@ -141,19 +128,13 @@ public:
     static Reference GetRef(Entity entity)
     {
         DEBUG_ASSERT(Has(entity));
-
         return Reference(entity, Index(entity));
     }
 
     static void Delete(Entity entity)
     {
         uint32_t idx = getInstance()->_delete(entity);
-
-        getInstance()->purge(idx);
-
-        getInstance()->m_dirtyFrame = EntityManager::getInstance()->getTick();
-
-        getInstance()->m_objects--;
+        getInstance()->destroy(idx);
     }
 
     static void Copy(Entity destination, Entity source)
@@ -200,49 +181,19 @@ public:
     {
         if (Has(entity))
         {
-            serializer.writeMapStart();
-
-            auto &fields = getInstance()->m_fields;
-            auto &rules  = getInstance()->m_serializationRules;
             uint32_t idx = Index(entity);
-
-            for (auto it = fields.begin(); it != fields.end(); ++it)
-            {
-                auto condition = rules.find(it->first);
-                if (condition != rules.end() && !condition->second(entity))
-                {
-                    continue;
-                }
-
-#if PP_FULL_REFLECTION_ENABLED
-                serializer.writeMapKey(
-                    FieldTable::getInstance()->reverse(it->first));
-#else
-                serializer.writeMapKey(it->first);
-#endif
-                it->second->serialize(serializer, idx);
-            }
-
-            serializer.writeMapEnd();
+            getInstance()->serialize(serializer, entity, idx);
         }
     }
 
     static void
     Deserialize(serialization::ISerializer &serializer, Entity entity)
     {
-        Register(entity);
+        if (!getInstance()->_has(entity))
+            Register(entity);
+
         uint32_t idx = Index(entity);
-
-        auto fields = getInstance()->m_fields;
-        int32_t k;
-
-        while (serializer.readMapKey(&k))
-        {
-            if (serializer.isValueNull())
-                continue;
-
-            fields[k]->deserialize(serializer, idx);
-        }
+        getInstance()->deserialize(serializer, idx);
     }
 
     static uint32_t DirtyFrame()
@@ -257,67 +208,6 @@ public:
             ref.m_index = Index(ref.m_entity);
         }
     }
-};
-
-class HintComponentStorage
-{
-public:
-    bool _has(Entity entity) const
-    {
-        uint32_t idx = entity.index;
-        return m_mask.size() > idx && m_mask[idx];
-    }
-
-    uint32_t _index(Entity entity) const
-    {
-        return entity.index;
-    }
-
-    Entity _at(uint32_t index) const
-    {
-        if (m_mask[index])
-        {
-            return EntityManager::getInstance()->at(index);
-        }
-        return NO_ENTITY;
-    }
-
-    uint32_t _register(Entity entity, uint32_t currentSize)
-    {
-        (void)currentSize;
-
-        uint32_t idx = entity.index;
-        if (m_mask.size() <= idx)
-        {
-            m_mask.resize((idx + 1));
-        }
-        m_mask[idx] = true;
-        return idx;
-    }
-
-    uint32_t _delete(Entity entity)
-    {
-        m_mask[entity.index] = false;
-        return 0;
-    }
-
-    uint32_t _safeDelete(Entity entity)
-    {
-        return _delete(entity);
-    }
-
-    void
-    _filter(bedrock::BitSet &mask, ComponentStorageFilterType filterType) const
-    {
-        mask &= (filterType == ComponentStorageFilterType::WITH) ? m_mask
-                                                                 : ~m_mask;
-    }
-
-    void _clean()
-    {}
-
-protected:
-    bedrock::BitSet m_mask;
 };
 
 template <typename T>
