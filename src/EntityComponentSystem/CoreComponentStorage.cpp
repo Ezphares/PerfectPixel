@@ -138,6 +138,7 @@ uint32_t FlatComponentStorage::_register(Entity entity, uint32_t currentSize)
         m_entities.resize((idx + 1), NO_ENTITY);
     }
     m_mask[idx] = true;
+    m_entities[idx] = entity;
     return idx;
 }
 
@@ -269,5 +270,60 @@ void MapComponentStorage::_clean()
         }
     }
 }
+/************************************************************************/
+/*                                                                      */
+/************************************************************************/
+bool HintComponentStorage::_has(Entity entity) const
+{
+    uint32_t idx = entity.index;
+    return m_mask.size() > idx && m_mask[idx];
+}
+
+uint32_t HintComponentStorage::_index(Entity entity) const
+{
+    return entity.index;
+}
+
+perfectpixel::ecs::Entity HintComponentStorage::_at(uint32_t index) const
+{
+    if (m_mask[index])
+    {
+        return EntityManager::getInstance()->at(index);
+    }
+    return NO_ENTITY;
+}
+
+uint32_t HintComponentStorage::_register(Entity entity, uint32_t currentSize)
+{
+    (void)currentSize;
+
+    uint32_t idx = entity.index;
+    if (m_mask.size() <= idx)
+    {
+        m_mask.resize((idx + 1));
+    }
+    m_mask[idx] = true;
+    return idx;
+}
+
+uint32_t HintComponentStorage::_delete(Entity entity)
+{
+    m_mask[entity.index] = false;
+    return 0;
+}
+
+uint32_t HintComponentStorage::_safeDelete(Entity entity)
+{
+    return _delete(entity);
+}
+
+void HintComponentStorage::_filter(
+    bedrock::BitSet &mask, ComponentStorageFilterType filterType) const
+{
+    mask &= (filterType == ComponentStorageFilterType::WITH) ? m_mask : ~m_mask;
+}
+
+void HintComponentStorage::_clean()
+{}
 
 }} // namespace perfectpixel::ecs

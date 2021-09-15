@@ -79,5 +79,24 @@ private:
     std::unordered_map<Entity, uint32_t> m_indices;
 };
 
+class HintComponentStorage
+{
+public:
+    bool _has(Entity entity) const;
+    uint32_t _index(Entity entity) const;
+    Entity _at(uint32_t index) const;
+    uint32_t _register(Entity entity, uint32_t currentSize);
+    uint32_t _delete(Entity entity);
+    uint32_t _safeDelete(Entity entity);
+
+    void
+    _filter(bedrock::BitSet &mask, ComponentStorageFilterType filterType) const;
+
+    void _clean();
+
+protected:
+    bedrock::BitSet m_mask;
+};
+
 typedef MapComponentStorage DefaultComponentStorage;
 }} // namespace perfectpixel::ecs

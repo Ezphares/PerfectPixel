@@ -11,7 +11,7 @@ namespace {
 const int32_t EULER_STEPS = 1;
 }
 
-typedef ecs::QueryHelper<ecs::With<ecs::TransformComponent>> IntegratorQuery;
+typedef ecs::QueryHelper<ecs::With<ecs::TransformComponent>, ecs::With<physics::PhysicsComponent>> IntegratorQuery;
 
 IntegratorSystem::IntegratorSystem()
     : ecs::QuerySystem(IntegratorQuery::build())
