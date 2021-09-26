@@ -1,0 +1,23 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: install dependencies
+      run: sudo apt-get install libgl1-mesa-dev freeglut3-dev mesa-common-dev
+    - name: configure
+      run: (mkdir build && cd build && cmake ..)
+    - name: compile
+      run: (cd build && make RunTests)
+    - name: run tests
+      run: (cd build && ./RunTests)
