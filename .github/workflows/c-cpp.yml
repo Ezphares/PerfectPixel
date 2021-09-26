@@ -13,6 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: true
     - name: install dependencies
       run: sudo apt-get install libgl1-mesa-dev freeglut3-dev mesa-common-dev
     - name: configure
