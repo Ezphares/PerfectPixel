@@ -156,7 +156,7 @@ bool BitSet::operator==(const BitSet &other) const
 
     for (uint32_t i = 0; i < m_data.size(); ++i)
     {
-        if ((~m_data[i]) != other.m_data[i])
+        if ((~m_data[i] & 0xff) != other.m_data[i])
         {
             return false;
         }
@@ -171,7 +171,7 @@ void BitSet::executeNegation()
     {
         for (uint32_t i = 0; i < m_data.size(); ++i)
         {
-            m_data[i] = ~m_data[i];
+            m_data[i] = (~m_data[i] & 0xff);
         }
 
         trim(); // Unincluded bits may have been set to 1
