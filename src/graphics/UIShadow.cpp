@@ -14,7 +14,8 @@ void perfectpixel::graphics::_internal::UIShadow::flip()
 }
 
 perfectpixel::graphics::_internal::UIShadow::UIShadowState
-perfectpixel::graphics::_internal::UIShadow::getPreviousState(int32_t id) const
+perfectpixel::graphics::_internal::UIShadow::getPreviousState(
+    std::int32_t id) const
 {
     const UIShadowStateBuffer &previousBuffer
         = m_stateDoubleBuffer[m_inactiveBuffer];
@@ -30,7 +31,7 @@ perfectpixel::graphics::_internal::UIShadow::getPreviousState(int32_t id) const
 }
 
 void perfectpixel::graphics::_internal::UIShadow::setState(
-    int32_t id, UIShadowState state)
+    std::int32_t id, UIShadowState state)
 {
     UIShadowStateBuffer &currentBuffer = m_stateDoubleBuffer[m_activeBuffer];
 

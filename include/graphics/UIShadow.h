@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <cstdint>
 #include <vector>
 
 namespace perfectpixel { namespace graphics { namespace _internal {
@@ -25,20 +26,20 @@ public:
 
     struct UIShadowStateEntry
     {
-        int32_t m_id;
+        std::int32_t m_id;
         UIShadowState m_state;
     };
 
     typedef std::vector<UIShadowStateEntry> UIShadowStateBuffer;
 
     std::array<UIShadowStateBuffer, 2> m_stateDoubleBuffer;
-    uint8_t m_activeBuffer;
+    std::uint8_t m_activeBuffer;
     // For code readability...
-    uint8_t m_inactiveBuffer;
+    std::uint8_t m_inactiveBuffer;
 
     void flip();
-    UIShadowState getPreviousState(int32_t id) const;
-    void setState(int32_t id, UIShadowState state);
+    UIShadowState getPreviousState(std::int32_t id) const;
+    void setState(std::int32_t id, UIShadowState state);
 };
 
 }}} // namespace perfectpixel::graphics::_internal
