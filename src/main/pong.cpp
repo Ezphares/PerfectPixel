@@ -310,8 +310,8 @@ class Pong : public core::Game
 
         // Serialization debug
         serialization::YAMLSerializer yaml;
-        yaml.m_reverse = &ecs::FieldTable::Reverse;
-        ecs::FieldTable::getInstance()->serialize(yaml, e);
+        yaml.m_reverse = &ecs::ReflectionTable::Reverse;
+        ecs::ReflectionTable::getInstance()->serialize(yaml, e);
         yaml.dump();
     }
 

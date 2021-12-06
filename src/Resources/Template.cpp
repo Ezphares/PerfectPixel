@@ -18,7 +18,7 @@ Template::Template()
 perfectpixel::ecs::Entity Template::spawn()
 {
     ecs::EntityManager *manager = ecs::EntityManager::getInstance();
-    ecs::FieldTable *table      = ecs::FieldTable::getInstance();
+    ecs::ReflectionTable *table = ecs::ReflectionTable::getInstance();
 
     std::vector<ecs::Entity> spawns
         = std::vector<ecs::Entity>(m_entities.size(), ecs::NO_ENTITY);
@@ -34,7 +34,7 @@ perfectpixel::ecs::Entity Template::spawn()
 
 void Template::applyTo(std::vector<ecs::Entity> &target)
 {
-    ecs::FieldTable *table = ecs::FieldTable::getInstance();
+    ecs::ReflectionTable *table = ecs::ReflectionTable::getInstance();
 
     for (uint32_t i = 0; i < m_entities.size(); ++i)
     {
@@ -71,7 +71,7 @@ Template::CreateTemplateLoader(
                         = ecs::EntityManager::getInstance()->create();
                     ecs::InactiveComponent::Register(entity);
 
-                    ecs::FieldTable::getInstance()->deserialize(
+                    ecs::ReflectionTable::getInstance()->deserialize(
                         *serializer, entity);
 
                     tpl->m_entities.push_back(entity);

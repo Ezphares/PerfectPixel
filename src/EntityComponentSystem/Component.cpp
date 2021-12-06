@@ -96,7 +96,8 @@ void BaseComponent::serialize(
         }
 
 #if PP_FULL_REFLECTION_ENABLED
-        serializer.writeMapKey(FieldTable::getInstance()->reverse(it->first));
+        serializer.writeMapKey(
+            ReflectionTable::getInstance()->reverse(it->first));
 #else
         serializer.writeMapKey(it->first);
 #endif

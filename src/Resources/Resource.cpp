@@ -99,7 +99,7 @@ void Resource::set()
 
 void Resource::set(const std::string &id)
 {
-    ecs::FieldTable::Touch(id);
+    ecs::ReflectionTable::Touch(id);
 
     set(bedrock::crc32(id));
 }

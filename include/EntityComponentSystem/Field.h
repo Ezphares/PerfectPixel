@@ -74,7 +74,7 @@ public:
         , m_default()
     {}
 
-    FieldImpl(FieldTable::ReflectionHint)
+    FieldImpl(ReflectionTable::ReflectionHint)
         : m_data()
         , m_default()
     {}
@@ -98,7 +98,8 @@ public:
         {
             ComponentLUTEntry lutEntry;
             lutCallback(lutEntry);
-            FieldTable::getInstance()->add(ownerId, selfId, typeId, lutEntry);
+            ReflectionTable::getInstance()->add(
+                ownerId, selfId, typeId, lutEntry);
         }
     }
 
@@ -125,7 +126,7 @@ public:
         {
             ComponentLUTEntry lutEntry;
             lutCallback(lutEntry);
-            FieldTable::getInstance()->add(
+            ReflectionTable::getInstance()->add(
                 ownerName,
                 ownerId,
                 selfName,
@@ -249,7 +250,7 @@ public:
     typedef T TValue;
     typedef TValue TContainer[Capacity];
 
-    ArrayField(FieldTable::ReflectionHint)
+    ArrayField(ReflectionTable::ReflectionHint)
         : m_data()
     {}
 
@@ -267,7 +268,8 @@ public:
         {
             ComponentLUTEntry lutEntry;
             lutCallback(lutEntry);
-            FieldTable::getInstance()->add(ownerId, selfId, typeId, lutEntry);
+            ReflectionTable::getInstance()->add(
+                ownerId, selfId, typeId, lutEntry);
         }
     }
 
@@ -289,7 +291,7 @@ public:
         {
             ComponentLUTEntry lutEntry;
             lutCallback(lutEntry);
-            FieldTable::getInstance()->add(
+            ReflectionTable::getInstance()->add(
                 ownerName,
                 ownerId,
                 selfName,
@@ -439,7 +441,8 @@ public:
         {
             ComponentLUTEntry lutEntry;
             lutCallback(lutEntry);
-            FieldTable::getInstance()->add(ownerId, selfId, typeId, lutEntry);
+            ReflectionTable::getInstance()->add(
+                ownerId, selfId, typeId, lutEntry);
         }
     }
 
@@ -461,7 +464,7 @@ public:
         {
             ComponentLUTEntry lutEntry;
             lutCallback(lutEntry);
-            FieldTable::getInstance()->add(
+            ReflectionTable::getInstance()->add(
                 ownerName,
                 ownerId,
                 selfName,

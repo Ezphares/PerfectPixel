@@ -165,6 +165,7 @@ MAKE_GROUP("EntityComponentSystem" "EntityComponentSystem"
 	"SystemQueue.cpp"
 	"CoreComponentStorage.cpp"
 	"Component.cpp"
+	"ReflectionTable.cpp"
 )
 
 MAKE_GROUP("Serialization" "serialization"
