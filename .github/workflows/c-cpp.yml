@@ -16,7 +16,7 @@ jobs:
       with:
         submodules: true
     - name: install dependencies
-      run: sudo apt-get install libgl1-mesa-dev freeglut3-dev mesa-common-dev g++-10
+      run: sudo apt-get udpate && sudo apt-get install libgl1-mesa-dev freeglut3-dev mesa-common-dev g++-10
     - name: configure
       run: (mkdir build && cd build && cmake -DCMAKE_CXX_COMPILER=g++-10 ..)
     - name: compile
