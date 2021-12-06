@@ -2,7 +2,7 @@
 
 #include <EntityComponentSystem/Component.h>
 #include <EntityComponentSystem/CoreComponentStorage.h>
-#include <EntityComponentSystem/EcsReflection.h>
+#include <EntityComponentSystem/ReflectionTable.h>
 
 #include <Bedrock/vectors.h>
 

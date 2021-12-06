@@ -1,6 +1,6 @@
 #pragma once
 
-#include <EntityComponentSystem/EcsReflection.h>
+#include <EntityComponentSystem/ReflectionTable.h>
 
 #include <serialization/BinarySerializer.h>
 
