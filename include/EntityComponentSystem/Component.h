@@ -1,5 +1,6 @@
 #pragma once
 
+#include <EntityComponentSystem/ComponentLUTEntry.h>
 #include <EntityComponentSystem/CoreComponentStorage.h>
 #include <EntityComponentSystem/EntityManager.h>
 #include <EntityComponentSystem/FieldHelper.h>
@@ -24,6 +25,7 @@ public:
     virtual void purge(uint32_t idx);
 
     bool addField(int32_t id, IField *field);
+    bool addFieldDescriptor(int32_t id, IFieldDescriptor *fieldDescriptor);
     void addSerializationRule(int32_t id, IField::SerializationCondition rule);
     IField *lookup(int32_t id);
 
@@ -31,14 +33,47 @@ public:
         serialization::ISerializer &serializer, Entity entity, uint32_t idx);
     void deserialize(serialization::ISerializer &serializer, uint32_t idx);
 
+    std::size_t size();
+
 protected:
     uint32_t m_objects;
     uint32_t m_lastIndex;
+    std::map<int32_t, IFieldDescriptor *> m_fieldDescriptors;
     std::map<int32_t, IField *> m_fields;
     uint32_t m_dirtyFrame;
-    size_t m_size;
     std::map<int32_t, IField::SerializationCondition> m_serializationRules;
 };
+
+class ManagerRegistration
+{
+public:
+    typedef void (*Factory)(BaseComponent *, Entity, uint32_t, void *);
+    typedef size_t (*Sizer)();
+
+    ManagerRegistration(
+        int32_t id, Factory factory, Sizer sizer, uint32_t count)
+    {
+        MetaData meta;
+        meta.factory          = factory;
+        meta.sizer            = sizer;
+        meta.count            = count;
+        m_defaultManagers[id] = meta;
+    }
+
+private:
+    struct MetaData
+    {
+        Factory factory;
+        Sizer sizer;
+        uint32_t count;
+    };
+
+    std::map<int32_t, MetaData> m_defaultManagers;
+};
+
+#define PPDefaultManager(T, Capacity)                                          \
+    inline static ManagerRegistration __Registration = ManagerRegistration(    \
+        PP_ID(Component), &T::InitManager, &T::Size, Capacity)
 
 template <typename T, ComponentStorage TStorage = DefaultComponentStorage>
 class Component : public bedrock::Singleton<T>,
@@ -57,20 +92,25 @@ public:
         {}
     };
 
-    static ComponentType
-    createManager(Entity group, uint32_t capacity, uint8_t *data = nullptr)
+    static void InitManager(
+        BaseComponent *manager,
+        Entity group,
+        uint32_t capacity,
+        void *data = nullptr)
     {
+        (void)manager;
         (void)group;
         if (data == nullptr)
         {
-            data = malloc(getInstance()->m_size * capacity);
+            data = malloc(getInstance()->size() * capacity);
         }
+        uintptr_t idata = (uintptr_t)data;
 
-        for (auto field : getInstance()->m_fields)
+        for (auto field : getInstance()->m_fieldDescriptors)
         {
             // TODO
             // field->second->create(capacity, data);
-            data += field->second->size() * capacity;
+            idata += field.second->size() * capacity;
         }
     }
 
@@ -88,6 +128,14 @@ public:
         return getInstance()->addField(id, field);
     }
 
+    static bool
+    AddFieldDescriptor(int32_t id, IFieldDescriptor *fieldDescriptor)
+    {
+        // We add the field descriptors to the default instance because of
+        // static initialization order
+        return getInstance()->addFieldDescriptor(id, fieldDescriptor);
+    }
+
     static void
     AddSerializationRule(int32_t id, IField::SerializationCondition rule)
     {
@@ -102,6 +150,11 @@ public:
     static bool Has(Entity entity)
     {
         return getInstance()->_has(entity);
+    }
+
+    static bool Has(Entity entity, T *manager)
+    {
+        return manager->_has(entity);
     }
 
     static uint32_t Index(Entity entity)
@@ -207,6 +260,22 @@ public:
         {
             ref.m_index = Index(ref.m_entity);
         }
+    }
+
+    static std::size_t Size()
+    {
+        return getInstance()->size();
+    }
+
+    static void FillLUTEntry(ComponentLUTEntry &lutEntry)
+    {
+        lutEntry.m_has         = &ComponentType::Has;
+        lutEntry.m_serialize   = &ComponentType::Serialize;
+        lutEntry.m_deserialize = &ComponentType::Deserialize;
+        lutEntry.m_register    = &ComponentType::VoidRegister;
+        lutEntry.m_delete      = &ComponentType::Delete;
+        lutEntry.m_fields      = &ComponentType::Lookup;
+        lutEntry.m_copy        = &ComponentType::Copy;
     }
 };
 

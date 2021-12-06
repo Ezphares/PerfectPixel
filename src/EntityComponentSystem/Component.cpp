@@ -7,7 +7,6 @@ BaseComponent::BaseComponent()
     , m_lastIndex(0)
     , m_fields()
     , m_dirtyFrame(0)
-    , m_size(0)
     , m_serializationRules()
 {}
 
@@ -54,7 +53,18 @@ bool BaseComponent::addField(int32_t id, IField *field)
     if (add)
     {
         m_fields[id] = field;
-        m_size += field->size();
+    }
+
+    return add;
+}
+
+bool BaseComponent::addFieldDescriptor(
+    int32_t id, IFieldDescriptor *fieldDescriptor)
+{
+    bool add = m_fieldDescriptors.find(id) == m_fieldDescriptors.end();
+    if (add)
+    {
+        m_fieldDescriptors[id] = fieldDescriptor;
     }
 
     return add;
@@ -108,6 +118,16 @@ void BaseComponent::deserialize(
 
         m_fields[k]->deserialize(serializer, idx);
     }
+}
+
+std::size_t BaseComponent::size()
+{
+    std::size_t result = 0u;
+    for (auto descriptor : m_fieldDescriptors)
+    {
+        result += descriptor.second->size();
+    }
+    return result;
 }
 
 }} // namespace perfectpixel::ecs

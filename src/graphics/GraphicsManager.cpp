@@ -199,7 +199,7 @@ void GraphicsManager::drawAll(double deltaT)
     }
 
     std::stringstream fpsText;
-    fpsText << "FT (avg): " << std::fixed << std::setprecision(2)
+    fpsText << "Frame: " << std::fixed << std::setprecision(2)
             << (ft / m_ftBuffer.size() * 1000) << "ms";
 
     TextBuffer text;

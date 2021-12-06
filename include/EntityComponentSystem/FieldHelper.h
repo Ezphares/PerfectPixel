@@ -2,10 +2,11 @@
 
 #include <EntityComponentSystem/Field.h>
 
-#define PPFIELDTYPE(Owner, T)                                                  \
-    ::perfectpixel::ecs::FieldImpl<Owner, Owner::Reference, T>
+#define PPFIELDTYPE(Owner, T) ::perfectpixel::ecs::FieldImpl<T>
 #define PPARRAYFIELDTYPE(Owner, T, C)                                          \
     ::perfectpixel::ecs::ArrayField<Owner, T, C>
+#define PPFIELDDESCRIPTORTYPE(Owner, T, C)                                     \
+    ::perfectpixel::ecs::FieldDescriptor<T, T &, C>
 
 #if PP_FULL_REFLECTION_ENABLED
 
@@ -17,7 +18,23 @@
         PP_ID(Name),                                                           \
         bedrock::typeName<T>(),                                                \
         bedrock::typeID<T>(),                                                  \
-        Default);
+        Default,                                                               \
+        Owner::AddField,                                                       \
+        Owner::FillLUTEntry,                                                   \
+        Owner::Index);
+
+#define PPFieldDescriptor(Owner, T, Name, Default)                             \
+    inline static PPFIELDDESCRIPTORTYPE(Owner, T, 1u) __Descriptor##Name       \
+        = PPFIELDDESCRIPTORTYPE(Owner, T, 1u)(                                 \
+            PP_DEQUALIFY(Owner),                                               \
+            PP_DQID(Owner),                                                    \
+            #Name,                                                             \
+            PP_ID(Name),                                                       \
+            bedrock::typeName<T>(),                                            \
+            bedrock::typeID<T>(),                                              \
+            Default,                                                           \
+            Owner::AddFieldDescriptor,                                         \
+            Owner::FillLUTEntry)
 
 #define PPArrayField(Owner, T, Capacity, Name)                                 \
     inline static PPARRAYFIELDTYPE(Owner, T, Capacity) Name                    \
@@ -27,21 +44,48 @@
             #Name,                                                             \
             PP_ID(Name),                                                       \
             bedrock::typeName<T>(),                                            \
-            bedrock::typeID<T>())
+            bedrock::typeID<T>(),                                              \
+            Owner::AddField,                                                   \
+            Owner::FillLUTEntry,                                               \
+            Owner::Index)
 
 #else /* PP_FULL_REFLECTION_ENABLED */
 
 #define PPFieldImpl(Owner, T, Name, Default)                                   \
     inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T)(          \
-        PP_DQID(Owner), PP_ID(Name), bedrock::typeID<T>(), Default);
+        PP_DQID(Owner),                                                        \
+        PP_ID(Name),                                                           \
+        bedrock::typeID<T>(),                                                  \
+        Default,                                                               \
+        Owner::AddField,                                                       \
+        Owner::FillLUTEntry,                                                   \
+        Owner::Index);
+
+#define PPFieldDescriptor(Owner, T, Name, Default)                             \
+    inline static PPFIELDDESCRIPTORTYPE(Owner, T, 1u) __Descriptor##Name       \
+        = PPFIELDDESCRIPTORTYPE(Owner, T, 1u)(                                 \
+            PP_DQID(Owner),                                                    \
+            PP_ID(Name),                                                       \
+            bedrock::typeID<T>(),                                              \
+            Default,                                                           \
+            Owner::AddFieldDescriptor,                                         \
+            Owner::FillLUTEntry);
 
 #define PPArrayField(Owner, T, Capacity, Name)                                 \
-    inline static PPFIELDTYPE(Owner, T, Capacity) Name = PPFIELDTYPE(          \
-        Owner, T, Capacity)(PP_DQID(Owner), bedrock::typeID<T>(), PP_DQID(T));
+    inline static PPFIELDTYPE(Owner, T, Capacity) Name                         \
+        = PPFIELDTYPE(Owner, T, Capacity)(                                     \
+            PP_DQID(Owner),                                                    \
+            bedrock::typeID<T>(),                                              \
+            PP_DQID(T),                                                        \
+            Owner::AddField,                                                   \
+            Owner::FillLUTEntry,                                               \
+            Owner::Index);
 
 #endif
 
-#define PPField(Owner, T, Name) PPFieldImpl(Owner, T, Name, T())
+#define PPField(Owner, T, Name)                                                \
+    PPFieldImpl(Owner, T, Name, T());                                          \
+    PPFieldDescriptor(Owner, T, Name, T())
 
 #define PPResourceField(Owner, ResourceType, Name)                             \
     PPFieldImpl(                                                               \

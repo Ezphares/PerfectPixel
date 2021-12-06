@@ -34,8 +34,13 @@ public:
     deserialize(serialization::ISerializer &serializer, uint32_t index)
         = 0;
     virtual void copy(uint32_t dstIndex, uint32_t srcIndex) = 0;
-    virtual size_t size()                                   = 0;
+    virtual void setBuffer(void *buffer)                    = 0;
+    // virtual void setManager(void *manager)                  = 0;
 };
+
+typedef bool (*FieldAdder)(int32_t, IField *);
+typedef void (*LUTFiller)(ComponentLUTEntry &);
+typedef uint32_t (*Indexer)(Entity);
 
 inline bool doNotSerialize(Entity)
 {
@@ -51,14 +56,12 @@ struct SerializationRule
     }
 };
 
-template <
-    typename Owner,
-    typename OwnerRef,
-    typename T,
-    Accessor<T> TAccessor = T &>
+template <typename T, Accessor<T> TAccessor = T &>
 class FieldImpl : public IField
 {
 private:
+    typedef T TValue;
+
     struct FieldTypeInfo
     {
         int32_t ownerId;
@@ -66,21 +69,36 @@ private:
     };
 
 public:
+    FieldImpl()
+        : m_data()
+        , m_default()
+    {}
+
     FieldImpl(FieldTable::ReflectionHint)
         : m_data()
         , m_default()
     {}
 
-    FieldImpl(int32_t ownerId, int32_t selfId, int32_t typeId, T defaultValue)
+    FieldImpl(
+        int32_t ownerId,
+        int32_t selfId,
+        int32_t typeId,
+        T defaultValue,
+        FieldAdder fieldCallback,
+        LUTFiller lutCallback,
+        Indexer indexCallback)
         : m_data()
         , m_default(defaultValue)
+        , m_indexCallback(indexCallback)
     {
         m_typeInfo.ownerId = ownerId;
         m_typeInfo.selfId  = selfId;
 
-        if (Owner::AddField(selfId, this))
+        if (fieldCallback(selfId, this))
         {
-            FieldTable::getInstance()->add<Owner>(ownerId, selfId, typeId);
+            ComponentLUTEntry lutEntry;
+            lutCallback(lutEntry);
+            FieldTable::getInstance()->add(ownerId, selfId, typeId, lutEntry);
         }
     }
 
@@ -92,17 +110,29 @@ public:
         int32_t selfId,
         const std::string &typeName,
         int32_t typeId,
-        T defaultValue)
+        T defaultValue,
+        FieldAdder fieldCallback,
+        LUTFiller lutCallback,
+        Indexer indexCallback)
         : m_data()
         , m_default(defaultValue)
+        , m_indexCallback(indexCallback)
     {
         m_typeInfo.ownerId = ownerId;
         m_typeInfo.selfId  = selfId;
 
-        if (Owner::AddField(selfId, this))
+        if (fieldCallback(selfId, this))
         {
-            FieldTable::getInstance()->add<Owner>(
-                ownerName, ownerId, selfName, selfId, typeName, typeId);
+            ComponentLUTEntry lutEntry;
+            lutCallback(lutEntry);
+            FieldTable::getInstance()->add(
+                ownerName,
+                ownerId,
+                selfName,
+                selfId,
+                typeName,
+                typeId,
+                lutEntry);
         }
     }
 #endif
@@ -119,36 +149,36 @@ public:
 
     T Get(Entity entity) const
     {
-        return m_data[Owner::Index(entity)];
+        return m_data[m_indexCallback(entity)];
     }
 
     void Set(Entity entity, const T &value)
     {
-        m_data[Owner::Index(entity)] = value;
+        m_data[m_indexCallback(entity)] = value;
     }
 
     // Raw access operators
     TAccessor &operator()(Entity entity)
     {
-        return m_data[Owner::Index(entity)];
+        return m_data[m_indexCallback(entity)];
     }
     const TAccessor &operator()(Entity entity) const
     {
-        return m_data.at(Owner::Index(entity));
+        return m_data.at(m_indexCallback(entity));
     }
 
-    T &operator()(OwnerRef &ref)
-    {
-        DEBUG_ASSERT(Owner::Has(ref.m_entity));
-        Owner::_fixRef(ref);
-        return m_data[ref.m_index];
-    }
-    const T &operator()(OwnerRef &ref) const
-    {
-        DEBUG_ASSERT(Owner::Has(ref.m_entity));
-        Owner::_fixRef(ref);
-        return m_data.at(ref.m_index);
-    }
+    // T &operator()(OwnerRef &ref)
+    //{
+    //    DEBUG_ASSERT(Owner::Has(ref.m_entity));
+    //    Owner::_fixRef(ref);
+    //    return m_data[ref.m_index];
+    //}
+    // const T &operator()(OwnerRef &ref) const
+    //{
+    //    DEBUG_ASSERT(Owner::Has(ref.m_entity));
+    //    Owner::_fixRef(ref);
+    //    return m_data.at(ref.m_index);
+    //}
 
     virtual void reset(uint32_t index) override
     {
@@ -196,15 +226,17 @@ public:
         m_data[index] = static_cast<T>(temp);
     }
 
-    virtual size_t size() override
+    virtual void setBuffer(void *buffer) override
     {
-        return sizeof(T);
+        m_buffer = reinterpret_cast<TValue *>(buffer);
     }
 
 private:
     std::vector<T> m_data;
     T m_default;
     FieldTypeInfo m_typeInfo;
+    TValue *m_buffer;
+    Indexer m_indexCallback;
 };
 
 template <typename Owner, typename T, std::uint32_t Capacity>
@@ -214,16 +246,28 @@ public:
     // FIXME Use a better container type
     typedef std::vector<T> Container;
 
+    typedef T TValue;
+    typedef TValue TContainer[Capacity];
+
     ArrayField(FieldTable::ReflectionHint)
         : m_data()
     {}
 
-    ArrayField(int32_t ownerId, int32_t selfId, int32_t typeId)
+    ArrayField(
+        int32_t ownerId,
+        int32_t selfId,
+        int32_t typeId,
+        FieldAdder fieldCallback,
+        LUTFiller lutCallback,
+        Indexer indexCallback)
         : m_data()
+        , m_indexCallback(indexCallback)
     {
-        if (Owner::AddField(selfId, this))
+        if (fieldCallback(selfId, this))
         {
-            FieldTable::getInstance()->add<Owner>(ownerId, selfId, typeId);
+            ComponentLUTEntry lutEntry;
+            lutCallback(lutEntry);
+            FieldTable::getInstance()->add(ownerId, selfId, typeId, lutEntry);
         }
     }
 
@@ -234,13 +278,25 @@ public:
         const std::string &selfName,
         int32_t selfId,
         const std::string &typeName,
-        int32_t typeId)
+        int32_t typeId,
+        FieldAdder fieldCallback,
+        LUTFiller lutCallback,
+        Indexer indexCallback)
         : m_data()
+        , m_indexCallback(indexCallback)
     {
-        if (Owner::AddField(selfId, this))
+        if (fieldCallback(selfId, this))
         {
-            FieldTable::getInstance()->add<Owner>(
-                ownerName, ownerId, selfName, selfId, typeName, typeId);
+            ComponentLUTEntry lutEntry;
+            lutCallback(lutEntry);
+            FieldTable::getInstance()->add(
+                ownerName,
+                ownerId,
+                selfName,
+                selfId,
+                typeName,
+                typeId,
+                lutEntry);
         }
     }
 #endif
@@ -326,13 +382,130 @@ public:
         m_data[dstIndex] = m_data[srcIndex];
     }
 
-    virtual size_t size() override
+    virtual void setBuffer(void *buffer) override
     {
-        return sizeof(T) * Capacity;
+        m_buffer = reinterpret_cast<TContainer *>(buffer);
     }
 
 private:
     std::vector<std::vector<T>> m_data;
+    T m_default;
+    TContainer *m_buffer;
+    Indexer m_indexCallback;
+};
+
+template <typename T>
+struct FieldUnderlying
+{
+    typedef T Type;
+};
+
+template <typename T, std::uint32_t Capacity>
+struct FieldContainer
+{
+    typedef typename FieldUnderlying<T> Type[Capacity];
+};
+
+template <typename T>
+struct FieldContainer<T, 1u>
+{
+    typedef typename FieldUnderlying<T> Type;
+};
+
+class IFieldDescriptor
+{
+public:
+    virtual void instantiate(IField *instance, void *manager, void *buffer) = 0;
+    virtual std::size_t size()                                              = 0;
+};
+
+template <typename T, Accessor<T> TAccessor = T &, uint32_t Capacity = 1u>
+class FieldDescriptor : public IFieldDescriptor
+{
+public:
+    typedef bool (*FieldDescAdder)(int32_t, IFieldDescriptor *);
+
+    FieldDescriptor(
+        int32_t ownerId,
+        int32_t selfId,
+        int32_t typeId,
+        T defaultValue,
+        FieldDescAdder fieldCallback,
+        LUTFiller lutCallback)
+        : m_id(selfId)
+        , m_default(defaultValue)
+    {
+        if (fieldCallback(selfId, this))
+        {
+            ComponentLUTEntry lutEntry;
+            lutCallback(lutEntry);
+            FieldTable::getInstance()->add(ownerId, selfId, typeId, lutEntry);
+        }
+    }
+
+#if PP_FULL_REFLECTION_ENABLED
+    FieldDescriptor(
+        const std::string &ownerName,
+        int32_t ownerId,
+        const std::string &selfName,
+        int32_t selfId,
+        const std::string &typeName,
+        int32_t typeId,
+        T defaultValue,
+        FieldDescAdder fieldCallback,
+        LUTFiller lutCallback)
+        : m_id(selfId)
+        , m_default(defaultValue)
+    {
+        if (fieldCallback(selfId, this))
+        {
+            ComponentLUTEntry lutEntry;
+            lutCallback(lutEntry);
+            FieldTable::getInstance()->add(
+                ownerName,
+                ownerId,
+                selfName,
+                selfId,
+                typeName,
+                typeId,
+                lutEntry);
+        }
+        m_default = defaultValue;
+    }
+#endif
+
+    virtual void
+    instantiate(IField *instance, void *manager, void *buffer) override
+    {
+        (void)instance;
+        (void)manager;
+        (void)buffer;
+        // if constexpr (Capacity < 2)
+        //{
+        //    instance = new FieldImpl<Owner, OwnerRef, T, TAccessor>();
+        //}
+        // else
+        //{
+        //    instance = new ArrayField<Owner, T, Capacity>();
+        //}
+        // instance->setBuffer(buffer);
+        // instance->setManager(manager);
+    }
+
+    virtual std::size_t size() override
+    {
+        if constexpr (Capacity < 2)
+        {
+            return sizeof(T);
+        }
+        else
+        {
+            return sizeof(T) * Capacity;
+        }
+    }
+
+private:
+    int32_t m_id;
     T m_default;
 };
 
