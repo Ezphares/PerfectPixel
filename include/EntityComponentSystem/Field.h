@@ -9,6 +9,7 @@
 #include <Bedrock/numbers.h>
 #include <EntityComponentSystem/Entity.h>
 
+#include <array>
 #include <type_traits>
 #include <vector>
 
@@ -405,13 +406,13 @@ struct FieldUnderlying
 template <typename T, std::uint32_t Capacity>
 struct FieldContainer
 {
-    typedef typename FieldUnderlying<T> Type[Capacity];
+    typedef std::array<typename FieldUnderlying<T>::Type, Capacity> Type;
 };
 
 template <typename T>
 struct FieldContainer<T, 1u>
 {
-    typedef typename FieldUnderlying<T> Type;
+    typedef typename FieldUnderlying<T>::Type Type;
 };
 
 class IFieldDescriptor
