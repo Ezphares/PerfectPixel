@@ -25,7 +25,6 @@ public:
     virtual void purge(uint32_t idx);
 
     bool addField(int32_t id, IField *field);
-    bool addFieldDescriptor(int32_t id, IFieldDescriptor *fieldDescriptor);
     void addSerializationRule(int32_t id, IField::SerializationCondition rule);
     IField *lookup(int32_t id);
 
@@ -38,7 +37,6 @@ public:
 protected:
     uint32_t m_objects;
     uint32_t m_lastIndex;
-    std::map<int32_t, IFieldDescriptor *> m_fieldDescriptors;
     std::map<int32_t, IField *> m_fields;
     uint32_t m_dirtyFrame;
     std::map<int32_t, IField::SerializationCondition> m_serializationRules;
@@ -92,28 +90,6 @@ public:
         {}
     };
 
-    static void InitManager(
-        BaseComponent *manager,
-        Entity group,
-        uint32_t capacity,
-        void *data = nullptr)
-    {
-        (void)manager;
-        (void)group;
-        if (data == nullptr)
-        {
-            data = malloc(getInstance()->size() * capacity);
-        }
-        uintptr_t idata = (uintptr_t)data;
-
-        for (auto field : getInstance()->m_fieldDescriptors)
-        {
-            // TODO
-            // field->second->create(capacity, data);
-            idata += field.second->size() * capacity;
-        }
-    }
-
     using bedrock::Singleton<T>::getInstance;
 
 protected:
@@ -127,15 +103,6 @@ public:
         static_assert(std::is_base_of_v<ComponentType, T>);
         return getInstance()->addField(id, field);
     }
-
-    static bool
-    AddFieldDescriptor(int32_t id, IFieldDescriptor *fieldDescriptor)
-    {
-        // We add the field descriptors to the default instance because of
-        // static initialization order
-        return getInstance()->addFieldDescriptor(id, fieldDescriptor);
-    }
-
     static void
     AddSerializationRule(int32_t id, IField::SerializationCondition rule)
     {

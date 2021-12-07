@@ -22,6 +22,30 @@ concept Accessor = requires(T a, U b)
     b = a;
 };
 
+template <typename T, typename Override = void>
+struct FieldUnderlying
+{
+    typedef T Type;
+};
+
+template <typename T>
+struct FieldUnderlying<T, typename std::enable_if<std::is_enum_v<T>>::type>
+{
+    typedef typename std::underlying_type<T>::type Type;
+};
+
+template <typename T, std::uint32_t Capacity>
+struct FieldContainer
+{
+    typedef std::array<typename FieldUnderlying<T>::Type, Capacity> Type;
+};
+
+template <typename T>
+struct FieldContainer<T, 1u>
+{
+    typedef typename FieldUnderlying<T>::Type Type;
+};
+
 class IField
 {
 public:
@@ -57,11 +81,14 @@ struct SerializationRule
     }
 };
 
-template <typename T, Accessor<T> TAccessor = T &>
+template <
+    typename T,
+    Accessor<typename FieldUnderlying<T>::Type> TAccessor =
+        typename FieldUnderlying<T>::Type &>
 class FieldImpl : public IField
 {
 private:
-    typedef T TValue;
+    typedef typename FieldUnderlying<T>::Type TValue;
 
     struct FieldTypeInfo
     {
@@ -160,11 +187,11 @@ public:
     }
 
     // Raw access operators
-    TAccessor &operator()(Entity entity)
+    TAccessor operator()(Entity entity)
     {
         return m_data[m_indexCallback(entity)];
     }
-    const TAccessor &operator()(Entity entity) const
+    const TValue &operator()(Entity entity) const
     {
         return m_data.at(m_indexCallback(entity));
     }
@@ -200,32 +227,12 @@ public:
     virtual void
     deserialize(serialization::ISerializer &serializer, uint32_t index) override
     {
-        _deserialize<T>(serializer, index);
+        serializer >> m_data[index];
     }
 
     virtual void copy(uint32_t dstIndex, uint32_t srcIndex) override
     {
         m_data[dstIndex] = m_data[srcIndex];
-    }
-
-    // For overloading reasons we have to split the deserialization into enums
-    // and everything else
-    template <
-        typename X,
-        typename std::enable_if_t<!std::is_enum<X>::value> * = nullptr>
-    void _deserialize(serialization::ISerializer &serializer, uint32_t index)
-    {
-        serializer >> m_data[index];
-    }
-
-    template <
-        typename X,
-        typename std::enable_if_t<std::is_enum<X>::value> * = nullptr>
-    void _deserialize(serialization::ISerializer &serializer, uint32_t index)
-    {
-        typename std::underlying_type<T>::type temp;
-        serializer >> temp;
-        m_data[index] = static_cast<T>(temp);
     }
 
     virtual void setBuffer(void *buffer) override
@@ -234,46 +241,192 @@ public:
     }
 
 private:
-    std::vector<T> m_data;
+    std::vector<TValue> m_data;
     T m_default;
     FieldTypeInfo m_typeInfo;
     TValue *m_buffer;
     Indexer m_indexCallback;
 };
 
+// template <typename Owner, typename T, std::uint32_t Capacity>
+// class ArrayField : public IField
+//{
+// public:
+//    // FIXME Use a better container type
+//    typedef std::vector<T> Container;
+//
+//    typedef T TValue;
+//    typedef TValue TContainer[Capacity];
+//
+//    ArrayField(ReflectionTable::ReflectionHint)
+//        : m_data()
+//    {}
+//
+//    ArrayField(
+//        int32_t ownerId,
+//        int32_t selfId,
+//        int32_t typeId,
+//        FieldAdder fieldCallback,
+//        LUTFiller lutCallback,
+//        Indexer indexCallback)
+//        : m_data()
+//        , m_indexCallback(indexCallback)
+//    {
+//        if (fieldCallback(selfId, this))
+//        {
+//            ComponentLUTEntry lutEntry;
+//            lutCallback(lutEntry);
+//            ReflectionTable::getInstance()->add(
+//                ownerId, selfId, typeId, lutEntry);
+//        }
+//    }
+//
+//#if PP_FULL_REFLECTION_ENABLED
+//    ArrayField(
+//        const std::string &ownerName,
+//        int32_t ownerId,
+//        const std::string &selfName,
+//        int32_t selfId,
+//        const std::string &typeName,
+//        int32_t typeId,
+//        FieldAdder fieldCallback,
+//        LUTFiller lutCallback,
+//        Indexer indexCallback)
+//        : m_data()
+//        , m_indexCallback(indexCallback)
+//    {
+//        if (fieldCallback(selfId, this))
+//        {
+//            ComponentLUTEntry lutEntry;
+//            lutCallback(lutEntry);
+//            ReflectionTable::getInstance()->add(
+//                ownerName,
+//                ownerId,
+//                selfName,
+//                selfId,
+//                typeName,
+//                typeId,
+//                lutEntry);
+//        }
+//    }
+//#endif
+//
+//    T at(uint32_t idx)
+//    {
+//        return m_data[idx];
+//    }
+//
+//    const T &get(Entity entity) const
+//    {
+//        return m_data[Owner::Index(entity)];
+//    }
+//
+//    void set(Entity entity, const T &value)
+//    {
+//        m_data[Owner::Index(entity)] = value;
+//    }
+//
+//    uint32_t capacity(Entity entity)
+//    {
+//        return m_data[Owner::Index(entity)].size();
+//    }
+//
+//    // Raw access operator
+//    Container &operator()(Entity entity)
+//    {
+//        return m_data[Owner::Index(entity)];
+//    }
+//
+//    T &operator()(Entity entity, uint32_t index)
+//    {
+//        return m_data[Owner::Index(entity)][index];
+//    }
+//
+//    const Container &operator()(Entity entity) const
+//    {
+//        return m_data.at(Owner::Index(entity));
+//    }
+//
+//    const T &operator()(Entity entity, uint32_t index) const
+//    {
+//        return m_data.at(Owner::Index(entity)).at(index);
+//    }
+//
+//    virtual void reset(uint32_t idx) override
+//    {
+//        if (m_data.size() <= idx)
+//        {
+//            m_data.resize(idx + 1);
+//        }
+//        m_data[idx] = std::vector<T>();
+//    }
+//
+//    virtual void
+//    serialize(serialization::ISerializer &serializer, uint32_t index) override
+//    {
+//        serializer.writeArrayStart();
+//
+//        for (const T &element : m_data[index])
+//        {
+//            (void)element;
+//            //				serializer << element; TODO
+//        }
+//
+//        serializer.writeArrayEnd();
+//    }
+//
+//    virtual void
+//    deserialize(serialization::ISerializer &serializer, uint32_t index)
+//    override
+//    {
+//        uint32_t arraySize = std::min(serializer.readArrayStart(), Capacity);
+//
+//        m_data[index].resize(arraySize);
+//
+//        // TODO:
+//
+//        serializer.readArrayEnd();
+//    }
+//
+//    virtual void copy(uint32_t dstIndex, uint32_t srcIndex) override
+//    {
+//        m_data[dstIndex] = m_data[srcIndex];
+//    }
+//
+//    virtual void setBuffer(void *buffer) override
+//    {
+//        m_buffer = reinterpret_cast<TContainer *>(buffer);
+//    }
+//
+// private:
+//    std::vector<std::vector<T>> m_data;
+//    T m_default;
+//    TContainer *m_buffer;
+//    Indexer m_indexCallback;
+//};
+
 template <typename Owner, typename T, std::uint32_t Capacity>
-class ArrayField : public IField
+class ArrayField : public FieldImpl<std::vector<T>>
 {
 public:
-    // FIXME Use a better container type
-    typedef std::vector<T> Container;
-
-    typedef T TValue;
-    typedef TValue TContainer[Capacity];
-
-    ArrayField(ReflectionTable::ReflectionHint)
-        : m_data()
+    ArrayField(
+        int32_t ownerId,
+        int32_t selfId,
+        int32_t typeId,
+        T defaultValue,
+        FieldAdder fieldCallback,
+        LUTFiller lutCallback,
+        Indexer indexCallback)
+        : FieldImpl<std::vector<T>>(
+            ownerId,
+            selfId,
+            typeId,
+            defaultValue,
+            fieldCallback,
+            lutCallback,
+            indexCallback)
     {}
 
-    ArrayField(
-        int32_t ownerId,
-        int32_t selfId,
-        int32_t typeId,
-        FieldAdder fieldCallback,
-        LUTFiller lutCallback,
-        Indexer indexCallback)
-        : m_data()
-        , m_indexCallback(indexCallback)
-    {
-        if (fieldCallback(selfId, this))
-        {
-            ComponentLUTEntry lutEntry;
-            lutCallback(lutEntry);
-            ReflectionTable::getInstance()->add(
-                ownerId, selfId, typeId, lutEntry);
-        }
-    }
-
 #if PP_FULL_REFLECTION_ENABLED
     ArrayField(
         const std::string &ownerName,
@@ -285,232 +438,19 @@ public:
         FieldAdder fieldCallback,
         LUTFiller lutCallback,
         Indexer indexCallback)
-        : m_data()
-        , m_indexCallback(indexCallback)
-    {
-        if (fieldCallback(selfId, this))
-        {
-            ComponentLUTEntry lutEntry;
-            lutCallback(lutEntry);
-            ReflectionTable::getInstance()->add(
-                ownerName,
-                ownerId,
-                selfName,
-                selfId,
-                typeName,
-                typeId,
-                lutEntry);
-        }
-    }
+        : FieldImpl<std::vector<T>>(
+            ownerName,
+            ownerId,
+            selfName,
+            selfId,
+            typeName,
+            typeId,
+            std::vector<T>(),
+            fieldCallback,
+            lutCallback,
+            indexCallback)
+    {}
 #endif
-
-    T at(uint32_t idx)
-    {
-        return m_data[idx];
-    }
-
-    const T &get(Entity entity) const
-    {
-        return m_data[Owner::Index(entity)];
-    }
-
-    void set(Entity entity, const T &value)
-    {
-        m_data[Owner::Index(entity)] = value;
-    }
-
-    uint32_t capacity(Entity entity)
-    {
-        return m_data[Owner::Index(entity)].size();
-    }
-
-    // Raw access operator
-    Container &operator()(Entity entity)
-    {
-        return m_data[Owner::Index(entity)];
-    }
-
-    T &operator()(Entity entity, uint32_t index)
-    {
-        return m_data[Owner::Index(entity)][index];
-    }
-
-    const Container &operator()(Entity entity) const
-    {
-        return m_data.at(Owner::Index(entity));
-    }
-
-    const T &operator()(Entity entity, uint32_t index) const
-    {
-        return m_data.at(Owner::Index(entity)).at(index);
-    }
-
-    virtual void reset(uint32_t idx) override
-    {
-        if (m_data.size() <= idx)
-        {
-            m_data.resize(idx + 1);
-        }
-        m_data[idx] = std::vector<T>();
-    }
-
-    virtual void
-    serialize(serialization::ISerializer &serializer, uint32_t index) override
-    {
-        serializer.writeArrayStart();
-
-        for (const T &element : m_data[index])
-        {
-            (void)element;
-            //				serializer << element; TODO
-        }
-
-        serializer.writeArrayEnd();
-    }
-
-    virtual void
-    deserialize(serialization::ISerializer &serializer, uint32_t index) override
-    {
-        uint32_t arraySize = std::min(serializer.readArrayStart(), Capacity);
-
-        m_data[index].resize(arraySize);
-
-        // TODO:
-
-        serializer.readArrayEnd();
-    }
-
-    virtual void copy(uint32_t dstIndex, uint32_t srcIndex) override
-    {
-        m_data[dstIndex] = m_data[srcIndex];
-    }
-
-    virtual void setBuffer(void *buffer) override
-    {
-        m_buffer = reinterpret_cast<TContainer *>(buffer);
-    }
-
-private:
-    std::vector<std::vector<T>> m_data;
-    T m_default;
-    TContainer *m_buffer;
-    Indexer m_indexCallback;
-};
-
-template <typename T>
-struct FieldUnderlying
-{
-    typedef T Type;
-};
-
-template <typename T, std::uint32_t Capacity>
-struct FieldContainer
-{
-    typedef std::array<typename FieldUnderlying<T>::Type, Capacity> Type;
-};
-
-template <typename T>
-struct FieldContainer<T, 1u>
-{
-    typedef typename FieldUnderlying<T>::Type Type;
-};
-
-class IFieldDescriptor
-{
-public:
-    virtual void instantiate(IField *instance, void *manager, void *buffer) = 0;
-    virtual std::size_t size()                                              = 0;
-};
-
-template <typename T, Accessor<T> TAccessor = T &, uint32_t Capacity = 1u>
-class FieldDescriptor : public IFieldDescriptor
-{
-public:
-    typedef bool (*FieldDescAdder)(int32_t, IFieldDescriptor *);
-
-    FieldDescriptor(
-        int32_t ownerId,
-        int32_t selfId,
-        int32_t typeId,
-        T defaultValue,
-        FieldDescAdder fieldCallback,
-        LUTFiller lutCallback)
-        : m_id(selfId)
-        , m_default(defaultValue)
-    {
-        if (fieldCallback(selfId, this))
-        {
-            ComponentLUTEntry lutEntry;
-            lutCallback(lutEntry);
-            ReflectionTable::getInstance()->add(
-                ownerId, selfId, typeId, lutEntry);
-        }
-    }
-
-#if PP_FULL_REFLECTION_ENABLED
-    FieldDescriptor(
-        const std::string &ownerName,
-        int32_t ownerId,
-        const std::string &selfName,
-        int32_t selfId,
-        const std::string &typeName,
-        int32_t typeId,
-        T defaultValue,
-        FieldDescAdder fieldCallback,
-        LUTFiller lutCallback)
-        : m_id(selfId)
-        , m_default(defaultValue)
-    {
-        if (fieldCallback(selfId, this))
-        {
-            ComponentLUTEntry lutEntry;
-            lutCallback(lutEntry);
-            ReflectionTable::getInstance()->add(
-                ownerName,
-                ownerId,
-                selfName,
-                selfId,
-                typeName,
-                typeId,
-                lutEntry);
-        }
-        m_default = defaultValue;
-    }
-#endif
-
-    virtual void
-    instantiate(IField *instance, void *manager, void *buffer) override
-    {
-        (void)instance;
-        (void)manager;
-        (void)buffer;
-        // if constexpr (Capacity < 2)
-        //{
-        //    instance = new FieldImpl<Owner, OwnerRef, T, TAccessor>();
-        //}
-        // else
-        //{
-        //    instance = new ArrayField<Owner, T, Capacity>();
-        //}
-        // instance->setBuffer(buffer);
-        // instance->setManager(manager);
-    }
-
-    virtual std::size_t size() override
-    {
-        if constexpr (Capacity < 2)
-        {
-            return sizeof(T);
-        }
-        else
-        {
-            return sizeof(T) * Capacity;
-        }
-    }
-
-private:
-    int32_t m_id;
-    T m_default;
 };
 
 }} // namespace perfectpixel::ecs

@@ -1,5 +1,7 @@
 #include <EntityComponentSystem/ReflectionTable.h>
 
+#include <EntityComponentSystem/EntityManager.h>
+
 #include <serialization/ISerializer.h>
 
 #include <Bedrock/Hash.h>
@@ -12,8 +14,8 @@ void ReflectionTable::add(
     int32_t typeId,
     const ComponentLUTEntry &lutEntry)
 {
-    m_componentLUT[componentId]                = lutEntry;
-    m_typeLUT[std::pair(componentId, fieldId)] = typeId;
+    m_componentLUT[componentId]                  = lutEntry;
+    m_typeLUT[combinedKey(componentId, fieldId)] = typeId;
 }
 
 void ReflectionTable::add(
@@ -36,7 +38,7 @@ void ReflectionTable::add(
 int32_t
 ReflectionTable::componentFieldTypeID(int32_t componentId, int32_t fieldId)
 {
-    return m_typeLUT[std::pair(componentId, fieldId)];
+    return m_typeLUT[combinedKey(componentId, fieldId)];
 }
 
 perfectpixel::ecs::IField *
@@ -142,6 +144,11 @@ void ReflectionTable::serialize(
             }
         }
     }
+}
+
+uint64_t ReflectionTable::combinedKey(int32_t p1, int32_t p2)
+{
+    return (static_cast<uint64_t>(p1) << 32) | static_cast<uint64_t>(p2);
 }
 
 }} // namespace perfectpixel::ecs

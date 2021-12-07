@@ -16,8 +16,6 @@ class TransformComponent
     : public Component<TransformComponent, FlatComponentStorage>
 {
 public:
-    PPDefaultManager(TransformComponent, TRANSFORM_COMPONENT_CAPACITY);
-
     PPField(TransformComponent, bedrock::Vector3, Position);
     // inline static Field<TransformComponent, types::Vector3> Position;
     // inline static Field<TransformComponent, types::Vector3> Velocity;

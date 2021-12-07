@@ -30,6 +30,7 @@ public:
     PPField(PhysicsComponent, float, Bounciness);
     PPField(PhysicsComponent, PhysicsSimulationType, SimulationType);
     PPField(PhysicsComponent, bedrock::Vector3, Velocity);
+    PPArrayField(PhysicsComponent, float, 8u, TestArray);
     PPArrayField(PhysicsComponent, physics::Force, 8u, ActiveForces);
 
     static void MakeStaticCollider(ecs::Entity entity);

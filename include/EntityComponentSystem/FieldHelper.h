@@ -23,19 +23,6 @@
         Owner::FillLUTEntry,                                                   \
         Owner::Index);
 
-#define PPFieldDescriptor(Owner, T, Name, Default)                             \
-    inline static PPFIELDDESCRIPTORTYPE(Owner, T, 1u) __Descriptor##Name       \
-        = PPFIELDDESCRIPTORTYPE(Owner, T, 1u)(                                 \
-            PP_DEQUALIFY(Owner),                                               \
-            PP_DQID(Owner),                                                    \
-            #Name,                                                             \
-            PP_ID(Name),                                                       \
-            bedrock::typeName<T>(),                                            \
-            bedrock::typeID<T>(),                                              \
-            Default,                                                           \
-            Owner::AddFieldDescriptor,                                         \
-            Owner::FillLUTEntry)
-
 #define PPArrayField(Owner, T, Capacity, Name)                                 \
     inline static PPARRAYFIELDTYPE(Owner, T, Capacity) Name                    \
         = PPARRAYFIELDTYPE(Owner, T, Capacity)(                                \
@@ -61,16 +48,6 @@
         Owner::FillLUTEntry,                                                   \
         Owner::Index);
 
-#define PPFieldDescriptor(Owner, T, Name, Default)                             \
-    inline static PPFIELDDESCRIPTORTYPE(Owner, T, 1u) __Descriptor##Name       \
-        = PPFIELDDESCRIPTORTYPE(Owner, T, 1u)(                                 \
-            PP_DQID(Owner),                                                    \
-            PP_ID(Name),                                                       \
-            bedrock::typeID<T>(),                                              \
-            Default,                                                           \
-            Owner::AddFieldDescriptor,                                         \
-            Owner::FillLUTEntry);
-
 #define PPArrayField(Owner, T, Capacity, Name)                                 \
     inline static PPFIELDTYPE(Owner, T, Capacity) Name                         \
         = PPFIELDTYPE(Owner, T, Capacity)(                                     \
@@ -83,9 +60,7 @@
 
 #endif
 
-#define PPField(Owner, T, Name)                                                \
-    PPFieldImpl(Owner, T, Name, T());                                          \
-    PPFieldDescriptor(Owner, T, Name, T())
+#define PPField(Owner, T, Name) PPFieldImpl(Owner, T, Name, T())
 
 #define PPResourceField(Owner, ResourceType, Name)                             \
     PPFieldImpl(                                                               \

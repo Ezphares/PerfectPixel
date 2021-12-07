@@ -58,18 +58,6 @@ bool BaseComponent::addField(int32_t id, IField *field)
     return add;
 }
 
-bool BaseComponent::addFieldDescriptor(
-    int32_t id, IFieldDescriptor *fieldDescriptor)
-{
-    bool add = m_fieldDescriptors.find(id) == m_fieldDescriptors.end();
-    if (add)
-    {
-        m_fieldDescriptors[id] = fieldDescriptor;
-    }
-
-    return add;
-}
-
 void BaseComponent::addSerializationRule(
     int32_t id, IField::SerializationCondition rule)
 {
@@ -119,16 +107,6 @@ void BaseComponent::deserialize(
 
         m_fields[k]->deserialize(serializer, idx);
     }
-}
-
-std::size_t BaseComponent::size()
-{
-    std::size_t result = 0u;
-    for (auto descriptor : m_fieldDescriptors)
-    {
-        result += descriptor.second->size();
-    }
-    return result;
 }
 
 }} // namespace perfectpixel::ecs

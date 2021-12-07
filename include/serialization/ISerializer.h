@@ -4,6 +4,7 @@
 #include <Bedrock/defines.h>
 
 #include <string>
+#include <vector>
 
 namespace perfectpixel { namespace serialization {
 
@@ -69,5 +70,34 @@ ISerializer &operator>>(ISerializer &istream, int32_t &num);
 
 ISerializer &operator<<(ISerializer &ostream, const bedrock::ID &id);
 ISerializer &operator>>(ISerializer &istream, bedrock::ID &id);
+
+template <typename T>
+ISerializer &operator<<(ISerializer &ostream, const std::vector<T> &arr)
+{
+    ostream.writeArrayStart(false);
+    for (const T &element : arr)
+    {
+        (void)element;
+        // ostream << element;
+    }
+    ostream.writeArrayEnd();
+
+    return ostream;
+}
+template <typename T>
+ISerializer &operator>>(ISerializer &istream, std::vector<T> &arr)
+{
+    uint32_t count = istream.readArrayStart();
+    arr.resize(count);
+
+    for (uint32_t i = 0; i < count; ++i)
+    {
+        // istream >> arr[i];
+    }
+
+    istream.readArrayEnd();
+
+    return istream;
+}
 
 }} // namespace perfectpixel::serialization

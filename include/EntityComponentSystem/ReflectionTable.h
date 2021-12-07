@@ -1,12 +1,11 @@
 #pragma once
 
 #include <EntityComponentSystem/ComponentLUTEntry.h>
-#include <EntityComponentSystem/EntityManager.h>
 
 #include <Bedrock/Singleton.h>
 #include <Bedrock/numbers.h>
 
-#include <map>
+#include <unordered_map>
 
 namespace perfectpixel {
 namespace serialization {
@@ -59,10 +58,13 @@ public:
     void serialize(serialization::ISerializer &serializer, Entity entity);
 
 private:
-    std::map<int32_t, ComponentLUTEntry> m_componentLUT;
-    std::map<std::pair<int32_t, int32_t>, int32_t> m_typeLUT;
+    uint64_t combinedKey(int32_t p1, int32_t p2);
+
+private:
+    std::unordered_map<int32_t, ComponentLUTEntry> m_componentLUT;
+    std::unordered_map<uint64_t, int32_t> m_typeLUT;
 #if PP_FULL_REFLECTION_ENABLED
-    std::map<int32_t, std::string> m_reverseHash;
+    std::unordered_map<int32_t, std::string> m_reverseHash;
 #endif /* PP_FULL_REFLECTION_ENABLED */
 };
 
