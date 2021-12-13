@@ -43,15 +43,17 @@ void Template::applyTo(std::vector<ecs::Entity> &target)
 }
 
 perfectpixel::resources::ResourceManager::ResourceLoaderFunction
-Template::CreateTemplateLoader(
-    std::function<serialization::ISerializer *()> provider)
+Template::CreateTemplateLoader()
 {
-    return [provider](
-               char *data,
-               size_t dataSize,
-               void **target,
-               const bedrock::Opaque &) {
-        serialization::ISerializer *serializer = provider();
+    return [](char *data,
+              size_t dataSize,
+              void **target,
+              const bedrock::Opaque &,
+              void *loaderUserData) {
+        serialization::SerializerFactory factory
+            = reinterpret_cast<serialization::SerializerFactory>(
+                loaderUserData);
+        serialization::ISerializer *serializer = factory();
         serializer->loadBuffer(data, dataSize);
 
         Template *tpl = new Template();

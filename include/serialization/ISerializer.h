@@ -55,6 +55,8 @@ public:
     virtual void mapUInt32(uint32_t memory, uint32_t serialized = -1) = 0;
 };
 
+typedef ISerializer *(*SerializerFactory)();
+
 // TODO: Move these
 ISerializer &operator<<(ISerializer &ostream, const std::string &str);
 ISerializer &operator>>(ISerializer &istream, std::string &str);

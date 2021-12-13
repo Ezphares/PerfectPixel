@@ -167,7 +167,12 @@ void ResourceManager::load(ResourceMetadata &metadata)
     }
 
     m_locator->locate(metadata.m_type, metadata.m_id, &buffer, &bufferSize);
-    loader.m_load(buffer, bufferSize, &metadata.m_data, metadata.m_userData);
+    loader.m_load(
+        buffer,
+        bufferSize,
+        &metadata.m_data,
+        metadata.m_userData,
+        loader.m_loaderUserData);
 
     delete buffer;
 }

@@ -4,8 +4,6 @@
 #include <Bedrock/Singleton.h>
 #include <EntityComponentSystem/Entity.h>
 
-#include <functional>
-
 #include <queue>
 #include <vector>
 
@@ -41,13 +39,13 @@ public:
 
     void expandMask(
         bedrock::BitSet bits,
-		EntityList *out_entities,
+        EntityList *out_entities,
         EntityFunc callback) const;
     bedrock::BitSet all() const;
 
     void addKillCallback(EntityFunc callback);
 
-	void tick();
+    void tick();
     uint32_t getTick() const;
 
 private:
@@ -57,7 +55,7 @@ private:
 
     std::vector<EntityFunc> m_onKill;
 
-	uint32_t m_tickIndex;
+    uint32_t m_tickIndex;
 };
 
 }} // namespace perfectpixel::ecs

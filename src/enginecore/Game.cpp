@@ -230,7 +230,8 @@ void Game::cleanup()
 
 void Game::loadResources()
 {
-    auto deserializationProvider = []() -> serialization::ISerializer * {
+    serialization::SerializerFactory deserializationProvider
+        = []() -> serialization::ISerializer * {
         serialization::YAMLSerializer *serializer
             = new serialization::YAMLSerializer();
         serializer->m_hash    = &bedrock::crc32;
@@ -244,12 +245,16 @@ void Game::loadResources()
     resources::ResourceManager::
         AddLoader<resources::Image, resources::PNGImage>(
             &resources::PNGImage::PNGImageLoaderFunction);
+
     resources::ResourceManager::AddLoader<resources::Sprite>(
-        resources::Sprite::CreateSpriteLoader(deserializationProvider));
+        resources::Sprite::CreateSpriteLoader(),
+        nullptr,
+        deserializationProvider);
 
     resources::ResourceManager::AddLoader<resources::Template>(
-        resources::Template::CreateTemplateLoader(deserializationProvider),
-        &resources::Template::TemplateUnloader);
+        resources::Template::CreateTemplateLoader(),
+        &resources::Template::TemplateUnloader,
+        deserializationProvider);
 
     registerResouces();
 }
