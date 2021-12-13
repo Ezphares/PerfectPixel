@@ -282,26 +282,29 @@ Win32Window::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_KILLFOCUS:
-        if (self && self->m_focusCallback)
+        if (self && self->m_focusCallback.m_func)
         {
-            self->m_focusCallback(false);
+            self->m_focusCallback.m_func(
+                self->m_focusCallback.m_instance, false);
         }
         break;
 
     case WM_SETFOCUS:
-        if (self && self->m_focusCallback)
+        if (self && self->m_focusCallback.m_func)
         {
-            self->m_focusCallback(true);
+            self->m_focusCallback.m_func(
+                self->m_focusCallback.m_instance, true);
         }
         break;
 
     case WM_SIZE:
-        if (self && self->m_sizeCallback)
+        if (self && self->m_sizeCallback.m_func)
         {
             unsigned width{static_cast<unsigned>(lParam & ((1 << 16) - 1))},
                 height{static_cast<unsigned>(lParam >> 16)};
 
-            self->m_sizeCallback(*self, width, height);
+            self->m_sizeCallback.m_func(
+                self->m_sizeCallback.m_instance, *self, width, height);
         }
         break;
 

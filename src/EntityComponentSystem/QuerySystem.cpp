@@ -1,10 +1,8 @@
 #include <EntityComponentSystem/EntityManager.h>
+#include <EntityComponentSystem/FastUpdate.h>
 #include <EntityComponentSystem/LifecycleComponents.h>
 #include <EntityComponentSystem/QuerySystem.h>
 #include <EntityComponentSystem/TransformComponent.h>
-#include <EntityComponentSystem/FastUpdate.h>
-
-#include <functional>
 
 namespace perfectpixel { namespace ecs {
 
@@ -20,10 +18,10 @@ QuerySystem::QuerySystem(Query query)
     , m_queryCreate(QueryHelperCreate::build())
     , m_queryDestroy(QueryHelperDestroy::build())
     , m_queryRender(QueryHelperRender::build())
-	, m_onCreate(nullptr)
-	, m_onDestroy(nullptr)
-	, m_onUpdate(nullptr)
-	, m_onRender(nullptr)
+    , m_onCreate(nullptr)
+    , m_onDestroy(nullptr)
+    , m_onUpdate(nullptr)
+    , m_onRender(nullptr)
 {}
 
 void QuerySystem::earlyAudit()
@@ -95,19 +93,19 @@ void QuerySystem::doProcess(float deltaT)
 
 void QuerySystem::doRender(float deltaT)
 {
-	if (m_onRender)
-	{
-		EntityManager::EntityList result = m_queryRender.execute(m_queryState);
+    if (m_onRender)
+    {
+        EntityManager::EntityList result = m_queryRender.execute(m_queryState);
         m_onRender(result.begin(), result.end(), deltaT);
-	}
+    }
 }
 
 void QuerySystem::doDestroy()
 {
-	if (m_onDestroy)
-	{
-		EntityManager::EntityList result = m_queryDestroy.finalize();
+    if (m_onDestroy)
+    {
+        EntityManager::EntityList result = m_queryDestroy.finalize();
         m_onDestroy(result.begin(), result.end());
-	}
+    }
 }
 }} // namespace perfectpixel::ecs

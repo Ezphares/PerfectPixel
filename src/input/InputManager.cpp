@@ -2,8 +2,6 @@
 
 #include <Bedrock/PpException.h>
 
-#include <functional>
-
 namespace perfectpixel { namespace input {
 
 InputManager::InputManager()

@@ -16,8 +16,6 @@
 
 #include <serialization/YAMLSerializer.h>
 
-#include <functional>
-
 #include <chrono>
 #include <thread>
 
@@ -53,14 +51,16 @@ void Game::run()
     graphics::IWindow *mainWindow = createWindow(mainWindowSettings);
     mainWindow->activate();
     mainWindow->setKeyCallback(m_inputManager.getKeyCallback());
-    mainWindow->setFocusCallback(
-        std::bind(&Game::focus, this, std::placeholders::_1));
-    mainWindow->setResizeCallback(std::bind(
-        &Game::windowResized,
-        this,
-        std::placeholders::_1,
-        std::placeholders::_2,
-        std::placeholders::_3));
+
+    graphics::IWindow::FocusCallback focusCb;
+    focusCb.m_func     = &Game::focusWrapper;
+    focusCb.m_instance = this;
+    mainWindow->setFocusCallback(focusCb);
+
+    graphics::IWindow::SizeCallback sizeCb;
+    sizeCb.m_func     = &Game::windowResizedWrapper;
+    sizeCb.m_instance = this;
+    mainWindow->setResizeCallback(sizeCb);
 
     PP_LOG(LEVEL_INFO, "Setting up renderer");
 
@@ -146,10 +146,21 @@ void Game::run()
     m_initializer->exit();
 }
 
+void Game::focusWrapper(void *instance, bool hasFocus)
+{
+    reinterpret_cast<Game *>(instance)->focus(hasFocus);
+}
+
 void Game::focus(bool hasFocus)
 {
     (void)hasFocus;
     m_inputManager.clearState();
+}
+
+void Game::windowResizedWrapper(
+    void *instance, graphics::IWindow &window, unsigned width, unsigned height)
+{
+    reinterpret_cast<Game *>(instance)->windowResized(window, width, height);
 }
 
 void Game::windowResized(

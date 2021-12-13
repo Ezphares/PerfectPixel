@@ -5,15 +5,34 @@
 
 #include <Bedrock/InputCallback.h>
 
-#include <functional>
-
 namespace perfectpixel { namespace graphics {
 
 class IWindow
 {
 public:
-    typedef std::function<void(bool)> FocusCallback;
-    typedef std::function<void(IWindow &, unsigned, unsigned)> SizeCallback;
+    typedef void (*FocusCallbackFunc)(void *, bool);
+    struct FocusCallback
+    {
+        FocusCallback()
+            : m_func(nullptr)
+            , m_instance(nullptr)
+        {}
+
+        FocusCallbackFunc m_func;
+        void *m_instance;
+    };
+
+    typedef void (*SizeCallbackFunc)(void *, IWindow &, unsigned, unsigned);
+    struct SizeCallback
+    {
+        SizeCallback()
+            : m_func(nullptr)
+            , m_instance(nullptr)
+        {}
+
+        SizeCallbackFunc m_func;
+        void *m_instance;
+    };
 
     IWindow() noexcept
     {}
