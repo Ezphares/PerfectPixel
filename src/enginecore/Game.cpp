@@ -260,12 +260,12 @@ void Game::loadResources()
     resources::ResourceManager::AddLoader<resources::Sprite>(
         resources::Sprite::CreateSpriteLoader(),
         nullptr,
-        deserializationProvider);
+        (void *)deserializationProvider);
 
     resources::ResourceManager::AddLoader<resources::Template>(
         resources::Template::CreateTemplateLoader(),
         &resources::Template::TemplateUnloader,
-        deserializationProvider);
+        (void *)deserializationProvider);
 
     registerResouces();
 }
