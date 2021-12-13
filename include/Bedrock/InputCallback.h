@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include <functional>
 
 namespace perfectpixel { namespace bedrock {
 
@@ -13,6 +12,16 @@ enum KeyEvent
     PP_KEYDOWN
 };
 
-typedef std::function<void(KeyCode, KeyEvent)> KeyCallback;
+typedef void (*KeyCallbackFunc)(void *, KeyCode, KeyEvent);
+struct KeyCallback
+{
+    KeyCallback()
+        : m_func(nullptr)
+        , m_instance(nullptr)
+    {}
+
+    KeyCallbackFunc m_func;
+    void *m_instance;
+};
 
 }} // namespace perfectpixel::bedrock

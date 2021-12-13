@@ -26,11 +26,17 @@ void InputManager::update()
 
 perfectpixel::bedrock::KeyCallback InputManager::getKeyCallback()
 {
-    return std::bind(
-        &InputManager::handleInput,
-        this,
-        std::placeholders::_1,
-        std::placeholders::_2);
+    bedrock::KeyCallback cb;
+    cb.m_func     = handleInputWrapper;
+    cb.m_instance = this;
+
+    return cb;
+}
+
+void InputManager::handleInputWrapper(
+    void *instance, bedrock::KeyCode keyCode, bedrock::KeyEvent keyEvent)
+{
+    reinterpret_cast<InputManager *>(instance)->handleInput(keyCode, keyEvent);
 }
 
 void InputManager::handleInput(
