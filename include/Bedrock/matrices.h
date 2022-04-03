@@ -37,7 +37,7 @@ struct Matrix
         return m_data[x * H + y];
     }
 
-    float m(unsigned x, unsigned y) const
+    const float &m(unsigned x, unsigned y) const
     {
         return m_data[x * H + y];
     }
@@ -156,9 +156,54 @@ struct Matrix
     }
 
     template <typename T = float>
-    EnableIfSquare<T> determinant()
+    EnableIfSquare<T> determinant() const
     {
         return Matrix<H, H>::getDeterminant(*this);
+    }
+
+    template <typename T = Matrix<H, H>>
+    EnableIfSquare<T> transposed() const
+    {
+        Matrix<H, H> result;
+
+        for (int i = 0; i < H; ++i)
+        {
+            for (int j = 0; j < H; ++j)
+            {
+                result.m(j, i) = m(i, j);
+            }
+        }
+    }
+
+    template <typename T = Matrix<H, H>>
+    EnableIfSquare<T> inverse() const
+    {
+        Matrix<H, H> cofactors;
+
+        bool add  = true;
+        float det = 0;
+        for (int i = 0; i < H; ++i)
+        {
+            for (int j = 0; j < H; ++j)
+            {
+                const float v
+                    = getDeterminant(getMinor(i, j)) * (add ? 1.0f : -1.0f);
+                cofactors.m(i, j) = v;
+                add               = !add;
+
+                det += m(i, j) * v;
+            }
+        }
+
+        const float inv     = 1.0f / det;
+        Matrix<H, H> result = cofactors.transposed();
+
+        for (int i = 0; i < H * H; ++i)
+        {
+            result.m_data[i] *= inv;
+        }
+
+        return result;
     }
 };
 
@@ -201,7 +246,12 @@ struct Matrix4x4 : public Matrix<4, 4>
 
     static Matrix4x4 translate(const Vector3 &coordinates);
     static Matrix4x4 scale(const Vector3 &axes);
-    static Matrix4x4 roatation(const Quaternion &quat);
+    static Matrix4x4 rotate(const Quaternion &quat);
+
+    static Matrix4x4 transform(
+        const Vector3 &translation,
+        const Vector3 &scaling,
+        const Quaternion &rotation);
 };
 
 }} // namespace perfectpixel::bedrock

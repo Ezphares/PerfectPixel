@@ -43,7 +43,7 @@ perfectpixel::bedrock::Matrix4x4 Matrix4x4::scale(const Vector3 &axes)
     return result;
 }
 
-perfectpixel::bedrock::Matrix4x4 Matrix4x4::roatation(const Quaternion &quat)
+perfectpixel::bedrock::Matrix4x4 Matrix4x4::rotate(const Quaternion &quat)
 {
     Matrix4x4 result = IDENTITY;
 
@@ -72,6 +72,14 @@ perfectpixel::bedrock::Matrix4x4 Matrix4x4::roatation(const Quaternion &quat)
     result.m(2, 2) = 1.0f - 2.0f * (xx + yy);
 
     return result;
+}
+
+perfectpixel::bedrock::Matrix4x4 Matrix4x4::transform(
+    const Vector3 &translation,
+    const Vector3 &scaling,
+    const Quaternion &rotation)
+{
+    return translate(translation) * rotate(rotation) * scale(scaling);
 }
 
 }} // namespace perfectpixel::bedrock

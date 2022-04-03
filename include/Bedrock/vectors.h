@@ -223,7 +223,7 @@ struct Vector2 : public Vector<2>
     {}
     explicit Vector2(const Vector3 &discard);
 
-    inline float x() const
+    inline const float &x() const
     {
         return m_data[0];
     }
@@ -231,7 +231,7 @@ struct Vector2 : public Vector<2>
     {
         return m_data[0];
     }
-    inline float y() const
+    inline const float &y() const
     {
         return m_data[1];
     }
@@ -260,7 +260,7 @@ struct Vector3 : public Vector<3>
     explicit Vector3(const Vector2 &expand);
     explicit Vector3(const Vector4 &discard);
 
-    inline float x() const
+    inline const float &x() const
     {
         return m_data[0];
     }
@@ -268,7 +268,7 @@ struct Vector3 : public Vector<3>
     {
         return m_data[0];
     }
-    inline float y() const
+    inline const float &y() const
     {
         return m_data[1];
     }
@@ -276,7 +276,7 @@ struct Vector3 : public Vector<3>
     {
         return m_data[1];
     }
-    inline float z() const
+    inline const float &z() const
     {
         return m_data[2];
     }
@@ -305,7 +305,7 @@ struct Vector4 : public Vector<4>
         : Vector<4>(std::array<float, 4>{x, y, z, w})
     {}
 
-    inline float x() const
+    inline const float &x() const
     {
         return m_data[0];
     }
@@ -313,7 +313,7 @@ struct Vector4 : public Vector<4>
     {
         return m_data[0];
     }
-    inline float y() const
+    inline const float &y() const
     {
         return m_data[1];
     }
@@ -321,7 +321,7 @@ struct Vector4 : public Vector<4>
     {
         return m_data[1];
     }
-    inline float z() const
+    inline const float &z() const
     {
         return m_data[2];
     }
@@ -329,7 +329,7 @@ struct Vector4 : public Vector<4>
     {
         return m_data[2];
     }
-    inline float w() const
+    inline const float &w() const
     {
         return m_data[3];
     }
