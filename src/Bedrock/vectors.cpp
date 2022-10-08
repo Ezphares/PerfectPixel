@@ -18,8 +18,8 @@ const Vector2 Vector2::UP    = Vector2(0, 1);
 const Vector2 Vector2::LEFT  = Vector2(-1, 0);
 const Vector2 Vector2::RIGHT = Vector2(1, 0);
 
-Vector3::Vector3(const Vector2 &expand)
-    : Vector<3>(std::array<float, 3>({expand.x(), expand.y(), 0.0f}))
+Vector3::Vector3(const Vector2 &expand, float z)
+    : Vector<3>(std::array<float, 3>({expand.x(), expand.y(), z}))
 {}
 
 Vector3::Vector3(const Vector4 &discard)
@@ -45,7 +45,7 @@ Angle Angle::radians(float radians)
     return res;
 }
 
-float Angle::radians()
+float Angle::radians() const
 {
     return m_rad;
 }
@@ -57,7 +57,7 @@ Angle Angle::degrees(float degrees)
     return res;
 }
 
-float Angle::degrees()
+float Angle::degrees() const
 {
     return m_rad / DEG2RAD;
 }

@@ -30,8 +30,8 @@ struct Angle
     static Angle degrees(float degrees);
     static Angle radians(float radians);
 
-    float radians();
-    float degrees();
+    float radians() const;
+    float degrees() const;
 
 private:
     float m_rad;
@@ -197,6 +197,11 @@ struct Vector
         return *this;
     }
 
+    Vector<D> operator-() const
+    {
+        return *this * -1.f;
+    }
+
     bool operator==(const Vector<D> &other) const
     {
         for (unsigned i = 0; i < D; i++)
@@ -257,7 +262,7 @@ struct Vector3 : public Vector<3>
     Vector3(float x, float y, float z)
         : Vector<3>(std::array<float, 3>{x, y, z})
     {}
-    explicit Vector3(const Vector2 &expand);
+    explicit Vector3(const Vector2 &expand, float z = 0.0f);
     explicit Vector3(const Vector4 &discard);
 
     inline const float &x() const

@@ -47,7 +47,7 @@ struct Matrix
     Vector<H> column(unsigned index) const
     {
         std::array<float, H> result;
-        for (unsigned i = 0; i < W; i++)
+        for (unsigned i = 0; i < H; i++)
         {
             result[i] = m_data[index * H + i];
         }
@@ -82,7 +82,7 @@ struct Matrix
         {
             for (unsigned j = 0; j < H; j++)
             {
-                result.m(i, j) = Vector<H>::dot(column(i), r.row(j));
+                result.m(i, j) = Vector<H>::dot(row(j), r.column(i));
             }
         }
 
@@ -231,7 +231,18 @@ struct Matrix3x3 : public Matrix<3, 3>
     {}
 
     static const Matrix3x3 IDENTITY;
+
+    static Matrix3x3 translate2D(const Vector2 &coordinates);
+    static Matrix3x3 scale2D(const Vector2 &axes);
+    static Matrix3x3 rotate2D(const Angle &angle);
+
+    static Matrix3x3 rotateAround2D(const Vector2 &point, const Angle &angle);
+
+    static Matrix3x3 transform2D(
+        Vector2 &translation, const Vector2 scaling, const Angle &rotation);
 };
+
+Vector2 operator*(const Matrix3x3 &mat, const Vector2 v2);
 
 struct Matrix4x4 : public Matrix<4, 4>
 {

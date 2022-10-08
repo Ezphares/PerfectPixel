@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="perfectpixel::bedrock::Vector&lt;2&gt;">
+    <DisplayString>({this->m_data[0]}, {this->m_data[1]})</DisplayString>
+    <Expand>
+      <Item Name="[x]">this->m_data[0]</Item>
+      <Item Name="[y]">this->m_data[1]</Item>
+    </Expand>
+  </Type>
+  <Type Name="perfectpixel::bedrock::Vector&lt;3&gt;">
+    <DisplayString>({this->m_data[0]}, {this->m_data[1]}, {this->m_data[2]})</DisplayString>
+    <Expand>
+      <Item Name="[x]">this->m_data[0]</Item>
+      <Item Name="[y]">this->m_data[1]</Item>
+      <Item Name="[z]">this->m_data[2]</Item>
+    </Expand>
+  </Type>
+  <Type Name="perfectpixel::bedrock::Vector&lt;4&gt;">
+    <DisplayString>({this->m_data[0]}, {this->m_data[1]}, {this->m_data[2]}, {this->m_data[3]})</DisplayString>
+    <Expand>
+      <Item Name="[x]">this->m_data[0]</Item>
+      <Item Name="[y]">this->m_data[1]</Item>
+      <Item Name="[z]">this->m_data[2]</Item>
+      <Item Name="[w]">this->m_data[3]</Item>
+    </Expand>
+  </Type>
+  <Type Name="perfectpixel::bedrock::Quaternion">
+    <DisplayString>({this->m_data[0]}, {this->m_data[1]}, {this->m_data[2]}) : [{this->m_data[3]}]</DisplayString>
+    <Expand>
+      <Item Name="[x]">this->m_data[0]</Item>
+      <Item Name="[y]">this->m_data[1]</Item>
+      <Item Name="[z]">this->m_data[2]</Item>
+      <Item Name="[w]">this->m_data[3]</Item>
+    </Expand>
+  </Type>
+</AutoVisualizer>
