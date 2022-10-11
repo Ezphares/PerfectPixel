@@ -72,14 +72,14 @@ GTEST_TEST(test_CollisionSystem, RectCircleCollision)
     ASSERT_EQ(ColliderMaskType::CMT_AA_RECTANGLE, cdata.m_maskTypeFirst);
     ASSERT_EQ(ColliderMaskType::CMT_AA_RECTANGLE, cdata.m_maskTypeSecond);
     ASSERT_TRUE(
-        cdata.m_data_RectRectOverlap.x() < cdata.m_data_RectRectOverlap.y());
+        cdata.m_data_RectRectOverlap.x < cdata.m_data_RectRectOverlap.y);
 
     circ.m_center = {0.0f, 5.0f};
     ASSERT_TRUE(CollisionSystem::collideRectCircle(rect, circ, cdata));
     ASSERT_EQ(ColliderMaskType::CMT_AA_RECTANGLE, cdata.m_maskTypeFirst);
     ASSERT_EQ(ColliderMaskType::CMT_AA_RECTANGLE, cdata.m_maskTypeSecond);
     ASSERT_TRUE(
-        cdata.m_data_RectRectOverlap.x() > cdata.m_data_RectRectOverlap.y());
+        cdata.m_data_RectRectOverlap.x > cdata.m_data_RectRectOverlap.y);
 
     // Corner tests
     circ.m_center = {11.0f, 11.0f};

@@ -10,7 +10,7 @@ const static float DEG2RAD = PI / 180;
 } // namespace
 
 Vector2::Vector2(const Vector3 &discard)
-    : Vector<2>(std::array<float, 2>{discard.x(), discard.y()})
+    : Vector<2>(std::array<float, 2>{discard.x, discard.y})
 {}
 
 const Vector2 Vector2::DOWN  = Vector2(0, -1);
@@ -19,11 +19,11 @@ const Vector2 Vector2::LEFT  = Vector2(-1, 0);
 const Vector2 Vector2::RIGHT = Vector2(1, 0);
 
 Vector3::Vector3(const Vector2 &expand, float z)
-    : Vector<3>(std::array<float, 3>({expand.x(), expand.y(), z}))
+    : Vector<3>(std::array<float, 3>({expand.x, expand.y, z}))
 {}
 
 Vector3::Vector3(const Vector4 &discard)
-    : Vector<3>(std::array<float, 3>({discard.x(), discard.y(), discard.z()}))
+    : Vector<3>(std::array<float, 3>({discard.x, discard.y, discard.z}))
 {}
 
 const Vector3 Vector3::DOWN    = Vector3(0, -1, 0);

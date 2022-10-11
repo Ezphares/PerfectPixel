@@ -331,8 +331,8 @@ void GraphicsManager::drawSpriteComponent(ecs::Entity entity)
 
     SpriteDrawInfo drawInfo;
 
-    drawInfo.m_worldCoord = {
-        actualPosition.x(), actualPosition.y(), upperBound.x(), upperBound.y()};
+    drawInfo.m_worldCoord
+        = {actualPosition.x, actualPosition.y, upperBound.x, upperBound.y};
 
     resources::Sprite &sprite = SpriteComponent::SpriteData(entity);
     if (!sprite.getImage().isValid())
@@ -346,14 +346,14 @@ void GraphicsManager::drawSpriteComponent(ecs::Entity entity)
     const bedrock::Vector2 textureSize = sprite.getSize();
 
     drawInfo.m_texCoord
-        = {texturePosition.x(),
-           texturePosition.y(),
-           texturePosition.x() + textureSize.x(),
-           texturePosition.y() + textureSize.y()};
+        = {texturePosition.x,
+           texturePosition.y,
+           texturePosition.x + textureSize.x,
+           texturePosition.y + textureSize.y};
 
     drawInfo.m_hints   = (RenderHints)SpriteComponent::DrawHint(entity);
     drawInfo.m_texture = &getImageTexture(sprite.getImage());
-    drawInfo.m_depth   = actualPosition.z();
+    drawInfo.m_depth   = actualPosition.z;
 
     enqueueSpriteDraw(drawInfo);
 }
@@ -404,12 +404,12 @@ void GraphicsManager::addSpriteVertexToBuffer(
     SpriteBuffer *buffer)
 {
     SpriteVertex vertex{
-        static_cast<GLfloat>(pos.x()),
-        static_cast<GLfloat>(pos.y()),
-        static_cast<GLfloat>(pos.z()),
+        static_cast<GLfloat>(pos.x),
+        static_cast<GLfloat>(pos.y),
+        static_cast<GLfloat>(pos.z),
 
-        static_cast<GLfloat>(uv.x()),
-        static_cast<GLfloat>(uv.y())};
+        static_cast<GLfloat>(uv.x),
+        static_cast<GLfloat>(uv.y)};
 
     buffer->push_back(vertex);
 }
@@ -493,7 +493,7 @@ void GraphicsManager::setCompatibleState(
 
 void GraphicsManager::updateCamera()
 {
-    float cameraRatio = m_mainCamera.m_size.x() / m_mainCamera.m_size.y();
+    float cameraRatio = m_mainCamera.m_size.x / m_mainCamera.m_size.y;
 
     bedrock::Vector2 scale = m_mainCamera.m_size;
 
@@ -503,15 +503,14 @@ void GraphicsManager::updateCamera()
     }
 
     bedrock::Vector2 translate{
-        m_mainCamera.m_center.x() / scale.x(),
-        m_mainCamera.m_center.y() / scale.y()};
+        m_mainCamera.m_center.x / scale.x, m_mainCamera.m_center.y / scale.y};
 
     // clang-format off
     GLfloat cameraTransform[16]{
-        2 / scale.x(),		0,					0, 0, 
-		0,					2 / scale.y(),		0, 0,
+        2 / scale.x,		0,					0, 0, 
+		0,					2 / scale.y,		0, 0,
         0,					0,					1, 0,
-        -translate.x() * 2, -translate.y() * 2, 0, 1};
+        -translate.x * 2, -translate.y * 2, 0, 1};
     // clang-format on
 
     m_programSpriteSoftAlpha->use();
@@ -536,7 +535,7 @@ void GraphicsManager::updateCamera()
         cameraTransform);
 
     m_frameBuffer->resize(
-        {static_cast<int32_t>(scale.x()), static_cast<int32_t>(scale.y())});
+        {static_cast<int32_t>(scale.x), static_cast<int32_t>(scale.y)});
 }
 
 perfectpixel::graphics::Texture &

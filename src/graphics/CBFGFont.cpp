@@ -44,24 +44,24 @@ namespace perfectpixel {
 				float widthFactor = static_cast<float>(m_width[c]) / static_cast<float>(m_header.m_cellWidth);
 
 				const Quad uvQuad{
-					m_uvStride.x() * col,
-					m_uvStride.y() * row,
-					m_uvStride.x() * col + (m_uvStride.x() * widthFactor),
-					m_uvStride.y() * (row + 1)
+					m_uvStride.x * col,
+					m_uvStride.y * row,
+					m_uvStride.x * col + (m_uvStride.x * widthFactor),
+					m_uvStride.y * (row + 1)
 				};
 
 				const Quad xyQuad{
-					cursor.x(),
-					cursor.y() + size,
-					cursor.x() + widthFactor * size,
-					cursor.y()
+					cursor.x,
+					cursor.y + size,
+					cursor.x + widthFactor * size,
+					cursor.y
 				};
 
 				TextVertex
-					topLeft{ xyQuad.m_left, xyQuad.m_top, position.z(), uvQuad.m_left, uvQuad.m_top },
-					topRight{ xyQuad.m_right, xyQuad.m_top, position.z(), uvQuad.m_right, uvQuad.m_top },
-					bottomLeft{ xyQuad.m_left, xyQuad.m_bottom, position.z(), uvQuad.m_left, uvQuad.m_bottom },
-					bottomRight{ xyQuad.m_right, xyQuad.m_bottom, position.z(), uvQuad.m_right, uvQuad.m_bottom };
+					topLeft{ xyQuad.m_left, xyQuad.m_top, position.z, uvQuad.m_left, uvQuad.m_top },
+					topRight{ xyQuad.m_right, xyQuad.m_top, position.z, uvQuad.m_right, uvQuad.m_top },
+					bottomLeft{ xyQuad.m_left, xyQuad.m_bottom, position.z, uvQuad.m_left, uvQuad.m_bottom },
+					bottomRight{ xyQuad.m_right, xyQuad.m_bottom, position.z, uvQuad.m_right, uvQuad.m_bottom };
 
 				out_vertices->push_back(topLeft);
 				out_vertices->push_back(topRight);
@@ -71,7 +71,7 @@ namespace perfectpixel {
 				out_vertices->push_back(topRight);
 				out_vertices->push_back(bottomRight);
 
-				cursor.x() += widthFactor * size;
+				cursor.x += widthFactor * size;
 			}
 		}
 

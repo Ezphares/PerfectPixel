@@ -144,12 +144,10 @@ bool CollisionSystem::collideRectRect(
     bedrock::Vector2 offset = secondRect.m_center - firstRect.m_center;
 
     bedrock::Vector2 overlap{
-        firstRect.m_halfSize.x() + secondRect.m_halfSize.x()
-            - std::abs(offset.x()),
-        firstRect.m_halfSize.y() + secondRect.m_halfSize.y()
-            - std::abs(offset.y())};
+        firstRect.m_halfSize.x + secondRect.m_halfSize.x - std::abs(offset.x),
+        firstRect.m_halfSize.y + secondRect.m_halfSize.y - std::abs(offset.y)};
 
-    if (overlap.x() < COLLISON_LEEWAY || overlap.y() < COLLISON_LEEWAY)
+    if (overlap.x < COLLISON_LEEWAY || overlap.y < COLLISON_LEEWAY)
     {
         // No collision
         return false;
@@ -213,14 +211,14 @@ bool CollisionSystem::collideRectCircle(
     circleToRect.m_halfSize = bedrock::Vector2(secondCircle.m_radius, 0.0f);
     if (collideRectRect(firstRect, circleToRect, out_collision))
     {
-        rectOverlapX = out_collision.m_data_RectRectOverlap.x();
+        rectOverlapX = out_collision.m_data_RectRectOverlap.x;
         rectCheck    = true;
     }
 
     circleToRect.m_halfSize = bedrock::Vector2(0.0f, secondCircle.m_radius);
     if (collideRectRect(firstRect, circleToRect, out_collision))
     {
-        rectOverlapY = out_collision.m_data_RectRectOverlap.y();
+        rectOverlapY = out_collision.m_data_RectRectOverlap.y;
         rectCheck    = true;
     }
 
@@ -232,16 +230,14 @@ bool CollisionSystem::collideRectCircle(
 
     // Otherwise check a circle collision against the nearest corner
     bedrock::Circle rectToCircle;
-    rectToCircle.m_center.x()
-        = firstRect.m_center.x()
-          + (firstRect.m_center.x() > secondCircle.m_center.x()
-                 ? -firstRect.m_halfSize.x()
-                 : firstRect.m_halfSize.x());
-    rectToCircle.m_center.y()
-        = firstRect.m_center.y()
-          + (firstRect.m_center.y() > secondCircle.m_center.y()
-                 ? -firstRect.m_halfSize.y()
-                 : firstRect.m_halfSize.y());
+    rectToCircle.m_center.x = firstRect.m_center.x
+                              + (firstRect.m_center.x > secondCircle.m_center.x
+                                     ? -firstRect.m_halfSize.x
+                                     : firstRect.m_halfSize.x);
+    rectToCircle.m_center.y = firstRect.m_center.y
+                              + (firstRect.m_center.y > secondCircle.m_center.y
+                                     ? -firstRect.m_halfSize.y
+                                     : firstRect.m_halfSize.y);
 
     return collideCircleCircle(rectToCircle, secondCircle, out_collision);
 }
@@ -291,17 +287,17 @@ void CollisionSystem::resolveCollision(const CollisionData &collision)
         bedrock::Vector2 overlap = collision.m_data_RectRectOverlap;
         float newVel1, newVel2;
 
-        if (overlap.x() < overlap.y())
+        if (overlap.x < overlap.y)
         {
             singleAxisReposition(
                 PhysicsComponent::Mass(collision.m_first),
                 PhysicsComponent::Mass(collision.m_second),
-                overlap.x(),
-                &(resolution1.m_data[0]),
-                &(resolution2.m_data[0]));
+                overlap.x,
+                &(resolution1[0]),
+                &(resolution2[0]));
 
-            if (collision.m_firstProxy.m_aaRect.m_center.x()
-                > collision.m_secondProxy.m_aaRect.m_center.x())
+            if (collision.m_firstProxy.m_aaRect.m_center.x
+                > collision.m_secondProxy.m_aaRect.m_center.x)
             {
                 resolution2 *= -1;
             }
@@ -314,26 +310,26 @@ void CollisionSystem::resolveCollision(const CollisionData &collision)
                 bounciness,
                 PhysicsComponent::Mass(collision.m_first),
                 PhysicsComponent::Mass(collision.m_second),
-                PhysicsComponent::Velocity(collision.m_first).x(),
-                PhysicsComponent::Velocity(collision.m_second).x(),
+                PhysicsComponent::Velocity(collision.m_first).x,
+                PhysicsComponent::Velocity(collision.m_second).x,
                 &newVel1,
                 &newVel2);
 
             bounce1
-                = {newVel1, PhysicsComponent::Velocity(collision.m_first).y()};
+                = {newVel1, PhysicsComponent::Velocity(collision.m_first).y};
             bounce2
-                = {newVel2, PhysicsComponent::Velocity(collision.m_first).y()};
+                = {newVel2, PhysicsComponent::Velocity(collision.m_first).y};
         }
         else
         {
             singleAxisReposition(
                 PhysicsComponent::Mass(collision.m_first),
                 PhysicsComponent::Mass(collision.m_second),
-                overlap.y(),
-                &(resolution1.m_data[1]),
-                &(resolution2.m_data[1]));
-            if (collision.m_firstProxy.m_aaRect.m_center.y()
-                > collision.m_secondProxy.m_aaRect.m_center.y())
+                overlap.y,
+                &(resolution1[1]),
+                &(resolution2[1]));
+            if (collision.m_firstProxy.m_aaRect.m_center.y
+                > collision.m_secondProxy.m_aaRect.m_center.y)
             {
                 resolution2 *= -1;
             }
@@ -346,15 +342,15 @@ void CollisionSystem::resolveCollision(const CollisionData &collision)
                 bounciness,
                 PhysicsComponent::Mass(collision.m_first),
                 PhysicsComponent::Mass(collision.m_second),
-                PhysicsComponent::Velocity(collision.m_first).y(),
-                PhysicsComponent::Velocity(collision.m_second).y(),
+                PhysicsComponent::Velocity(collision.m_first).y,
+                PhysicsComponent::Velocity(collision.m_second).y,
                 &newVel1,
                 &newVel2);
 
             bounce1
-                = {PhysicsComponent::Velocity(collision.m_first).x(), newVel1};
+                = {PhysicsComponent::Velocity(collision.m_first).x, newVel1};
             bounce2
-                = {PhysicsComponent::Velocity(collision.m_second).x(), newVel2};
+                = {PhysicsComponent::Velocity(collision.m_second).x, newVel2};
         }
     }
     else if (

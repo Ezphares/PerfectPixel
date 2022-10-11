@@ -32,10 +32,10 @@ public:
     struct Anchor
     {
         Anchor(bedrock::Vector2 point = bedrock::Vector2())
-            : m_left(point.x())
-            , m_right(point.x())
-            , m_bottom(point.y())
-            , m_top(point.y())
+            : m_left(point.x)
+            , m_right(point.x)
+            , m_bottom(point.y)
+            , m_top(point.y)
         {}
 
         float m_left, m_right, m_bottom, m_top;

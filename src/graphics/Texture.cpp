@@ -139,8 +139,8 @@ perfectpixel::bedrock::Vector2 Texture::pixelToTexture(bedrock::Point2 pixel) co
 perfectpixel::bedrock::Point2 Texture::textureToPixel(bedrock::Vector2 pixel) const
 {
 	return bedrock::Point2{
-		static_cast<int32_t>(pixel.x() * m_size.m_x + 0.001),
-		static_cast<int32_t>(pixel.y() * m_size.m_y + 0.001),
+		static_cast<int32_t>(pixel.x * m_size.m_x + 0.001),
+		static_cast<int32_t>(pixel.y * m_size.m_y + 0.001),
 	};
 }
 

@@ -44,9 +44,9 @@ GUI::AnchoredRegion GUI::AnchoredRegion::absolute(
         v = 1.0f;
     }
 
-    result.m_anchor.m_left = result.m_anchor.m_right = result.m_pivot.x() = h;
+    result.m_anchor.m_left = result.m_anchor.m_right = result.m_pivot.x = h;
 
-    result.m_anchor.m_top = result.m_anchor.m_bottom = result.m_pivot.y() = v;
+    result.m_anchor.m_top = result.m_anchor.m_bottom = result.m_pivot.y = v;
 
     return result;
 }
@@ -111,15 +111,15 @@ void perfectpixel::graphics::GUI::positionToSimpleRelative(
     bedrock::Vector2 innerRel
         = guiInternal.m_tracker.absToRel(position.m_extend);
 
-    temp.m_left   = innerRel.x() * position.m_pivot.x();
-    temp.m_right  = innerRel.x() * (1.0f - position.m_pivot.x());
-    temp.m_bottom = innerRel.y() * position.m_pivot.y();
-    temp.m_top    = innerRel.y() * (1.0f - position.m_pivot.y());
+    temp.m_left   = innerRel.x * position.m_pivot.x;
+    temp.m_right  = innerRel.x * (1.0f - position.m_pivot.x);
+    temp.m_bottom = innerRel.y * position.m_pivot.y;
+    temp.m_top    = innerRel.y * (1.0f - position.m_pivot.y);
 
     bedrock::Vector2 cursor = guiInternal.m_tracker.cursor();
 
-    outInner.m_left   = position.m_anchor.m_left - temp.m_left + cursor.x();
-    outInner.m_right  = position.m_anchor.m_right - temp.m_right + cursor.x();
-    outInner.m_bottom = position.m_anchor.m_bottom - temp.m_bottom + cursor.y();
-    outInner.m_top    = position.m_anchor.m_top - temp.m_top + cursor.y();
+    outInner.m_left   = position.m_anchor.m_left - temp.m_left + cursor.x;
+    outInner.m_right  = position.m_anchor.m_right - temp.m_right + cursor.x;
+    outInner.m_bottom = position.m_anchor.m_bottom - temp.m_bottom + cursor.y;
+    outInner.m_top    = position.m_anchor.m_top - temp.m_top + cursor.y;
 }

@@ -16,7 +16,7 @@ inline static void AssertVectorEq(Vector<N> expected, Vector<N> actual)
 {
     for (unsigned i = 0; i < N; i++)
     {
-        ASSERT_FLOAT_EQ(expected.m_data[i], actual.m_data[i]);
+        ASSERT_FLOAT_EQ(expected[i], actual[i]);
     }
 }
 

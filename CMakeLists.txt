@@ -177,6 +177,7 @@ MAKE_GROUP("Serialization" "serialization"
 list(APPEND UNIT_TEST_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/tests/test_Vectors.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/tests/test_Matrices.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/tests/test_TransformedView.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/tests/test_Quaternion.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/tests/test_BitSet.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/tests/test_TypeReflection.cpp"

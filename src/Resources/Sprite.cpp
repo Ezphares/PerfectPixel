@@ -71,8 +71,8 @@ bedrock::Vector2 Sprite::getTexCoord(int32_t frame /*= 0*/) const
     bedrock::Vector2 step = m_textureSize + m_frameSpacing;
 
     return bedrock::Vector2{
-        m_textureTopLeft.x() + (frame % m_framesPerRow) * step.x(),
-        m_textureTopLeft.y() + (frame / m_framesPerRow) * step.y()};
+        m_textureTopLeft.x + (frame % m_framesPerRow) * step.x,
+        m_textureTopLeft.y + (frame / m_framesPerRow) * step.y};
 }
 
 bedrock::Vector2 Sprite::getSize() const

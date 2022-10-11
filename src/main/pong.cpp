@@ -59,14 +59,14 @@ public:
     static void Reset(Entity entity)
     {
         bedrock::Vector3 &position = TransformComponent::Position(entity);
-        position                   = {0, 0, position.z()};
+        position                   = {0, 0, position.z};
 
         bedrock::Vector3 &velocity
             = physics::PhysicsComponent::Velocity(entity);
 
-        velocity.x()                      = velocity.x() > 0 ? -40.0f : 40.0f;
-        velocity.y()                      = velocity.y() > 0 ? 35.0f : -35.0f;
-        BallComponent::DeltaXPrev(entity) = velocity.x();
+        velocity.x                        = velocity.x > 0 ? -40.0f : 40.0f;
+        velocity.y                        = velocity.y > 0 ? 35.0f : -35.0f;
+        BallComponent::DeltaXPrev(entity) = velocity.x;
     }
 };
 
@@ -159,10 +159,10 @@ public:
         {
             Entity entity = *it;
             BatComponent::CurrentDirection(entity)
-                = TransformComponent::Position(entity).y()
+                = TransformComponent::Position(entity).y
                           < TransformComponent::Position(
                                 AIComponent::BallToTrack(entity))
-                                .y()
+                                .y
                       ? 1.0f
                       : -1.0f;
         }
@@ -198,12 +198,12 @@ public:
             Entity entity    = *it;
             bool shouldReset = false;
 
-            if (TransformComponent::Position(entity).x() < -80)
+            if (TransformComponent::Position(entity).x < -80)
             {
                 BallComponent::Score2(entity)++;
                 shouldReset = true;
             }
-            else if (TransformComponent::Position(entity).x() > 80)
+            else if (TransformComponent::Position(entity).x > 80)
             {
                 BallComponent::Score1(entity)++;
                 shouldReset = true;
@@ -217,12 +217,12 @@ public:
             bedrock::Vector3 &velocity
                 = physics::PhysicsComponent::Velocity(entity);
             // Speed up after batting
-            if (BallComponent::DeltaXPrev(entity) > 0.0f != velocity.x() > 0.0f)
+            if (BallComponent::DeltaXPrev(entity) > 0.0f != velocity.x > 0.0f)
             {
                 velocity *= 1.05f;
             }
 
-            BallComponent::DeltaXPrev(entity) = velocity.x();
+            BallComponent::DeltaXPrev(entity) = velocity.x;
         }
     }
 };

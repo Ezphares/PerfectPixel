@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
   <Type Name="perfectpixel::bedrock::Vector&lt;2&gt;">
-    <DisplayString>({this->m_data[0]}, {this->m_data[1]})</DisplayString>
+    <DisplayString>({this->x,g}, {this->y,g})</DisplayString>
     <Expand>
-      <Item Name="[x]">this->m_data[0]</Item>
-      <Item Name="[y]">this->m_data[1]</Item>
+      <Item Name="[x]">this->x</Item>
+      <Item Name="[y]">this->y</Item>
     </Expand>
   </Type>
   <Type Name="perfectpixel::bedrock::Vector&lt;3&gt;">
-    <DisplayString>({this->m_data[0]}, {this->m_data[1]}, {this->m_data[2]})</DisplayString>
+    <DisplayString>({this->x,g}, {this->y,g}, {this->z,g})</DisplayString>
     <Expand>
-      <Item Name="[x]">this->m_data[0]</Item>
-      <Item Name="[y]">this->m_data[1]</Item>
-      <Item Name="[z]">this->m_data[2]</Item>
+      <Item Name="[x]">this->x</Item>
+      <Item Name="[y]">this->y</Item>
+      <Item Name="[z]">this->z</Item>
     </Expand>
   </Type>
   <Type Name="perfectpixel::bedrock::Vector&lt;4&gt;">
-    <DisplayString>({this->m_data[0]}, {this->m_data[1]}, {this->m_data[2]}, {this->m_data[3]})</DisplayString>
+    <DisplayString>({this->x,g}, {this->y,g}, {this->z,g}, {this->w,g})</DisplayString>
     <Expand>
-      <Item Name="[x]">this->m_data[0]</Item>
-      <Item Name="[y]">this->m_data[1]</Item>
-      <Item Name="[z]">this->m_data[2]</Item>
-      <Item Name="[w]">this->m_data[3]</Item>
+      <Item Name="[x]">this->x</Item>
+      <Item Name="[y]">this->y</Item>
+      <Item Name="[z]">this->z</Item>
+      <Item Name="[w]">this->w</Item>
     </Expand>
   </Type>
   <Type Name="perfectpixel::bedrock::Quaternion">
-    <DisplayString>({this->m_data[0]}, {this->m_data[1]}, {this->m_data[2]}) : [{this->m_data[3]}]</DisplayString>
+    <DisplayString>({this->x,g}, {this-y,g}, {this->z,g}) : [{this->w,g}]</DisplayString>
     <Expand>
-      <Item Name="[x]">this->m_data[0]</Item>
-      <Item Name="[y]">this->m_data[1]</Item>
-      <Item Name="[z]">this->m_data[2]</Item>
-      <Item Name="[w]">this->m_data[3]</Item>
+      <Item Name="[x]">this->x</Item>
+      <Item Name="[y]">this->y</Item>
+      <Item Name="[z]">this->z</Item>
+      <Item Name="[w]">this->w</Item>
     </Expand>
   </Type>
 </AutoVisualizer>

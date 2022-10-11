@@ -10,6 +10,8 @@
 #include <cmath>
 #include <type_traits>
 
+#include <cassert>
+
 namespace perfectpixel {
 
 namespace serialization {
@@ -52,30 +54,150 @@ enum SwizzlePosition : uint8_t
 };
 
 template <unsigned D>
-struct Vector
+struct VectorData
+{
+    std::array<float, D> m_data;
+
+    inline float &operator[](unsigned i)
+    {
+        return m_data[i];
+    }
+    inline const float &operator[](unsigned i) const
+    {
+        return m_data[i];
+    }
+};
+
+template <>
+struct VectorData<2u>
+{
+    float x, y;
+
+    inline float &operator[](unsigned i)
+    {
+        assert(i < 2);
+
+        switch (i)
+        {
+        case 0:
+            return x;
+        default:
+            return y;
+        }
+    }
+    inline const float &operator[](unsigned i) const
+    {
+        assert(i < 2);
+
+        switch (i)
+        {
+        case 0:
+            return x;
+        default:
+            return y;
+        }
+    }
+};
+
+template <>
+struct VectorData<3u>
+{
+    float x, y, z;
+
+    inline float &operator[](unsigned i)
+    {
+        assert(i < 3);
+
+        switch (i)
+        {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        default:
+            return z;
+        }
+    }
+    inline const float &operator[](unsigned i) const
+    {
+        assert(i < 3);
+
+        switch (i)
+        {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        default:
+            return z;
+        }
+    }
+};
+
+template <>
+struct VectorData<4u>
+{
+    float x, y, z, w;
+
+    inline float &operator[](unsigned i)
+    {
+        assert(i < 4);
+
+        switch (i)
+        {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        default:
+            return w;
+        }
+    }
+    inline const float &operator[](unsigned i) const
+    {
+        assert(i < 4);
+
+        switch (i)
+        {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        default:
+            return w;
+        }
+    }
+};
+
+template <unsigned D>
+struct Vector : public VectorData<D>
 {
     Vector()
-        : m_data()
     {
         for (unsigned i = 0; i < D; i++)
         {
-            m_data[0] = 0.0f;
+            (*this)[i] = 0.0f;
         }
     }
 
     Vector(std::array<float, D> values)
     {
-        m_data = values;
+        for (unsigned i = 0; i < D; i++)
+        {
+            (*this)[i] = values[i];
+        }
     }
-
-    std::array<float, D> m_data;
 
     static float dot(const Vector<D> &l, const Vector<D> &r)
     {
         float accumulator{0.0f};
         for (unsigned i = 0; i < D; i++)
         {
-            accumulator += l.m_data[i] * r.m_data[i];
+            accumulator += (l[i] * r[i]);
         }
         return accumulator;
     }
@@ -87,9 +209,9 @@ struct Vector
         typename std::enable_if<_ == 3, void>::type * = nullptr)
     {
         return Vector<D>(std::array<float, 3>{
-            l.m_data[1] * r.m_data[2] - l.m_data[2] * r.m_data[1],
-            l.m_data[2] * r.m_data[0] - l.m_data[0] * r.m_data[2],
-            l.m_data[0] * r.m_data[1] - l.m_data[1] * r.m_data[0],
+            l[1] * r[2] - l[2] * r[1],
+            l[2] * r[0] - l[0] * r[2],
+            l[0] * r[1] - l[1] * r[0],
         });
     }
 
@@ -116,8 +238,7 @@ struct Vector
             uint8_t srcIndex  = 0;
             while (src >>= 1)
                 srcIndex++;
-            result.m_data[i]
-                = negative ? -vec.m_data[srcIndex] : vec.m_data[srcIndex];
+            result[i] = negative ? -vec[srcIndex] : vec[srcIndex];
         }
 
         return result;
@@ -144,7 +265,7 @@ struct Vector
     {
         for (unsigned i = 0; i < D; i++)
         {
-            m_data[i] += r.m_data[i];
+            (*this)[i] += r[i];
         }
         return *this;
     }
@@ -160,7 +281,7 @@ struct Vector
     {
         for (unsigned i = 0; i < D; i++)
         {
-            m_data[i] -= r.m_data[i];
+            (*this)[i] -= r[i];
         }
         return *this;
     }
@@ -176,7 +297,7 @@ struct Vector
     {
         for (unsigned i = 0; i < D; i++)
         {
-            m_data[i] *= scalar;
+            (*this)[i] *= scalar;
         }
         return *this;
     }
@@ -192,7 +313,7 @@ struct Vector
     {
         for (unsigned i = 0; i < D; i++)
         {
-            m_data[i] /= scalar;
+            (*this)[i] /= scalar;
         }
         return *this;
     }
@@ -206,7 +327,7 @@ struct Vector
     {
         for (unsigned i = 0; i < D; i++)
         {
-            if (m_data[i] != other.m_data[i])
+            if ((*this)[i] != other[i])
             {
                 return false;
             }
@@ -228,23 +349,6 @@ struct Vector2 : public Vector<2>
     {}
     explicit Vector2(const Vector3 &discard);
 
-    inline const float &x() const
-    {
-        return m_data[0];
-    }
-    inline float &x()
-    {
-        return m_data[0];
-    }
-    inline const float &y() const
-    {
-        return m_data[1];
-    }
-    inline float &y()
-    {
-        return m_data[1];
-    }
-
     const static Vector2 DOWN;
     const static Vector2 UP;
     const static Vector2 LEFT;
@@ -265,31 +369,6 @@ struct Vector3 : public Vector<3>
     explicit Vector3(const Vector2 &expand, float z = 0.0f);
     explicit Vector3(const Vector4 &discard);
 
-    inline const float &x() const
-    {
-        return m_data[0];
-    }
-    inline float &x()
-    {
-        return m_data[0];
-    }
-    inline const float &y() const
-    {
-        return m_data[1];
-    }
-    inline float &y()
-    {
-        return m_data[1];
-    }
-    inline const float &z() const
-    {
-        return m_data[2];
-    }
-    inline float &z()
-    {
-        return m_data[2];
-    }
-
     const static Vector3 DOWN;
     const static Vector3 UP;
     const static Vector3 LEFT;
@@ -309,39 +388,6 @@ struct Vector4 : public Vector<4>
     Vector4(float x, float y, float z, float w)
         : Vector<4>(std::array<float, 4>{x, y, z, w})
     {}
-
-    inline const float &x() const
-    {
-        return m_data[0];
-    }
-    inline float &x()
-    {
-        return m_data[0];
-    }
-    inline const float &y() const
-    {
-        return m_data[1];
-    }
-    inline float &y()
-    {
-        return m_data[1];
-    }
-    inline const float &z() const
-    {
-        return m_data[2];
-    }
-    inline float &z()
-    {
-        return m_data[2];
-    }
-    inline const float &w() const
-    {
-        return m_data[3];
-    }
-    inline float &w()
-    {
-        return m_data[3];
-    }
 };
 
 struct Point3
@@ -378,7 +424,7 @@ operator<<(ISerializer &ostream, const perfectpixel::bedrock::Vector<D> &vec)
 
     for (unsigned i = 0; i < D; ++i)
     {
-        ostream.writeFloat(vec.m_data[i]);
+        ostream.writeFloat(vec[i]);
     }
 
     ostream.writeArrayEnd();
@@ -391,9 +437,11 @@ operator>>(ISerializer &istream, perfectpixel::bedrock::Vector<D> &vec)
 {
     uint32_t datasize = istream.readArrayStart();
 
-    for (unsigned i = 0; i < std::min(D, datasize); ++i)
+    assert(datasize == D);
+
+    for (unsigned i = 0; i < D; ++i)
     {
-        istream.readFloat(&vec.m_data[i]);
+        istream.readFloat(&vec[i]);
     }
 
     istream.readArrayEnd();

@@ -26,8 +26,8 @@ Matrix3x3::translate2D(const Vector2 &coordinates)
 {
     Matrix3x3 result = IDENTITY;
 
-    result.m(2, 0) = coordinates.x();
-    result.m(2, 1) = coordinates.y();
+    result.m(2, 0) = coordinates.x;
+    result.m(2, 1) = coordinates.y;
 
     return result;
 }
@@ -36,8 +36,8 @@ perfectpixel::bedrock::Matrix3x3 Matrix3x3::scale2D(const Vector2 &axes)
 {
     Matrix3x3 result = IDENTITY;
 
-    result.m(0, 0) = axes.x();
-    result.m(1, 1) = axes.y();
+    result.m(0, 0) = axes.x;
+    result.m(1, 1) = axes.y;
 
     return result;
 }
@@ -74,9 +74,9 @@ Matrix4x4::translate(const Vector3 &coordinates)
 {
     Matrix4x4 result = IDENTITY;
 
-    result.m(3, 0) = coordinates.x();
-    result.m(3, 1) = coordinates.y();
-    result.m(3, 2) = coordinates.z();
+    result.m(3, 0) = coordinates.x;
+    result.m(3, 1) = coordinates.y;
+    result.m(3, 2) = coordinates.z;
 
     return result;
 }
@@ -85,9 +85,9 @@ perfectpixel::bedrock::Matrix4x4 Matrix4x4::scale(const Vector3 &axes)
 {
     Matrix4x4 result = IDENTITY;
 
-    result.m(0, 0) = axes.x();
-    result.m(1, 1) = axes.y();
-    result.m(2, 2) = axes.z();
+    result.m(0, 0) = axes.x;
+    result.m(1, 1) = axes.y;
+    result.m(2, 2) = axes.z;
 
     return result;
 }
@@ -96,17 +96,17 @@ perfectpixel::bedrock::Matrix4x4 Matrix4x4::rotate(const Quaternion &quat)
 {
     Matrix4x4 result = IDENTITY;
 
-    const float xx = quat.x() * quat.x();
-    const float xw = quat.x() * quat.w();
-    const float xy = quat.x() * quat.y();
+    const float xx = quat.x * quat.x;
+    const float xw = quat.x * quat.w;
+    const float xy = quat.x * quat.y;
 
-    const float yy = quat.y() * quat.y();
-    const float yw = quat.y() * quat.w();
-    const float yz = quat.y() * quat.z();
+    const float yy = quat.y * quat.y;
+    const float yw = quat.y * quat.w;
+    const float yz = quat.y * quat.z;
 
-    const float zz = quat.z() * quat.z();
-    const float zw = quat.z() * quat.w();
-    const float zx = quat.x() * quat.z();
+    const float zz = quat.z * quat.z;
+    const float zw = quat.z * quat.w;
+    const float zx = quat.x * quat.z;
 
     result.m(0, 0) = 1.0f - 2.0f * (yy + zz);
     result.m(0, 1) = 2.0f * (xy - zw);

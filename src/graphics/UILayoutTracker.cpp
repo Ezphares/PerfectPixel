@@ -19,22 +19,22 @@ void perfectpixel::graphics::_internal::UILayoutTracker::addLayout(
     LayoutEntry &top = m_layoutStack.back();
 
     bedrock::Vector2 toAdvance;
-    if (top.m_cursorDirection.x() > .5f)
+    if (top.m_cursorDirection.x > .5f)
     {
-        toAdvance.x() += localRelMax.x();
+        toAdvance.x += localRelMax.x;
     }
-    else if (top.m_cursorDirection.x() < .5f)
+    else if (top.m_cursorDirection.x < .5f)
     {
-        toAdvance.x() += localRelMin.x();
+        toAdvance.x += localRelMin.x;
     }
 
-    if (top.m_cursorDirection.y() > .5f)
+    if (top.m_cursorDirection.y > .5f)
     {
-        toAdvance.y() += localRelMax.y();
+        toAdvance.y += localRelMax.y;
     }
-    else if (top.m_cursorDirection.y() < .5f)
+    else if (top.m_cursorDirection.y < .5f)
     {
-        toAdvance.y() += localRelMin.y();
+        toAdvance.y += localRelMin.y;
     }
 
     LayoutEntry newEntry;
@@ -43,21 +43,21 @@ void perfectpixel::graphics::_internal::UILayoutTracker::addLayout(
     newEntry.m_localRelMax = localRelMax;
     newEntry.m_globalRelMin
         = {bedrock::invLerp(
-               localRelMin.x(), localRelMax.x(), top.m_globalRelMin.x()),
+               localRelMin.x, localRelMax.x, top.m_globalRelMin.x),
            bedrock::invLerp(
-               localRelMin.y(), localRelMax.y(), top.m_globalRelMin.x())};
+               localRelMin.y, localRelMax.y, top.m_globalRelMin.x)};
     newEntry.m_globalRelMax
         = {bedrock::invLerp(
-               localRelMin.x(), localRelMax.x(), top.m_globalRelMin.x()),
+               localRelMin.x, localRelMax.x, top.m_globalRelMin.x),
            bedrock::invLerp(
-               localRelMin.y(), localRelMax.y(), top.m_globalRelMin.y())};
+               localRelMin.y, localRelMax.y, top.m_globalRelMin.y)};
     newEntry.m_absMin = relToAbs(localRelMin);
     newEntry.m_absMax = relToAbs(localRelMax);
     newEntry.m_mouseLocal
         = {bedrock::invLerp(
-               localRelMin.x(), localRelMax.x(), top.m_mouseLocal.x()),
+               localRelMin.x, localRelMax.x, top.m_mouseLocal.x),
            bedrock::invLerp(
-               localRelMin.y(), localRelMax.y(), top.m_mouseLocal.y())};
+               localRelMin.y, localRelMax.y, top.m_mouseLocal.y)};
     newEntry.m_cursorDirection = bedrock::Vector2();
     if (direction == LayoutDirection::HORIZONTAL)
     {
@@ -69,8 +69,8 @@ void perfectpixel::graphics::_internal::UILayoutTracker::addLayout(
     }
     newEntry.m_cursorDirection *= sign;
     newEntry.m_cursor
-        = {newEntry.m_cursorDirection.x() >= 0.0f ? 0.0f : 1.0f,
-           newEntry.m_cursorDirection.y() >= 0.0f ? 0.0f : 1.0f};
+        = {newEntry.m_cursorDirection.x >= 0.0f ? 0.0f : 1.0f,
+           newEntry.m_cursorDirection.y >= 0.0f ? 0.0f : 1.0f};
 
     m_layoutStack.push_back(std::move(newEntry));
 
@@ -86,7 +86,7 @@ perfectpixel::graphics::_internal::UILayoutTracker::absToRel(
     const bedrock::Vector2 scale{top.m_absMax - top.m_absMin};
     const bedrock::Vector2 local{absolute - top.m_absMin};
 
-    return bedrock::Vector2{local.x() / scale.x(), local.y() / scale.y()};
+    return bedrock::Vector2{local.x / scale.x, local.y / scale.y};
 }
 
 perfectpixel::bedrock::Vector2
@@ -99,7 +99,7 @@ perfectpixel::graphics::_internal::UILayoutTracker::relToAbs(
 
     return top.m_absMin
            + bedrock::Vector2{
-               relative.x() * scale.x(), relative.y() * scale.y()};
+               relative.x * scale.x, relative.y * scale.y};
 }
 
 perfectpixel::bedrock::Vector2

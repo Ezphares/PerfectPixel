@@ -69,7 +69,7 @@ struct Matrix
         Vector<H> result;
         for (unsigned i = 0; i < H; i++)
         {
-            result.m_data[i] = Vector<W>::dot(row(i), r);
+            result[i] = Vector<W>::dot(row(i), r);
         }
         return result;
     }
@@ -173,6 +173,8 @@ struct Matrix
                 result.m(j, i) = m(i, j);
             }
         }
+
+        return result;
     }
 
     template <typename T = Matrix<H, H>>
@@ -182,16 +184,19 @@ struct Matrix
 
         bool add  = true;
         float det = 0;
-        for (int i = 0; i < H; ++i)
+        for (int j = 0; j < H; ++j)
         {
-            for (int j = 0; j < H; ++j)
+            for (int i = 0; i < H; ++i)
             {
                 const float v
                     = getDeterminant(getMinor(i, j)) * (add ? 1.0f : -1.0f);
                 cofactors.m(i, j) = v;
                 add               = !add;
 
-                det += m(i, j) * v;
+                if (j == 0)
+                {
+                    det += m(i, j) * v;
+                }
             }
         }
 

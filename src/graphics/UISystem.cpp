@@ -33,11 +33,11 @@ void UISystem::onRender(
             int32_t alignment = UITextComponent::Alignment(entity);
             if ((alignment & UIUtil::UITA_CENTER) > 0)
             {
-                element->m_position.x() -= width * 0.5f;
+                element->m_position.x -= width * 0.5f;
             }
             else if ((alignment & UIUtil::UITA_RIGHT) > 0)
             {
-                element->m_position.x() -= width;
+                element->m_position.x -= width;
             }
 
             m_gm->queueDrawSingle(element);

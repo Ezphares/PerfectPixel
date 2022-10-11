@@ -77,3 +77,19 @@ GTEST_TEST(test_Matrix, Transform3x3)
     Vector2 rotatedAround = rotateAround * point;
     AssertVectorEq(Vector2{5, 2}, rotatedAround);
 }
+
+GTEST_TEST(test_Matrix, Inverse3x3)
+{
+    Matrix3x3 identity = Matrix3x3::IDENTITY;
+
+    AssertMatrixEq(identity, identity.inverse());
+
+    // Test values taken shamelessly from
+    // https://www.mathsisfun.com/algebra/matrix-inverse-minors-cofactors-adjugate.html
+    Matrix3x3 test = Matrix3x3({3, 2, 0, 0, 0, 1, 2, -2, 1});
+    Matrix3x3 testResult
+        = Matrix3x3({0.2f, -0.2f, 0.2f, 0.2f, 0.3f, -0.3f, 0, 1, 0});
+
+    AssertMatrixEq(testResult, test.inverse());
+    AssertMatrixEq(identity, test * test.inverse());
+}
