@@ -4,7 +4,7 @@
 
 using namespace perfectpixel::bedrock;
 
-GTEST_TEST(TransformedView2D, TransformedView2D_identity)
+GTEST_TEST(test_TransformedView2D, TransformedView2D_identity)
 {
     Vector3 pointA{4, 3, 1};
     Vector3 pointB{1, 2, -1};
@@ -20,7 +20,7 @@ GTEST_TEST(TransformedView2D, TransformedView2D_identity)
     translate = pointB;
     AssertVectorEq(pointB, pointA);
 }
-GTEST_TEST(TransformedView2D, TransformedView2D_positions)
+GTEST_TEST(test_TransformedView2D, TransformedView2D_positions)
 {
     Vector3 point{4, 3, 1};
 
@@ -34,4 +34,20 @@ GTEST_TEST(TransformedView2D, TransformedView2D_positions)
     // Check that writebacks work
     translate = translated + Vector3{-1, -1, 0};
     AssertVectorEq(Vector3{3, 2, 1}, point);
+}
+
+GTEST_TEST(test_TransformedView2D, TransformedView2D_rotations)
+{
+    Vector3 point{4, 3, 1};
+
+    TransformedView2D<Vector3> rotate
+        = TransformedView2D(&point, Matrix3x3::rotate2D(Angle::degrees(90)));
+
+    // Check that the viewed vector is translated
+    Vector3 translated = rotate;
+    AssertVectorEq(Vector3{-3, 4, 1}, translated);
+
+    // Check that writebacks work
+    rotate = translated + Vector3{0, -4, 0};
+    AssertVectorEq(Vector3{0, 3, 1}, point);
 }

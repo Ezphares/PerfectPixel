@@ -182,16 +182,15 @@ struct Matrix
     {
         Matrix<H, H> cofactors;
 
-        bool add  = true;
         float det = 0;
         for (int j = 0; j < H; ++j)
         {
             for (int i = 0; i < H; ++i)
             {
-                const float v
-                    = getDeterminant(getMinor(i, j)) * (add ? 1.0f : -1.0f);
+                bool add = (i + j) % 2 == 0;
+
+                float v = getDeterminant(getMinor(i, j)) * (add ? 1.0f : -1.0f);
                 cofactors.m(i, j) = v;
-                add               = !add;
 
                 if (j == 0)
                 {

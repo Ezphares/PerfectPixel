@@ -19,6 +19,8 @@
 #include <chrono>
 #include <thread>
 
+#include "imgui.h"
+
 namespace perfectpixel { namespace core {
 
 Game::Game()
@@ -47,10 +49,19 @@ void Game::run()
     // Virtual call, change window settings
     setupMainWindow(mainWindowSettings);
 
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
     // Create the window
     graphics::IWindow *mainWindow = createWindow(mainWindowSettings);
     mainWindow->activate();
     mainWindow->setKeyCallback(m_inputManager.getKeyCallback());
+    mainWindow->initImGui();
 
     graphics::IWindow::FocusCallback focusCb;
     focusCb.m_func     = &Game::focusWrapper;
@@ -70,6 +81,14 @@ void Game::run()
     camera.m_size      = {160, 120};
     camera.m_scaleMode = graphics::CameraSettings::SCALE_STRETCH;
     m_graphicsManager.setMainCamera(camera);
+
+    ImGuiStyle &style = ImGui::GetStyle();
+    ImGui::StyleColorsDark();
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        style.WindowRounding              = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
 
     // Fire a resize event to initialize size dependent variables
     windowResized(
@@ -127,18 +146,33 @@ void Game::run()
             accumulator = 0;
         }
 
+        // Handle input
+        m_initializer->handleOsStep();
+        m_shouldExit = mainWindow->isClosed();
+        if (m_shouldExit)
+        {
+            break;
+        }
+
+        m_inputManager.update();
+
+        m_graphicsManager.startFrame();
+        mainWindow->startFrame();
+        ImGui::NewFrame();
+
         // Render step
         bedrock::Logger::touchLog(bedrock::Logger::LOG_TOUCH_RENDER);
         m_processorQueue.renderAll(static_cast<float>(frametime.count()));
         m_graphicsManager.drawAll(frametime.count());
+
+        m_graphicsManager.endFrame();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            mainWindow->activate();
+        }
+
         m_graphicsManager.cleanup();
         mainWindow->draw();
-
-        // Handle input
-        m_initializer->handleOsStep();
-        m_inputManager.update();
-
-        m_shouldExit = mainWindow->isClosed();
     }
 
     PP_LOG(LEVEL_INFO, "Shutting down...");

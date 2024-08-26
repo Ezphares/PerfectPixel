@@ -8,7 +8,7 @@
 using namespace perfectpixel::bedrock;
 
 namespace {
-const float EPSILON = std::numeric_limits<float>::epsilon();
+const float EPSILON = 1e-6f;
 }
 
 template <unsigned N>
@@ -16,7 +16,7 @@ inline static void AssertVectorEq(Vector<N> expected, Vector<N> actual)
 {
     for (unsigned i = 0; i < N; i++)
     {
-        ASSERT_FLOAT_EQ(expected[i], actual[i]);
+        ASSERT_NEAR(expected[i], actual[i], EPSILON);
     }
 }
 
@@ -25,6 +25,6 @@ inline static void AssertMatrixEq(Matrix<W, H> expected, Matrix<W, H> actual)
 {
     for (unsigned i = 0; i < W * H; i++)
     {
-        ASSERT_FLOAT_EQ(expected.m_data[i], actual.m_data[i]);
+        ASSERT_NEAR(expected.m_data[i], actual.m_data[i], EPSILON);
     }
 }

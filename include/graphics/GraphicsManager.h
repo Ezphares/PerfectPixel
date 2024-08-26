@@ -47,9 +47,10 @@ public:
 public:
     void initialize();
 
+    void startFrame();
     void drawAll(double deltaT);
     void postProcess();
-    void flip();
+    void endFrame();
 
     float calculateRatio(int32_t width, int32_t height);
     void setWindowRatio(float ratio);

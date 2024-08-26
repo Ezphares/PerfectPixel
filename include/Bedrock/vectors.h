@@ -230,7 +230,7 @@ struct Vector : public VectorData<D>
     {
         Vector<D> result;
 
-        for (size_t i = 0u; i < D; ++i)
+        for (unsigned int i = 0u; i < D; ++i)
         {
             SwizzlePosition s = layout[i];
             bool negative     = (s & SwizzlePosition::N) > 0u;

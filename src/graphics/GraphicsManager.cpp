@@ -15,31 +15,32 @@
 #include <iomanip>
 #include <sstream>
 
+// clang-format off
+#include "imgui.h"
+#include "backends/imgui_impl_opengl3.h"
+// clang-format on
+
 namespace perfectpixel { namespace graphics {
 
 namespace {
+// clang-format off
 const static GLfloat MAT4_IDENTITY[16]{
-    1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1};
+// clang-format on
 
+// clang-format off
 const static GLfloat PP_VERTICES[18]{
-    -1.0f,
-    -1.0f,
-    0.0f,
-    1.0f,
-    -1.0f,
-    0.0f,
-    -1.0f,
-    1.0f,
-    0.0f,
-    -1.0f,
-    1.0f,
-    0.0f,
-    1.0f,
-    -1.0f,
-    0.0f,
-    1.0f,
-    1.0f,
-    0.0f};
+    -1.0f, -1.0f,  0.0f,
+     1.0f, -1.0f,  0.0f,
+    -1.0f,  1.0f,  0.0f,
+    -1.0f,  1.0f,  0.0f,
+     1.0f, -1.0f,  0.0f,
+     1.0f,  1.0f,  0.0f
+};
+// clang-format on
 
 const static GLfloat COLOUR_WHITE[4]{1, 1, 1, 1};
 
@@ -73,6 +74,8 @@ void GraphicsManager::initialize()
     wglSwapIntervalEXT(0);
 #endif
     // /DEBUG
+
+    ImGui_ImplOpenGL3_Init();
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -147,8 +150,26 @@ void GraphicsManager::initialize()
     m_font = new CBFGFont(bedrock::File("DengXianLight.bff").str());
 }
 
+void GraphicsManager::startFrame()
+{
+    // ImGuiIO &imgui    = ImGui::GetIO();
+    // imgui.DisplaySize = ImVec2(
+    //     static_cast<float>(m_mainWindowSize.m_x),
+    //     static_cast<float>(m_mainWindowSize.m_y));
+    ImGui_ImplOpenGL3_NewFrame();
+}
+
 void GraphicsManager::drawAll(double deltaT)
 {
+    static bool imOpen   = true;
+    static bool testbool = true;
+    if (ImGui::Begin("test", &imOpen))
+    {
+        ImGui::Text("Hello World!");
+        ImGui::Checkbox("Test?", &testbool);
+    }
+    ImGui::End();
+
     m_frameBuffer->bind();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -270,8 +291,17 @@ void GraphicsManager::postProcess()
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void GraphicsManager::flip()
-{}
+void GraphicsManager::endFrame()
+{
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+    }
+}
 
 float GraphicsManager::calculateRatio(int32_t width, int32_t height)
 {

@@ -16,11 +16,10 @@
 namespace perfectpixel { namespace ecs {
 
 template <typename T, typename U>
-concept Accessor = requires(T a, U b)
-{
-    a = b;
-    b = a;
-};
+concept Accessor = requires(T a, U b) {
+                       a = b;
+                       b = a;
+                   };
 
 template <typename T, typename Override = void>
 struct FieldUnderlying
@@ -164,6 +163,18 @@ public:
                 lutEntry);
         }
     }
+
+    void fillLUT(const std::string &name, const std::string &ownerName)
+    {
+        ReflectionTable::getInstance()->add(
+            ownerName,
+            m_typeInfo.ownerId,
+            name,
+            m_typeInfo.selfId,
+            bedrock::typeName<T>(),
+            bedrock::typeID<T>());
+    }
+
 #endif
 
     T at(uint32_t idx)
@@ -281,7 +292,7 @@ private:
 //        }
 //    }
 //
-//#if PP_FULL_REFLECTION_ENABLED
+// #if PP_FULL_REFLECTION_ENABLED
 //    ArrayField(
 //        const std::string &ownerName,
 //        int32_t ownerId,
@@ -309,7 +320,7 @@ private:
 //                lutEntry);
 //        }
 //    }
-//#endif
+// #endif
 //
 //    T at(uint32_t idx)
 //    {

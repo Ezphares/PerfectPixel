@@ -3,6 +3,7 @@
 #include <EntityComponentSystem/Component.h>
 #include <EntityComponentSystem/QuerySystem.h>
 #include <EntityComponentSystem/TransformComponent.h>
+#include <EntityComponentSystem/Context.h>
 
 #include <graphics/IWindow.h>
 #include <graphics/LocalGL.h>
@@ -396,6 +397,8 @@ class Pong : public core::Game
 
     virtual void step()
     {
+        pp::ecs::Context c;
+
         if (m_inputManager.isButtonDown("Info"))
         {
             MessageBoxA(

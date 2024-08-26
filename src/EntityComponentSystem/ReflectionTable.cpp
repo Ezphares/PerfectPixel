@@ -8,6 +8,36 @@
 
 namespace perfectpixel { namespace ecs {
 
+void ReflectionTable::addComponent(
+    const std::string &componentName,
+    int32_t componentId,
+    const ComponentLUTEntry &lutEntry)
+{
+    m_componentLUT[componentId] = lutEntry;
+#if PP_FULL_REFLECTION_ENABLED
+    m_reverseHash[componentId] = componentName;
+#endif /* PP_FULL_REFLECTION_ENABLED */
+}
+
+void ReflectionTable::addField(
+    const std::string &fieldName,
+    int32_t fieldId,
+    int32_t componentId,
+    int32_t typeId)
+{
+    m_typeLUT[combinedKey(componentId, fieldId)] = typeId;
+#if PP_FULL_REFLECTION_ENABLED
+    m_reverseHash[fieldId] = fieldName;
+#endif /* PP_FULL_REFLECTION_ENABLED */
+}
+
+void ReflectionTable::addType(const std::string &typeName, int32_t typeId)
+{
+#if PP_FULL_REFLECTION_ENABLED
+    m_reverseHash[typeId] = typeName;
+#endif /* PP_FULL_REFLECTION_ENABLED */
+}
+
 void ReflectionTable::add(
     int32_t componentId,
     int32_t fieldId,

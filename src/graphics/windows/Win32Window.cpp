@@ -4,11 +4,22 @@
 
 #include <Bedrock/PpException.h>
 
+// clang-format off
+#include "imgui.h"
+#include "backends/imgui_impl_win32.h"
+// clang-format on
+
+extern IMGUI_IMPL_API
+    LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
+
+static HGLRC g_ImguiRC = NULL;
+
 namespace perfectpixel { namespace graphics {
 
 std::map<HWND, Win32Window *> Win32Window::m_handleLookup
     = std::map<HWND, Win32Window *>();
 Win32Window *Win32Window::m_currentSetup = NULL;
+PIXELFORMATDESCRIPTOR Win32Window::pfd{0};
 
 Win32Window::Win32Window(HINSTANCE hInstance, std::string wndClassName)
     : m_splash(0)
@@ -23,6 +34,7 @@ Win32Window::Win32Window(HINSTANCE hInstance, std::string wndClassName)
     , m_keyCallback()
     , m_focusCallback()
     , m_closed(false)
+    , m_imgui(false)
 {}
 
 Win32Window::~Win32Window()
@@ -46,7 +58,7 @@ void Win32Window::initialize(const WindowSettings &trySettings)
     m_wc.hbrBackground = m_brush;
     m_wc.lpszClassName = m_wndClassName.c_str();
     m_wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
-    m_wc.style         = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+    m_wc.style         = CS_OWNDC /* | CS_HREDRAW | CS_VREDRAW */;
 
     if (!RegisterClassEx(&m_wc))
     {
@@ -139,44 +151,24 @@ void Win32Window::initialize(const WindowSettings &trySettings)
     m_handleLookup[m_hwnd] = this;
     m_currentSetup         = NULL;
 
-    PIXELFORMATDESCRIPTOR pfd
-        = {sizeof(PIXELFORMATDESCRIPTOR),
-           1,
-           PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER, // Flags
-           PFD_TYPE_RGBA, // The kind of framebuffer. RGBA or palette.
-           32,            // Colordepth of the framebuffer.
-           0,
-           0,
-           0,
-           0,
-           0,
-           0,
-           0,
-           0,
-           0,
-           0,
-           0,
-           0,
-           0,
-           24, // Number of bits for the depthbuffer
-           8,  // Number of bits for the stencilbuffer
-           0,  // Number of Aux buffers in the framebuffer.
-           PFD_MAIN_PLANE,
-           0,
-           0,
-           0,
-           0};
-
     m_deviceContext = GetDC(m_hwnd);
-    SetPixelFormat(
-        m_deviceContext, ChoosePixelFormat(m_deviceContext, &pfd), &pfd);
+    SetPixelFormat(m_deviceContext, pixelFormat(m_deviceContext), &pfd);
 
     m_renderingContext = wglCreateContext(m_deviceContext);
+    wglMakeCurrent(m_deviceContext, m_renderingContext);
 }
 
 void Win32Window::activate()
 {
     wglMakeCurrent(m_deviceContext, m_renderingContext);
+}
+
+void Win32Window::startFrame()
+{
+    if (m_imgui)
+    {
+        ImGui_ImplWin32_NewFrame();
+    }
 }
 
 void Win32Window::draw()
@@ -240,6 +232,24 @@ void Win32Window::setResizeCallback(SizeCallback callback)
     m_sizeCallback = callback;
 }
 
+void Win32Window::initImGui()
+{
+    ImGui_ImplWin32_InitForOpenGL(m_hwnd);
+    g_ImguiRC = m_renderingContext;
+
+    ImGuiIO &io = ImGui::GetIO();
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        ImGuiPlatformIO &platformIO       = ImGui::GetPlatformIO();
+        platformIO.Renderer_CreateWindow  = &imGuiHook_CreateWindow;
+        platformIO.Renderer_DestroyWindow = &imGuiHook_DestroyWindow;
+        platformIO.Renderer_SwapBuffers   = &imGuiHook_SwapBuffers;
+        platformIO.Platform_RenderWindow  = &imGuiHook_RenderWindow;
+    }
+
+    m_imgui = true;
+}
+
 LRESULT CALLBACK
 Win32Window::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -248,6 +258,14 @@ Win32Window::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     if (it != m_handleLookup.end())
     {
         self = it->second;
+    }
+
+    if (self->m_imgui)
+    {
+        if (ImGui_ImplWin32_WndProcHandler(hwnd, message, wParam, lParam))
+        {
+            return true;
+        }
     }
 
     switch (message)
@@ -313,6 +331,82 @@ Win32Window::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
 
     return DefWindowProc(hwnd, message, wParam, lParam);
+}
+
+int Win32Window::pixelFormat(HDC deviceContext)
+{
+    if (pfd.nSize == 0)
+    {
+        pfd.nSize    = sizeof(pfd);
+        pfd.nVersion = 1;
+        pfd.dwFlags
+            = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+        pfd.iPixelType   = PFD_TYPE_RGBA;
+        pfd.cColorBits   = 32;
+        pfd.cStencilBits = 8;
+        pfd.cDepthBits   = 24;
+    }
+
+    return ::ChoosePixelFormat(deviceContext, &pfd);
+}
+
+bool Win32Window::createImGuiDevice(HWND hWnd, WGL_WindowData *data)
+{
+    HDC hDc      = ::GetDC(hWnd);
+    const int pf = pixelFormat(hDc);
+    if (pf == 0)
+        return false;
+    if (::SetPixelFormat(hDc, pf, &pfd) == FALSE)
+        return false;
+    ::ReleaseDC(hWnd, hDc);
+
+    data->hDC = ::GetDC(hWnd);
+    if (!g_ImguiRC)
+        g_ImguiRC = wglCreateContext(data->hDC);
+
+    wglMakeCurrent(data->hDC, g_ImguiRC);
+    wglSwapIntervalEXT(0);
+
+    return true;
+}
+
+void Win32Window::cleanupImGuiDevice(HWND hWnd, WGL_WindowData *data)
+{
+    wglMakeCurrent(nullptr, nullptr);
+    ::ReleaseDC(hWnd, data->hDC);
+}
+
+void Win32Window::imGuiHook_CreateWindow(ImGuiViewport *viewport)
+{
+    assert(viewport->RendererUserData == NULL);
+
+    WGL_WindowData *data = IM_NEW(WGL_WindowData);
+    createImGuiDevice((HWND)viewport->PlatformHandle, data);
+    viewport->RendererUserData = data;
+}
+
+void Win32Window::imGuiHook_DestroyWindow(ImGuiViewport *viewport)
+{
+    if (viewport->RendererUserData != NULL)
+    {
+        WGL_WindowData *data = (WGL_WindowData *)viewport->RendererUserData;
+        cleanupImGuiDevice((HWND)viewport->PlatformHandle, data);
+        IM_DELETE(data);
+        viewport->RendererUserData = NULL;
+    }
+}
+
+void Win32Window::imGuiHook_RenderWindow(ImGuiViewport *viewport, void *)
+{
+    // Activate the platform window DC in the OpenGL rendering context
+    if (WGL_WindowData *data = (WGL_WindowData *)viewport->RendererUserData)
+        wglMakeCurrent(data->hDC, g_ImguiRC);
+}
+
+void Win32Window::imGuiHook_SwapBuffers(ImGuiViewport *viewport, void *)
+{
+    if (WGL_WindowData *data = (WGL_WindowData *)viewport->RendererUserData)
+        ::SwapBuffers(data->hDC);
 }
 
 }} // namespace perfectpixel::graphics

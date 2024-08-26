@@ -25,6 +25,19 @@ public:
     {};
     inline static ReflectionHint NoReflection;
 
+    void addComponent(
+        const std::string &componentName,
+        int32_t componentId,
+        const ComponentLUTEntry &lutEntry);
+
+    void addField(
+        const std::string &fieldName,
+        int32_t fieldId,
+        int32_t componentId,
+        int32_t typeId);
+
+    void addType(const std::string &typeName, int32_t typeId);
+
     void
     add(const std::string &componentName,
         int32_t componentId,

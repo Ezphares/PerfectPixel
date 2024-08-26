@@ -29,8 +29,10 @@
 
 namespace perfectpixel { namespace bedrock {
 
+using TypeID = int32_t;
+
 template <typename T>
-int32_t typeID()
+TypeID typeID()
 {
     std::stringstream err;
     err << "No TypeID registered for requested type [" << typeid(T).name()
@@ -40,7 +42,7 @@ int32_t typeID()
 }
 
 template <>
-inline int32_t typeID<std::nullptr_t>()
+inline TypeID typeID<std::nullptr_t>()
 {
     return 0;
 }

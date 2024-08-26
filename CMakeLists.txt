@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.8)
+cmake_minimum_required (VERSION 3.12)
 
 if (${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
 	message(FATAL_ERROR "\nIn-Source build not supported. Please build in a subdirectory.\nYou might need to delete CMakeCache.txt")
@@ -73,6 +73,10 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}/depends/zlib")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/depends/libpng")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/depends/libpng")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/depends/glew/include")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/depends/imgui-docking")
+
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/depends/imgui-docking")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/depends/imgui-docking/backends")
 
 ##################################################
 # MACROS
@@ -100,6 +104,10 @@ MACRO(MAKE_GROUP GNAME GFOLDER)
 	set ("${GNAME}_FILES" "${${GNAME}_SRC_FILES}" "${${GNAME}_INCLUDE_FILES}")
 ENDMACRO(MAKE_GROUP)
 
+
+#TODO
+MACRO(PP_LIB)
+ENDMACRO(PP_LIB)
 
 MAKE_GROUP("Core" "enginecore"
 	"Entry.cpp"
@@ -191,6 +199,17 @@ list(APPEND UNIT_TEST_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/tests/testutil.h"
 )
 
+list(APPEND IMGUI_FILES
+	"${CMAKE_CURRENT_SOURCE_DIR}/depends/imgui-docking/imgui.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/depends/imgui-docking/imgui_draw.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/depends/imgui-docking/imgui_tables.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/depends/imgui-docking/imgui_widgets.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/depends/imgui-docking/imgui_demo.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/depends/imgui-docking/backends/imgui_impl_opengl3.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/depends/imgui-docking/backends/imgui_impl_win32.cpp"
+)
+message(${IMGUI_FILES})
+
 ##################################################
 # TARGETS
 ##################################################
@@ -203,6 +222,7 @@ add_library(LibPerfectPixel
 	"${Bedrock_FILES}" 
 	"${EntityComponentSystem_FILES}" 
 	"${Serialization_FILES}" 
+	"${IMGUI_FILES}"
 )
 
 enable_testing()
@@ -213,7 +233,7 @@ add_test(
 	COMMAND RunTests
 )
 
-add_executable(Pong WIN32 "${CMAKE_CURRENT_SOURCE_DIR}/src/main/pong.cpp")
+add_executable(Pong WIN32 "${CMAKE_CURRENT_SOURCE_DIR}/src/main/pong.cpp" )
 
 
 if (MSVC)

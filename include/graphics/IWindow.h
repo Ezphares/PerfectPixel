@@ -45,8 +45,10 @@ public:
     virtual void destroy()                                  = 0;
     virtual WindowDimensions getDimensions()                = 0;
     virtual bool isClosed()                                 = 0;
+    virtual void startFrame()                               = 0;
     virtual void draw()                                     = 0;
     virtual void setSplash(const resources::Image &image)   = 0;
+    virtual void initImGui()                                = 0;
 
     virtual void setKeyCallback(bedrock::KeyCallback callback) = 0;
     virtual void setFocusCallback(FocusCallback callback)      = 0;
