@@ -85,7 +85,7 @@ MACRO(PP_LIBRARY LIB)
 	if (MSVC)
 		target_compile_options(${LIB} PRIVATE /W4 /WX)
 	else()
-		target_compile_options(LibPerfectPixel PRIVATE -Wall -Wextra -Werror)
+		target_compile_options(${LIB} PRIVATE -Wall -Wextra -Werror)
 	endif()
 
 	list(APPEND PP_LIBRARIES ${LIB})
