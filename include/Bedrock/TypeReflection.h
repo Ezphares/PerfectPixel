@@ -3,10 +3,10 @@
 #include <sstream>
 #include <typeinfo>
 
-#include <Bedrock/Hash.h>
-#include <Bedrock/PpException.h>
-#include <Bedrock/defines.h>
-#include <Bedrock/numbers.h>
+#include "bedrock/Hash.h"
+#include "bedrock/PpException.h"
+#include "bedrock/defines.h"
+#include "bedrock/numbers.h"
 
 #if PP_FULL_REFLECTION_ENABLED
 #define PP_TYPENAME_IMPL(T, TSHORT)                                            \
@@ -34,11 +34,7 @@ using TypeID = int32_t;
 template <typename T>
 TypeID typeID()
 {
-    std::stringstream err;
-    err << "No TypeID registered for requested type [" << typeid(T).name()
-        << "]";
-
-    throw PpException(err.str());
+    return ~0;
 }
 
 template <>
@@ -51,11 +47,7 @@ inline TypeID typeID<std::nullptr_t>()
 template <typename T>
 std::string typeName()
 {
-    std::stringstream err;
-    err << "No TypeName registered for requested type [" << typeid(T).name()
-        << "]";
-
-    throw PpException(err.str());
+    return "<< unknown type >>";
 }
 
 template <>

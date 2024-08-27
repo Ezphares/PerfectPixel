@@ -1,8 +1,8 @@
 #include "testutil.h"
 
-#include "graphics/UILayoutTracker.h"
+#include "renderer/UILayoutTracker.h"
 
-using namespace perfectpixel::graphics::_internal;
+using namespace perfectpixel::renderer::_internal;
 using namespace perfectpixel::bedrock;
 
 GTEST_TEST(test_UILayoutTracker, BasicAbsToRel)

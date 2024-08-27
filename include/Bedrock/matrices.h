@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Bedrock/Quaternion.h>
-#include <Bedrock/vectors.h>
+#include "bedrock/Quaternion.h"
+#include "bedrock/vectors.h"
 
 #include <array>
 #include <type_traits>

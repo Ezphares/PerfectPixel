@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Bedrock/matrices.h>
+#include "bedrock/matrices.h"
 
 namespace perfectpixel { namespace bedrock {
 

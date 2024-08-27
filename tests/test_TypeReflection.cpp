@@ -1,6 +1,6 @@
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
-#include <Bedrock/TypeReflection.h>
+#include "bedrock/TypeReflection.h"
 
 namespace some_namespace {
 	struct TestDummy {};

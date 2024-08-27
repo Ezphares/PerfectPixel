@@ -1,6 +1,6 @@
 #include "testutil.h"
 
-#include <Bedrock/Quaternion.h>
+#include "bedrock/Quaternion.h"
 
 using namespace perfectpixel::bedrock;
 

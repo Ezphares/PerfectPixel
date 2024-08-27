@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Bedrock/vectors.h>
+#include "bedrock/vectors.h"
 
 namespace perfectpixel { namespace bedrock {
 

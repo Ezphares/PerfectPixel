@@ -1,9 +1,9 @@
 #pragma once
 
-#include <Bedrock/TypeReflection.h>
-#include <Bedrock/numbers.h>
+#include "bedrock/TypeReflection.h"
+#include "bedrock/numbers.h"
 
-#include <serialization/ISerializer.h>
+#include "serialization/ISerializer.h"
 
 #include <algorithm>
 #include <array>

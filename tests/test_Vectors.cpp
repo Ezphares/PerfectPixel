@@ -1,8 +1,8 @@
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
 #include "testutil.h"
 
-#include <Bedrock/vectors.h>
+#include "bedrock/vectors.h"
 
 using namespace perfectpixel::bedrock;
 

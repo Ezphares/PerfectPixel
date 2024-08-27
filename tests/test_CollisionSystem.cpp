@@ -1,8 +1,8 @@
 #include "testutil.h"
 
-#include <physics/CollisionSystem.h>
+#include "core/CollisionSystem.h"
 
-#include <Bedrock/vectors.h>
+#include "bedrock/vectors.h"
 
 #include <cmath>
 

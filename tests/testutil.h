@@ -1,9 +1,9 @@
 #pragma once
 
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
-#include <Bedrock/matrices.h>
-#include <Bedrock/vectors.h>
+#include "bedrock/matrices.h"
+#include "bedrock/vectors.h"
 
 using namespace perfectpixel::bedrock;
 

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <serialization/ISerializer.h>
+#include "serialization/ISerializer.h"
 
-#include <yaml-cpp/emitter.h>
-#include <yaml-cpp/node/iterator.h>
+#include "yaml-cpp/emitter.h"
+#include "yaml-cpp/node/iterator.h"
 
 #include <stack>
 

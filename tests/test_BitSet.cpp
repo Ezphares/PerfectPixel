@@ -1,6 +1,6 @@
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
-#include <Bedrock/BitSet.h>
+#include "bedrock/BitSet.h"
 
 using namespace perfectpixel::bedrock;
 

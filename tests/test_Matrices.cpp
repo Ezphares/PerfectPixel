@@ -1,6 +1,6 @@
 #include "testutil.h"
 
-#include <Bedrock/matrices.h>
+#include "bedrock/matrices.h"
 
 using namespace perfectpixel::bedrock;
 

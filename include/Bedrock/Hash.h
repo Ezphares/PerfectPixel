@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Bedrock/defines.h>
-#include <Bedrock/numbers.h>
+#include "bedrock/defines.h"
+#include "bedrock/numbers.h"
 
 #include <cstdint>
 #include <cstring>

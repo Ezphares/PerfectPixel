@@ -1,6 +1,6 @@
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
-#include <EntityComponentSystem/Entity.h>
+#include "ecs/Entity.h"
 
 using namespace perfectpixel::ecs;
 

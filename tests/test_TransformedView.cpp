@@ -1,6 +1,6 @@
 #include "testutil.h"
 
-#include <Bedrock/TransformedView2D.h>
+#include "bedrock/TransformedView2D.h"
 
 using namespace perfectpixel::bedrock;
 

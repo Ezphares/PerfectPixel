@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Bedrock/Hash.h>
-#include <Bedrock/defines.h>
+#include "bedrock/Hash.h"
+#include "bedrock/defines.h"
 
 #include <string>
 #include <vector>
