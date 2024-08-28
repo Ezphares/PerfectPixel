@@ -1,9 +1,10 @@
 #pragma once
 
+#include "core/UI/UITextComponent.h"
+
 #include "renderer/CBFGFont.h"
 #include "renderer/DrawQueue.h"
 #include "renderer/RendererInterface.h"
-#include "renderer/UITextComponent.h"
 
 #include "ecs/QueryHelper.h"
 #include "ecs/QuerySystem.h"
@@ -11,7 +12,7 @@
 
 // FIXME Very temporary
 
-namespace perfectpixel { namespace renderer {
+namespace perfectpixel::core {
 
 class UISystem : public ecs::QuerySystem
 {
@@ -29,8 +30,8 @@ public:
     static void
     onRender(const RangeLimit &begin, const RangeLimit &end, float deltaT);
 
-    static IFont *m_font;
-    static RendererInterface *m_gm;
+    static renderer::IFont *m_font;
+    static renderer::RendererInterface *m_gm;
 };
 
-}} // namespace perfectpixel::renderer
+} // namespace perfectpixel::core

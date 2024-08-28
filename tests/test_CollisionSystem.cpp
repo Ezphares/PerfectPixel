@@ -59,7 +59,7 @@ GTEST_TEST(test_CollisionSystem, RectCircleCollision)
     bedrock::AARectangle rect{{10, 10}, {0, 0}};
     bedrock::Circle circ{10.0f};
 
-    CollisionSystem::CollisionData cdata;
+    CollisionSystem::CollisionData cdata{};
 
     // Basic test
     ASSERT_TRUE(CollisionSystem::collideRectCircle(rect, circ, cdata));

@@ -15,7 +15,7 @@
         PP_DEQUALIFY(Owner),                                                   \
         PP_DQID(Owner),                                                        \
         #Name,                                                                 \
-        PP_ID(Name),                                                           \
+        PP_ID(Name).m_hash,                                                    \
         bedrock::typeName<T>(),                                                \
         bedrock::typeID<T>(),                                                  \
         Default,                                                               \
@@ -29,7 +29,7 @@
             PP_DEQUALIFY(Owner),                                               \
             PP_DQID(Owner),                                                    \
             #Name,                                                             \
-            PP_ID(Name),                                                       \
+            PP_ID(Name).m_hash,                                                \
             bedrock::typeName<T>(),                                            \
             bedrock::typeID<T>(),                                              \
             Owner::AddField,                                                   \
@@ -41,7 +41,7 @@
 #define PPFieldImpl(Owner, T, Name, Default)                                   \
     inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T)(          \
         PP_DQID(Owner),                                                        \
-        PP_ID(Name),                                                           \
+        PP_ID(Name).m_hash,                                                    \
         bedrock::typeID<T>(),                                                  \
         Default,                                                               \
         Owner::AddField,                                                       \
@@ -80,7 +80,7 @@
 #define PPRuleName(Owner, Field) PPInternal__Rule_##Owner##Field
 #define PPDoNotSerialize(Owner, Field)                                         \
     inline static PPRuleType(Owner) PPRuleName(Owner, Field) = PPRuleType(     \
-        Owner)(PP_ID(Field), &::perfectpixel::ecs::doNotSerialize);
+        Owner)(PP_ID(Field).m_hash, &::perfectpixel::ecs::doNotSerialize);
 #define PPSerializeIf(Owner, Field, Condition)                                 \
     inline static PPRuleType(Owner) PPRuleName(Owner, Field)                   \
         = PPRuleType(Owner)(PP_ID(Field), Condition);

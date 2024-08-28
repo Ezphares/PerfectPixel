@@ -40,7 +40,7 @@ public:
     {}
 
 public:
-    virtual void initialize(const WindowSettings &settings)            = 0;
+    virtual bool initialize(const WindowSettings &settings)            = 0;
     virtual void activate()                                            = 0;
     virtual void destroy()                                             = 0;
     virtual WindowDimensions getDimensions()                           = 0;
@@ -48,7 +48,9 @@ public:
     virtual void startFrame()                                          = 0;
     virtual void draw()                                                = 0;
     virtual void setSplash(int w, int h, int c, unsigned char *buffer) = 0;
-    virtual void initImGui()                                           = 0;
+
+    virtual void initImGui()     = 0;
+    virtual void shutdownImGui() = 0;
 
     virtual void setKeyCallback(bedrock::KeyCallback callback) = 0;
     virtual void setFocusCallback(FocusCallback callback)      = 0;

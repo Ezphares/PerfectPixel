@@ -5,12 +5,19 @@
 
 namespace perfectpixel { namespace renderer {
 
+using ImageResourceBundleID = int32_t;
+
 struct ImageResource
 {
-public:
     int x, y, channels;
     char *buffer;
 };
+
+struct ImageResourceUserData
+{
+    ImageResourceBundleID bundleID;
+};
+
 }} // namespace perfectpixel::renderer
 
 PP_TYPE_REFLECTION(::perfectpixel::renderer::ImageResource, ImageResource);

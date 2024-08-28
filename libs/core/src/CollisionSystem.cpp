@@ -1,5 +1,5 @@
-#include "core/ColliderComponent.h"
 #include "core/CollisionSystem.h"
+#include "core/ColliderComponent.h"
 #include "core/PhysicsComponent.h"
 
 #include "ecs/TransformComponent.h"
@@ -60,7 +60,7 @@ void CollisionSystem::collideSingle(
 
     for (ecs::Entity other : toCheck)
     {
-        CollisionData collision;
+        CollisionData collision{};
         if (checkCollision(entity, other, collision))
         {
             ++m_collisionCount;

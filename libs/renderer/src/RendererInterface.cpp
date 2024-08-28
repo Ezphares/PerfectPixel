@@ -3,7 +3,6 @@
 #include "renderer/CBFGFont.h"
 #include "renderer/CameraComponent.h"
 #include "renderer/LocalGL.h"
-#include "renderer/SpriteComponent.h"
 
 #include "bedrock/File.h"
 #include "bedrock/PpException.h"
@@ -18,23 +17,6 @@
 // clang-format on
 
 namespace perfectpixel { namespace renderer {
-
-void makeQuad(GLfloat *out, float scaleX = 1.0f, float scaleY = 1.0f)
-{
-    // clang-format off
-    GLfloat vertices[18]
-    {
-    -scaleX, -scaleY,  0.0f,
-     scaleX, -scaleY,  0.0f,
-    -scaleX,  scaleY,  0.0f,
-    -scaleX,  scaleY,  0.0f,
-     scaleX, -scaleY,  0.0f,
-     scaleX,  scaleY,  0.0f
-    };
-    // clang-format on
-
-    memcpy(out, vertices, 18 * sizeof(GLfloat));
-}
 
 namespace {
 // clang-format off
@@ -66,6 +48,7 @@ RendererInterface::RendererInterface()
     , m_windowRatio(1.0f)
     , m_mainCamera()
     , m_ftWrite(0)
+    , m_textureStore()
 {}
 
 RendererInterface::~RendererInterface()
@@ -159,6 +142,11 @@ void RendererInterface::initialize()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     m_font = new CBFGFont(bedrock::File("DengXianLight.bff").str());
+}
+
+void RendererInterface::shutdown()
+{
+    ImGui_ImplOpenGL3_Shutdown();
 }
 
 void RendererInterface::startFrame()
@@ -509,38 +497,18 @@ void RendererInterface::updateCamera()
         {static_cast<int32_t>(scale.x), static_cast<int32_t>(scale.y)});
 }
 
-perfectpixel::renderer::Texture &
-RendererInterface::getImageTexture(core::Resource imageResource)
+const perfectpixel::renderer::Texture &RendererInterface::getImageTexture(
+    bedrock::ID resourceID,
+    ImageResourceBundleID bundleID,
+    ImageResource *(*getResource)(void *),
+    void *resourcePtr)
 {
-    renderer::ImageResource *image
-        = imageResource.get<renderer::ImageResource>();
+    const Texture *tex = m_textureStore.getTexture(bundleID, resourceID);
+    if (tex)
+        return *tex;
 
-    // Attempt 1: Cached index
-    uint32_t idx = ~0u;
-    // image->getTextureHint();
-    if (idx < m_managedTextures.size())
-    {
-        if (m_managedTextures[idx].getSourceImageId() == imageResource.getId())
-        {
-            return m_managedTextures[idx];
-        }
-    }
-
-    // Attempt 2: Scan
-    for (idx = 0; idx < m_managedTextures.size(); ++idx)
-    {
-        if (m_managedTextures[idx].getSourceImageId() == imageResource.getId())
-        {
-            // image->setTextureHint(idx);
-            return m_managedTextures[idx];
-        }
-    }
-
-    // Attempt 3: Create
-    idx = static_cast<uint32_t>(m_managedTextures.size());
-    m_managedTextures.emplace_back(*image, imageResource.getId());
-    // image->setTextureHint(idx);
-    return m_managedTextures[idx];
+    return m_textureStore.createTexture(
+        bundleID, resourceID, *getResource(resourcePtr));
 }
 
 bool RendererInterface::compSortSoftalpha(

@@ -22,27 +22,35 @@ public:
 
 public:
     Texture(const PlaceHolder &);
-    Texture(const ImageResource &image, int32_t imageResourceId = 0);
+    Texture(
+        const ImageResource &image,
+        bedrock::ID imageResourceId = bedrock::ID{0});
     Texture(const bedrock::Point2 size);
     Texture(const CBFGFontHeader &header, const char *raw);
+
+    Texture(const Texture &)            = delete;
+    Texture &operator=(const Texture &) = delete;
+
+    Texture(Texture &&);
+    Texture &operator=(Texture &&);
 
     ~Texture();
 
 public:
-    void bind(GLuint unit = 1);
+    void bind(GLuint unit = 1) const;
     static void unbind(GLuint unit = 1);
     bedrock::Vector2 pixelToTexture(bedrock::Point2 pixel) const;
     bedrock::Point2 textureToPixel(bedrock::Vector2 pixel) const;
 
     GLuint getId() const;
 
-    int32_t getSourceImageId() const;
+    bedrock::ID getSourceImageId() const;
     void destroy();
 
 private:
     GLuint m_textureId;
     bedrock::Point2 m_size;
-    int32_t m_sourceImageId;
+    bedrock::ID m_sourceImageId;
 };
 
 }} // namespace perfectpixel::renderer

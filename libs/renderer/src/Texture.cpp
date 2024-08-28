@@ -8,7 +8,7 @@ namespace perfectpixel { namespace renderer {
 
 const Texture::PlaceHolder Texture::PLACEHOLDER = {};
 
-Texture::Texture(const ImageResource &image, int32_t imageResourceId)
+Texture::Texture(const ImageResource &image, bedrock::ID imageResourceId)
     : m_sourceImageId(imageResourceId)
 {
     glGenTextures(1, &m_textureId);
@@ -70,7 +70,7 @@ Texture::Texture(const bedrock::Point2 size)
 Texture::Texture(const PlaceHolder &)
     : m_textureId(0)
     , m_size()
-    , m_sourceImageId(0)
+    , m_sourceImageId({0})
 {}
 
 Texture::Texture(const CBFGFontHeader &header, const char *raw)
@@ -107,10 +107,38 @@ Texture::Texture(const CBFGFontHeader &header, const char *raw)
     unbind();
 }
 
-Texture::~Texture()
-{}
+Texture::Texture(Texture &&rhs)
+{
+    m_textureId     = rhs.m_textureId;
+    m_sourceImageId = rhs.m_sourceImageId;
+    m_size          = rhs.m_size;
 
-void Texture::bind(GLuint unit)
+    rhs.m_textureId     = 0;
+    rhs.m_size          = bedrock::Point2(0, 0);
+    rhs.m_sourceImageId = bedrock::ID(0);
+}
+
+Texture &Texture::operator=(Texture &&rhs)
+{
+    if (&rhs != this)
+    {
+        m_textureId     = rhs.m_textureId;
+        m_sourceImageId = rhs.m_sourceImageId;
+        m_size          = rhs.m_size;
+
+        rhs.m_textureId     = 0;
+        rhs.m_size          = bedrock::Point2(0, 0);
+        rhs.m_sourceImageId = bedrock::ID(0);
+    }
+    return *this;
+}
+
+Texture::~Texture()
+{
+    destroy();
+}
+
+void Texture::bind(GLuint unit) const
 {
     glActiveTexture(GL_TEXTURE0 + unit);
     glBindTexture(GL_TEXTURE_2D, m_textureId);
@@ -145,7 +173,7 @@ GLuint Texture::getId() const
     return m_textureId;
 }
 
-int32_t Texture::getSourceImageId() const
+bedrock::ID Texture::getSourceImageId() const
 {
     return m_sourceImageId;
 }

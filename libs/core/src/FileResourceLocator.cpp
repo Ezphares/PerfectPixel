@@ -11,7 +11,7 @@ FileResourceLocator::FileResourceLocator()
 {}
 
 bool FileResourceLocator::locate(
-    int32_t type, int32_t id, char **out_buffer, size_t *out_size)
+    bedrock::TypeID type, bedrock::ID id, char **out_buffer, size_t *out_size)
 {
     auto it = m_LUT.find(key(type, id));
     if (it == m_LUT.end())
@@ -31,14 +31,15 @@ bool FileResourceLocator::locate(
 }
 
 void FileResourceLocator::insert(
-    int32_t type, int32_t id, const std::string &hint)
+    bedrock::TypeID type, bedrock::ID id, const std::string &hint)
 {
     m_LUT[key(type, id)] = hint;
 }
 
-int64_t FileResourceLocator::key(int32_t type, int32_t id)
+int64_t FileResourceLocator::key(bedrock::TypeID type, bedrock::ID id)
 {
-    return (static_cast<uint64_t>(type) << 32) | static_cast<uint64_t>(id);
+    return (static_cast<uint64_t>(type) << 32)
+           | static_cast<uint64_t>(id.m_hash);
 }
 
 } // namespace perfectpixel::core

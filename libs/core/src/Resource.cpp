@@ -9,18 +9,18 @@
 
 namespace perfectpixel::core {
 
-Resource::Resource(int32_t type)
+Resource::Resource(bedrock::TypeID type)
     : m_type(type)
     , m_valid(false)
 {}
 
-Resource::Resource(int32_t type, const std::string &ID)
+Resource::Resource(bedrock::TypeID type, const std::string &ID)
     : Resource(type)
 {
     set(ID);
 }
 
-Resource::Resource(int32_t type, int32_t ID)
+Resource::Resource(bedrock::TypeID type, bedrock::ID ID)
     : Resource(type)
 {
     set(ID);
@@ -80,7 +80,7 @@ bool Resource::isValid() const
     return m_valid;
 }
 
-int32_t Resource::getId() const
+perfectpixel::bedrock::ID Resource::getId() const
 {
     return m_id;
 }
@@ -101,10 +101,10 @@ void Resource::set(const std::string &id)
 {
     ecs::ReflectionTable::Touch(id);
 
-    set(bedrock::crc32(id));
+    set(bedrock::ID(bedrock::crc32(id)));
 }
 
-void Resource::set(int32_t id)
+void Resource::set(bedrock::ID id)
 {
     set();
 
@@ -117,7 +117,7 @@ void *Resource::_get()
 {
     if (!m_valid)
     {
-        throw bedrock::PpException("Trying to get invalid resource");
+        return nullptr;
     }
     if (m_cache)
     {
@@ -134,6 +134,11 @@ void *Resource::_get()
     return result;
 }
 
+const bedrock::Opaque &Resource::getUserData() const
+{
+    return ResourceManager::GetUserData(m_type, m_id, &m_cacheHint);
+}
+
 } // namespace perfectpixel::core
 
 namespace perfectpixel { namespace serialization {
@@ -142,7 +147,7 @@ ISerializer &operator<<(
 {
     if (resource.isValid())
     {
-        serializer.writeIdentifier(resource.getId());
+        serializer.writeIdentifier(resource.getId().m_hash);
     }
     else
     {
@@ -161,7 +166,7 @@ operator>>(ISerializer &serializer, perfectpixel::core::Resource &resource)
     {
         int32_t id;
         serializer.readIdentifier(&id);
-        resource.set(id);
+        resource.set(bedrock::ID{id});
     }
 
     return serializer;

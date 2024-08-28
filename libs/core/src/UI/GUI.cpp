@@ -1,9 +1,11 @@
-#include "renderer/GUI.h"
-#include "renderer/CameraSettings.h"
-#include "renderer/UILayoutTracker.h"
-#include "renderer/UIShadow.h"
 
-namespace perfectpixel { namespace renderer {
+#include "renderer/CameraSettings.h"
+
+#include "core/UI/GUI.h"
+#include "core/UI/UILayoutTracker.h"
+#include "core/UI/UIShadow.h"
+
+namespace perfectpixel::core {
 namespace _internal {
 
 class GUIInternal
@@ -51,27 +53,27 @@ GUI::AnchoredRegion GUI::AnchoredRegion::absolute(
     return result;
 }
 
-}} // namespace perfectpixel::renderer
+} // namespace perfectpixel::core
 
-perfectpixel::renderer::GUI::HorizontalLayout::HorizontalLayout(
+perfectpixel::core::GUI::HorizontalLayout::HorizontalLayout(
     const AnchoredRegion &position,
     LinearLayoutOptions options /*= LinearLayoutOptions()*/)
 {
     GUI::pushHorizontalLayout(position, options);
 }
 
-perfectpixel::renderer::GUI::HorizontalLayout::~HorizontalLayout()
+perfectpixel::core::GUI::HorizontalLayout::~HorizontalLayout()
 {
     GUI::popLayout();
 }
 
-void perfectpixel::renderer::GUI::Spacer(float size, bool relative /*= false*/)
+void perfectpixel::core::GUI::Spacer(float size, bool relative /*= false*/)
 {
     (void)size; // TODO
     (void)relative;
 }
 
-void perfectpixel::renderer::GUI::begin(const CameraSettings &camera)
+void perfectpixel::core::GUI::begin(const renderer::CameraSettings &camera)
 {
     _internal::GUIInternal &guiInternal = *(getInstance()->m_internal);
 
@@ -79,7 +81,7 @@ void perfectpixel::renderer::GUI::begin(const CameraSettings &camera)
     guiInternal.m_shadow.flip();
 }
 
-void perfectpixel::renderer::GUI::pushHorizontalLayout(
+void perfectpixel::core::GUI::pushHorizontalLayout(
     const AnchoredRegion &position, const LinearLayoutOptions &options)
 {
     _internal::GUIInternal &guiInternal = *(getInstance()->m_internal);
@@ -94,14 +96,14 @@ void perfectpixel::renderer::GUI::pushHorizontalLayout(
         options.m_reverse ? -1.0f : 1.0f);
 }
 
-void perfectpixel::renderer::GUI::popLayout()
+void perfectpixel::core::GUI::popLayout()
 {
     _internal::GUIInternal &guiInternal = *(getInstance()->m_internal);
 
     guiInternal.m_tracker.pop();
 }
 
-void perfectpixel::renderer::GUI::positionToSimpleRelative(
+void perfectpixel::core::GUI::positionToSimpleRelative(
     const AnchoredRegion &position, Anchor &outInner)
 {
     Anchor temp;

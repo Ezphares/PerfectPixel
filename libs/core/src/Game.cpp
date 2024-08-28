@@ -6,13 +6,13 @@
 #include "core/Sprite.h"
 #include "core/SpriteDrawSystem.h"
 #include "core/Template.h"
+#include "core/UI/UISystem.h"
 
 #include "ecs/DebugProcessor.h"
 #include "ecs/LifeCycleSystem.h"
 #include "ecs/LifecycleComponents.h"
 
 #include "renderer/IWindow.h"
-#include "renderer/UISystem.h"
 
 #include "serialization/YAMLSerializer.h"
 
@@ -32,7 +32,7 @@ Game::Game()
     , m_shouldExit(false)
     , m_processorQueue()
     , m_inputManager()
-    , m_graphicsManager()
+    , m_rendererInterface()
     , m_fileResourceLocator()
     , m_targetUps(100.0)
 {}
@@ -79,12 +79,12 @@ void Game::run()
 
     PP_LOG(LEVEL_INFO, "Setting up renderer");
 
-    m_graphicsManager.initialize();
+    m_rendererInterface.initialize();
     renderer::CameraSettings camera;
     camera.m_center    = {0, 0};
     camera.m_size      = {160, 120};
     camera.m_scaleMode = renderer::CameraSettings::SCALE_BARS;
-    m_graphicsManager.setMainCamera(camera);
+    m_rendererInterface.setMainCamera(camera);
 
     ImGuiStyle &style = ImGui::GetStyle();
     ImGui::StyleColorsDark();
@@ -160,6 +160,10 @@ void Game::run()
         variableUpdate(frametime.count());
     }
 
+    m_rendererInterface.shutdown();
+    m_mainWindow->shutdownImGui();
+    ImGui::DestroyContext();
+
     PP_LOG(LEVEL_INFO, "Shutting down...");
 
     m_initializer->exit();
@@ -189,7 +193,7 @@ void Game::windowResized(
     renderer::IWindow &window, unsigned width, unsigned height)
 {
     (void)window;
-    m_graphicsManager.setWindowSize(
+    m_rendererInterface.setWindowSize(
         {static_cast<int32_t>(width), static_cast<int32_t>(height)});
 }
 
@@ -240,12 +244,12 @@ void Game::setupProcessors()
     m_processorQueue.registerSystem(new physics::IntegratorSystem(), 240, true);
     m_processorQueue.registerSystem(new physics::CollisionSystem(), 250, true);
 
-    renderer::UISystem *ui = new renderer::UISystem();
-    ui->m_gm               = &m_graphicsManager;
+    core::UISystem *ui = new core::UISystem();
+    ui->m_gm           = &m_rendererInterface;
     m_processorQueue.registerSystem(ui, 250, true);
 
     SpriteDrawSystem *spriteDraw = new SpriteDrawSystem();
-    spriteDraw->m_gm             = &m_graphicsManager;
+    spriteDraw->m_gm             = &m_rendererInterface;
     m_processorQueue.registerSystem(spriteDraw, 245, true);
 
     setupCustomProcessors(m_processorQueue);
@@ -333,7 +337,7 @@ void Game::variableUpdate(double variableDeltaT)
     // Handle input
     m_inputManager.update();
 
-    m_graphicsManager.startFrame();
+    m_rendererInterface.startFrame();
     m_mainWindow->startFrame();
     ImGui::NewFrame();
 
@@ -373,9 +377,9 @@ void Game::variableUpdate(double variableDeltaT)
 
     bedrock::Logger::touchLog(bedrock::Logger::LOG_TOUCH_RENDER);
     m_processorQueue.renderAll(static_cast<float>(variableDeltaT));
-    m_graphicsManager.drawAll(variableDeltaT);
+    m_rendererInterface.drawAll(variableDeltaT);
 
-    m_graphicsManager.endFrame(ImGui::GetDrawData());
+    m_rendererInterface.endFrame(ImGui::GetDrawData());
     if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
         ImGui::UpdatePlatformWindows();

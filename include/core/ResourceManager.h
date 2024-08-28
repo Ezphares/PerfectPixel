@@ -32,7 +32,8 @@ public:
             };
         }
     };
-    typedef std::tuple<int32_t, int32_t, ResourceLoader> ResourceLoaderLookup;
+    typedef std::tuple<bedrock::TypeID, bedrock::TypeID, ResourceLoader>
+        ResourceLoaderLookup;
 
     enum ResourceLoadingStategy : uint8_t
     {
@@ -45,9 +46,9 @@ public:
 private:
     struct ResourceMetadata
     {
-        int32_t m_id;
-        int32_t m_type;
-        int32_t m_variant;
+        bedrock::ID m_id;
+        bedrock::TypeID m_type;
+        bedrock::TypeID m_variant;
         int32_t m_refs;
         void *m_data;
         ResourceLoadingStategy m_loadingStrategy;
@@ -72,17 +73,24 @@ public:
         getInstance()->m_loaderLUT.push_back(entry);
     }
 
-    static void Take(int32_t type, int32_t id, uint32_t *ref_cacheHint);
-    static void Release(int32_t type, int32_t id, uint32_t *ref_cacheHint);
+    static void
+    Take(bedrock::TypeID type, bedrock::ID id, uint32_t *ref_cacheHint);
+    static void
+    Release(bedrock::TypeID type, bedrock::ID id, uint32_t *ref_cacheHint);
     static void RegisterResource(
         const std::string &locator,
         ResourceLoadingStategy loadingStrategy,
-        int32_t id,
-        int32_t type,
-        int32_t variant            = 0,
+        bedrock::ID id,
+        bedrock::TypeID type,
+        bedrock::TypeID variant    = 0,
         bedrock::Opaque &&userData = bedrock::Opaque());
-    static void *
-    GetData(int32_t type, int32_t id, bool *out_cache, uint32_t *ref_cacheHint);
+    static void *GetData(
+        bedrock::TypeID type,
+        bedrock::ID id,
+        bool *out_cache,
+        uint32_t *ref_cacheHint);
+    static const bedrock::Opaque &
+    GetUserData(bedrock::TypeID type, bedrock::ID id, uint32_t *ref_cacheHint);
 
     static void Shutdown();
     static void UnloadAll();
@@ -92,17 +100,17 @@ public:
 
 private:
     ResourceMetadata &insert(ResourceMetadata &&metadata);
-    size_t offset(int32_t type);
-    void pushOffset(int32_t type, size_t count = 1);
+    size_t offset(bedrock::TypeID type);
+    void pushOffset(bedrock::TypeID type, size_t count = 1);
 
     void load(ResourceMetadata &metadata);
     void unload(ResourceMetadata &metadata, bool now = false);
     ResourceMetadata &
-    getMetadata(int32_t type, int32_t id, uint32_t *ref_cacheHint);
+    getMetadata(bedrock::TypeID type, bedrock::ID id, uint32_t *ref_cacheHint);
     ResourceLoader &getLoader(const ResourceMetadata &metadata);
 
 private:
-    std::vector<std::pair<int32_t, size_t>> m_offsets;
+    std::vector<std::pair<bedrock::TypeID, size_t>> m_offsets;
     std::vector<ResourceMetadata> m_metadata;
     std::vector<ResourceLoaderLookup> m_loaderLUT;
     IResourceLocator *m_locator;

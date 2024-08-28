@@ -16,9 +16,6 @@ static HGLRC g_ImguiRC = NULL;
 
 namespace perfectpixel { namespace renderer {
 
-std::map<HWND, Win32Window *> Win32Window::m_handleLookup
-    = std::map<HWND, Win32Window *>();
-Win32Window *Win32Window::m_currentSetup = NULL;
 PIXELFORMATDESCRIPTOR Win32Window::pfd{0};
 
 Win32Window::Win32Window(HINSTANCE hInstance, std::string wndClassName)
@@ -33,6 +30,7 @@ Win32Window::Win32Window(HINSTANCE hInstance, std::string wndClassName)
     , m_wndClassName(wndClassName)
     , m_keyCallback()
     , m_focusCallback()
+    , m_sizeCallback()
     , m_closed(false)
     , m_imgui(false)
 {}
@@ -45,7 +43,7 @@ Win32Window::~Win32Window()
     }
 }
 
-void Win32Window::initialize(const WindowSettings &trySettings)
+bool Win32Window::initialize(const WindowSettings &trySettings)
 {
     WindowSettings settings = trySettings;
 
@@ -62,7 +60,7 @@ void Win32Window::initialize(const WindowSettings &trySettings)
 
     if (!RegisterClassEx(&m_wc))
     {
-        throw bedrock::PpException("Could not register window class");
+        return false;
     }
 
     if (settings.type == WindowSettings::FULLSCREEN)
@@ -128,8 +126,7 @@ void Win32Window::initialize(const WindowSettings &trySettings)
         y = (desktopSize.bottom - height) / 2;
     }
 
-    m_currentSetup = this;
-    m_hwnd         = CreateWindowEx(
+    m_hwnd = CreateWindowEx(
         dwExStyle,
         m_wc.lpszClassName,
         settings.title.c_str(),
@@ -141,21 +138,20 @@ void Win32Window::initialize(const WindowSettings &trySettings)
         0,
         0,
         m_hInstance,
-        0);
+        this);
 
     if (!m_hwnd)
     {
-        throw bedrock::PpException("Could not create window");
+        return false;
     }
-
-    m_handleLookup[m_hwnd] = this;
-    m_currentSetup         = NULL;
 
     m_deviceContext = GetDC(m_hwnd);
     SetPixelFormat(m_deviceContext, pixelFormat(m_deviceContext), &pfd);
 
     m_renderingContext = wglCreateContext(m_deviceContext);
     wglMakeCurrent(m_deviceContext, m_renderingContext);
+
+    return true;
 }
 
 void Win32Window::activate()
@@ -180,6 +176,7 @@ void Win32Window::destroy()
 {
     wglDeleteContext(m_renderingContext);
     DestroyWindow(m_hwnd);
+    UnregisterClass(m_wndClassName.c_str(), m_hInstance);
 }
 
 WindowDimensions Win32Window::getDimensions()
@@ -248,84 +245,96 @@ void Win32Window::initImGui()
     m_imgui = true;
 }
 
-LRESULT CALLBACK
-Win32Window::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+void Win32Window::shutdownImGui()
 {
-    Win32Window *self = Win32Window::m_currentSetup;
-    auto it           = m_handleLookup.find(hwnd);
-    if (it != m_handleLookup.end())
-    {
-        self = it->second;
-    }
+    ImGui_ImplWin32_Shutdown();
+}
 
-    if (self->m_imgui)
+bool Win32Window::wndProcImpl(
+    LRESULT &retval, HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    retval = 0;
+    if (m_imgui
+        && ImGui_ImplWin32_WndProcHandler(hwnd, message, wParam, lParam))
     {
-        if (ImGui_ImplWin32_WndProcHandler(hwnd, message, wParam, lParam))
-        {
-            return true;
-        }
+        retval = 1;
+        return true;
     }
 
     switch (message)
     {
     case WM_CLOSE:
-        if (self)
-        {
-            self->m_closed = true;
-        }
+        m_closed = true;
         break;
 
     case WM_KEYDOWN:
-        if (self && self->m_keyCallback.m_func)
+        if (m_keyCallback.m_func)
         {
-            self->m_keyCallback.m_func(
-                self->m_keyCallback.m_instance,
+            m_keyCallback.m_func(
+                m_keyCallback.m_instance,
                 static_cast<bedrock::KeyCode>(wParam),
                 bedrock::PP_KEYDOWN);
-            return 0;
+            return true;
         }
         break;
 
     case WM_KEYUP:
-        if (self && self->m_keyCallback.m_func)
+        if (m_keyCallback.m_func)
         {
-            self->m_keyCallback.m_func(
-                self->m_keyCallback.m_instance,
+            m_keyCallback.m_func(
+                m_keyCallback.m_instance,
                 static_cast<bedrock::KeyCode>(wParam),
                 bedrock::PP_KEYUP);
-            return 0;
-        }
-        break;
-
-    case WM_KILLFOCUS:
-        if (self && self->m_focusCallback.m_func)
-        {
-            self->m_focusCallback.m_func(
-                self->m_focusCallback.m_instance, false);
+            return true;
         }
         break;
 
     case WM_SETFOCUS:
-        if (self && self->m_focusCallback.m_func)
+    case WM_KILLFOCUS:
+        if (m_focusCallback.m_func)
         {
-            self->m_focusCallback.m_func(
-                self->m_focusCallback.m_instance, true);
+            m_focusCallback.m_func(
+                m_focusCallback.m_instance, message == WM_SETFOCUS);
         }
         break;
 
     case WM_SIZE:
-        if (self && self->m_sizeCallback.m_func)
+        if (m_sizeCallback.m_func)
         {
-            unsigned width{static_cast<unsigned>(lParam & ((1 << 16) - 1))},
-                height{static_cast<unsigned>(lParam >> 16)};
+            const unsigned width  = LOWORD(lParam);
+            const unsigned height = HIWORD(lParam);
 
-            self->m_sizeCallback.m_func(
-                self->m_sizeCallback.m_instance, *self, width, height);
+            m_sizeCallback.m_func(
+                m_sizeCallback.m_instance, *this, width, height);
         }
         break;
 
     default:
         break;
+    }
+
+    return false;
+}
+
+LRESULT CALLBACK
+Win32Window::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    if (message == WM_CREATE)
+    {
+        CREATESTRUCT *cs = reinterpret_cast<CREATESTRUCT *>(lParam);
+        SetWindowLongPtr(
+            hwnd,
+            GWLP_USERDATA,
+            reinterpret_cast<LONG_PTR>(cs->lpCreateParams));
+    }
+
+    Win32Window *window = reinterpret_cast<Win32Window *>(
+        GetWindowLongPtr(hwnd, GWLP_USERDATA));
+
+    LRESULT retval = 0;
+    if (window && window->wndProcImpl(retval, hwnd, message, wParam, lParam))
+    {
+        return retval;
     }
 
     return DefWindowProc(hwnd, message, wParam, lParam);

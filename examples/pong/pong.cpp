@@ -7,12 +7,12 @@
 
 #include "renderer/IWindow.h"
 #include "renderer/LocalGL.h"
-#include "renderer/SpriteComponent.h"
 #include "renderer/Texture.h"
-#include "renderer/UITextComponent.h"
 
 #include "core/ColliderComponent.h"
 #include "core/PhysicsComponent.h"
+#include "core/SpriteComponent.h"
+#include "core/UI/UITextComponent.h"
 
 #include "bedrock/TypeReflection.h"
 #include "bedrock/vectors.h"
@@ -229,7 +229,7 @@ public:
 
 class ScoreUISystem : public QuerySystem
 {
-    typedef QueryHelper<With<ScoreUIComponent, renderer::UITextComponent>>
+    typedef QueryHelper<With<ScoreUIComponent, core::UITextComponent>>
         ScoreUIQuery;
 
 public:
@@ -254,7 +254,7 @@ public:
                         : BallComponent::Score2(
                             ScoreUIComponent::BallToTrack(entity)));
 
-            renderer::UITextComponent::Text(entity) = textStream.str();
+            core::UITextComponent::Text(entity) = textStream.str();
         }
     }
 };
@@ -281,11 +281,11 @@ class Pong : public core::Game
         TransformComponent::Register(e);
         TransformComponent::Position(e) = bedrock::Vector3::RIGHT * x;
 
-        renderer::SpriteComponent::Register(e);
-        renderer::SpriteComponent::SpriteData(e) = *spr;
-        renderer::SpriteComponent::Size(e)       = {4, 16};
-        renderer::SpriteComponent::Offset(e)     = {-2, -8};
-        renderer::SpriteComponent::FPS(e)        = 1.0f;
+        core::SpriteComponent::Register(e);
+        core::SpriteComponent::SpriteData(e) = *spr;
+        core::SpriteComponent::Size(e)       = {4, 16};
+        core::SpriteComponent::Offset(e)     = {-2, -8};
+        core::SpriteComponent::FPS(e)        = 1.0f;
 
         physics::PhysicsComponent::Register(e);
         physics::PhysicsComponent::Bounciness(e)     = 0.0f;
@@ -383,10 +383,10 @@ class Pong : public core::Game
             TransformComponent::Position(ui)
                 = bedrock::Vector3(i == 0 ? -40.0f : 40.0f, -60.0f, -1.0f);
 
-            renderer::UITextComponent::Register(ui);
-            renderer::UITextComponent::Text(ui) = "0";
-            renderer::UITextComponent::Alignment(ui)
-                = renderer::UIUtil::UITA_CENTER | renderer::UIUtil::UITA_TOP;
+            core::UITextComponent::Register(ui);
+            core::UITextComponent::Text(ui) = "0";
+            core::UITextComponent::Alignment(ui)
+                = core::UIUtil::UITA_CENTER | core::UIUtil::UITA_TOP;
 
             ScoreUIComponent::Register(ui);
             ScoreUIComponent::BallToTrack(ui) = m_ball;
@@ -413,12 +413,21 @@ class Pong : public core::Game
 
     virtual void registerResouces()
     {
+        auto levelBundle = []() {
+            bedrock::Opaque res
+                = bedrock::Opaque::create<renderer::ImageResourceUserData>();
+            res.get<renderer::ImageResourceUserData>().bundleID = 2;
+            return std::move(res);
+        };
+
         // TEXTURES
         core::ResourceManager::RegisterResource(
             "pong_all.png",
             core::ResourceManager::RLS_AUTO_USE,
             PP_ID(pong_all.png),
-            bedrock::typeID<renderer::ImageResource>());
+            bedrock::typeID<renderer::ImageResource>(),
+            0,
+            levelBundle());
 
         // SPRITES
         core::ResourceManager::RegisterResource(

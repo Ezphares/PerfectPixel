@@ -1,6 +1,6 @@
 #pragma once
 
-#include "renderer/UIUtil.h"
+#include "core/UI/UIUtil.h"
 
 #include "ecs/Component.h"
 #include "ecs/CoreComponentStorage.h"
@@ -9,7 +9,7 @@
 
 #include <string>
 
-namespace perfectpixel { namespace renderer {
+namespace perfectpixel::core {
 
 class UITextComponent
     : public ecs::Component<UITextComponent, ecs::LinearScanComponentStorage>
@@ -19,4 +19,4 @@ public:
     PPField(UITextComponent, int32_t, Alignment);
 };
 
-}} // namespace perfectpixel::renderer
+} // namespace perfectpixel::core

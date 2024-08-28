@@ -18,8 +18,6 @@ class CollisionSystem : public ecs::QuerySystem
 public:
     struct ProxyShape
     {
-        inline ProxyShape(){};
-
         union
         {
             bedrock::Circle m_circle;
@@ -29,7 +27,6 @@ public:
 
     struct CollisionData
     {
-        inline CollisionData(){};
         ecs::Entity m_first, m_second;
         ColliderMaskType m_maskTypeFirst, m_maskTypeSecond;
         union
@@ -38,7 +35,7 @@ public:
             float m_data_CircCircOverlap;
         };
 
-        ProxyShape m_firstProxy, m_secondProxy;
+        ProxyShape m_firstProxy{}, m_secondProxy{};
     };
 
 public:

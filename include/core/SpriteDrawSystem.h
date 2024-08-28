@@ -3,7 +3,8 @@
 #pragma once
 
 #include "renderer/RendererInterface.h"
-#include "renderer/SpriteComponent.h"
+
+#include "core/SpriteComponent.h"
 
 #include "ecs/QueryHelper.h"
 #include "ecs/QuerySystem.h"
@@ -18,7 +19,7 @@ namespace perfectpixel::core {
 class SpriteDrawSystem : public ecs::QuerySystem
 {
     typedef ecs::QueryHelper<
-        ecs::With<renderer::SpriteComponent, ecs::TransformComponent>>
+        ecs::With<SpriteComponent, ecs::TransformComponent>>
         SpriteQuery;
 
 public:
@@ -32,6 +33,8 @@ public:
     onRender(const RangeLimit &begin, const RangeLimit &end, float deltaT);
 
     static renderer::RendererInterface *m_gm;
+
+    static renderer::ImageResource *getImageResource(void *resourcePtr);
 };
 
 } // namespace perfectpixel::core

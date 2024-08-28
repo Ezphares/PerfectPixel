@@ -1,6 +1,6 @@
-#include "renderer/SpriteComponent.h"
+#include "core/SpriteComponent.h"
 
-namespace perfectpixel { namespace renderer {
+namespace perfectpixel { namespace core {
 
 void SpriteComponent::SetSprite(ecs::Entity entity, core::Resource &res)
 {
@@ -24,4 +24,4 @@ void SpriteComponent::Update(ecs::Entity entity, float deltaT)
     }
 }
 
-}} // namespace perfectpixel::renderer
+}} // namespace perfectpixel::core

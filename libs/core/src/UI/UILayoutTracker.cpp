@@ -1,8 +1,8 @@
-#include "renderer/UILayoutTracker.h"
+#include "core/UI/UILayoutTracker.h"
 
 #include "bedrock/interpolation.h"
 
-void perfectpixel::renderer::_internal::UILayoutTracker::makeRoot(
+void perfectpixel::core::_internal::UILayoutTracker::makeRoot(
     bedrock::Vector2 absSize)
 {
     m_layoutStack.resize(1);
@@ -10,7 +10,7 @@ void perfectpixel::renderer::_internal::UILayoutTracker::makeRoot(
     m_layoutStack[0].m_absMax = absSize;
 }
 
-void perfectpixel::renderer::_internal::UILayoutTracker::addLayout(
+void perfectpixel::core::_internal::UILayoutTracker::addLayout(
     bedrock::Vector2 localRelMin,
     bedrock::Vector2 localRelMax,
     LayoutDirection direction,
@@ -72,7 +72,7 @@ void perfectpixel::renderer::_internal::UILayoutTracker::addLayout(
 }
 
 perfectpixel::bedrock::Vector2
-perfectpixel::renderer::_internal::UILayoutTracker::absToRel(
+perfectpixel::core::_internal::UILayoutTracker::absToRel(
     const bedrock::Vector2 &absolute)
 {
     const LayoutEntry &top = m_layoutStack.back();
@@ -84,7 +84,7 @@ perfectpixel::renderer::_internal::UILayoutTracker::absToRel(
 }
 
 perfectpixel::bedrock::Vector2
-perfectpixel::renderer::_internal::UILayoutTracker::relToAbs(
+perfectpixel::core::_internal::UILayoutTracker::relToAbs(
     const bedrock::Vector2 &relative)
 {
     const LayoutEntry &top = m_layoutStack.back();
@@ -96,12 +96,12 @@ perfectpixel::renderer::_internal::UILayoutTracker::relToAbs(
 }
 
 perfectpixel::bedrock::Vector2
-perfectpixel::renderer::_internal::UILayoutTracker::cursor()
+perfectpixel::core::_internal::UILayoutTracker::cursor()
 {
     return m_layoutStack.back().m_cursor;
 }
 
-void perfectpixel::renderer::_internal::UILayoutTracker::pop()
+void perfectpixel::core::_internal::UILayoutTracker::pop()
 {
     if (m_layoutStack.size() > 1) // Do not pop the root
     {

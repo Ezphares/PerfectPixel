@@ -1,21 +1,20 @@
-#include "renderer/UIShadow.h"
+#include "core/UI/UIShadow.h"
 
-perfectpixel::renderer::_internal::UIShadow::UIShadow()
+perfectpixel::core::_internal::UIShadow::UIShadow()
     : m_stateDoubleBuffer()
     , m_activeBuffer(0)
     , m_inactiveBuffer(1)
 {}
 
-void perfectpixel::renderer::_internal::UIShadow::flip()
+void perfectpixel::core::_internal::UIShadow::flip()
 {
     std::swap(m_activeBuffer, m_inactiveBuffer);
 
     m_stateDoubleBuffer[m_activeBuffer].resize(0);
 }
 
-perfectpixel::renderer::_internal::UIShadow::UIShadowState
-perfectpixel::renderer::_internal::UIShadow::getPreviousState(
-    std::int32_t id) const
+perfectpixel::core::_internal::UIShadow::UIShadowState
+perfectpixel::core::_internal::UIShadow::getPreviousState(std::int32_t id) const
 {
     const UIShadowStateBuffer &previousBuffer
         = m_stateDoubleBuffer[m_inactiveBuffer];
@@ -30,7 +29,7 @@ perfectpixel::renderer::_internal::UIShadow::getPreviousState(
     return UIShadowState::UISS_INACTIVE;
 }
 
-void perfectpixel::renderer::_internal::UIShadow::setState(
+void perfectpixel::core::_internal::UIShadow::setState(
     std::int32_t id, UIShadowState state)
 {
     UIShadowStateBuffer &currentBuffer = m_stateDoubleBuffer[m_activeBuffer];

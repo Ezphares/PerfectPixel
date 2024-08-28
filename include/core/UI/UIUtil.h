@@ -1,6 +1,6 @@
 #pragma once
 
-namespace perfectpixel { namespace renderer {
+namespace perfectpixel::core {
 
 class UIUtil
 {
@@ -17,4 +17,4 @@ public:
     };
 };
 
-}} // namespace perfectpixel::renderer
+} // namespace perfectpixel::core

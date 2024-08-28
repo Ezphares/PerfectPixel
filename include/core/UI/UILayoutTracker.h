@@ -4,7 +4,7 @@
 
 #include <vector>
 
-namespace perfectpixel { namespace renderer { namespace _internal {
+namespace perfectpixel::core::_internal {
 
 class UILayoutTracker
 {
@@ -47,4 +47,4 @@ private:
     std::vector<LayoutEntry> m_layoutStack;
 };
 
-}}} // namespace perfectpixel::renderer::_internal
+} // namespace perfectpixel::core::_internal

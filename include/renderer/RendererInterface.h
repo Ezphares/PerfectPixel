@@ -9,9 +9,8 @@
 #include "renderer/Quad.h"
 #include "renderer/RenderHint.h"
 #include "renderer/ShaderProgram.h"
+#include "renderer/TextureStore.h"
 #include "renderer/VAO.h"
-
-#include "core/Resource.h"
 
 #include "bedrock/vectors.h"
 
@@ -27,7 +26,7 @@ public:
     {
         Quad m_worldCoord, m_texCoord;
         RenderHints m_hints;
-        Texture *m_texture;
+        const Texture *m_texture;
         float m_depth;
     };
 
@@ -46,6 +45,7 @@ public:
 
 public:
     void initialize();
+    void shutdown();
 
     void startFrame();
     void drawAll(double deltaT);
@@ -64,7 +64,11 @@ public:
         return m_font;
     }
 
-    Texture &getImageTexture(core::Resource imageResource);
+    const Texture &getImageTexture(
+        bedrock::ID resourceID,
+        ImageResourceBundleID bundleID,
+        ImageResource *(*getResource)(void *),
+        void *resourcePtr);
     void enqueueSpriteDraw(const SpriteDrawInfo &info);
 
 private:
@@ -117,7 +121,7 @@ private:
 
     DrawQueue m_uiQueue;
 
-    std::vector<Texture> m_managedTextures;
+    TextureStore m_textureStore;
 };
 
 }} // namespace perfectpixel::renderer

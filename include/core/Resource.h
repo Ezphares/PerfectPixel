@@ -2,6 +2,7 @@
 
 #include "serialization/ISerializer.h"
 
+#include "bedrock/Opaque.h"
 #include "bedrock/TypeReflection.h"
 
 #include <string>
@@ -11,9 +12,9 @@ namespace perfectpixel::core {
 class Resource
 {
 public:
-    Resource(int32_t type);
-    Resource(int32_t type, const std::string &id);
-    Resource(int32_t type, int32_t id);
+    Resource(bedrock::TypeID type);
+    Resource(bedrock::TypeID type, const std::string &id);
+    Resource(bedrock::TypeID type, bedrock::ID id);
 
     ~Resource();
     Resource(const Resource &toCopy);
@@ -22,10 +23,10 @@ public:
     Resource &operator=(Resource &&toMove);
 
     bool isValid() const;
-    int32_t getId() const;
+    bedrock::ID getId() const;
 
     void set(const std::string &id);
-    void set(int32_t id);
+    void set(bedrock::ID id);
     void set();
 
     void *_get();
@@ -35,10 +36,12 @@ public:
         return reinterpret_cast<T *>(_get());
     }
 
+    const bedrock::Opaque &getUserData() const;
+
 private:
-    const int32_t m_type;
-    int32_t m_id;
-    uint32_t m_cacheHint;
+    const bedrock::TypeID m_type;
+    bedrock::ID m_id;
+    mutable uint32_t m_cacheHint;
     void *m_cache;
     bool m_valid;
 };

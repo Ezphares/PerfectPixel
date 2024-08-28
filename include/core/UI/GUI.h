@@ -5,7 +5,7 @@
 
 #include "core/Sprite.h"
 
-namespace perfectpixel { namespace renderer {
+namespace perfectpixel::core {
 
 struct CameraSettings;
 namespace _internal {
@@ -105,7 +105,7 @@ public:
         const AnchoredRegion &position);
         */
 
-    static void begin(const CameraSettings &camera);
+    static void begin(const renderer::CameraSettings &camera);
 
 private:
     // Layout internals
@@ -121,4 +121,4 @@ private:
     _internal::GUIInternal *m_internal;
 }; // namespace bedrock::Singleton<GUI>
 
-}} // namespace perfectpixel::renderer
+} // namespace perfectpixel::core

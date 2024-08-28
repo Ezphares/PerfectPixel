@@ -18,7 +18,7 @@ public:
     virtual ~Win32Window();
 
 public:
-    virtual void initialize(const WindowSettings &settings) override;
+    virtual bool initialize(const WindowSettings &settings) override;
     virtual void activate() override;
     virtual void startFrame() override;
     virtual void draw() override;
@@ -29,9 +29,13 @@ public:
     virtual void setKeyCallback(bedrock::KeyCallback callback) override;
     virtual void setFocusCallback(FocusCallback callback) override;
     virtual void setResizeCallback(SizeCallback callback) override;
+
     virtual void initImGui() override;
+    virtual void shutdownImGui() override;
 
 private:
+    bool wndProcImpl(
+        LRESULT &retval, HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
     static LRESULT CALLBACK
     WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -48,9 +52,6 @@ private:
     static void imGuiHook_SwapBuffers(ImGuiViewport *viewport, void *);
 
 private:
-    static std::map<HWND, Win32Window *> m_handleLookup;
-    static Win32Window *m_currentSetup;
-
     static PIXELFORMATDESCRIPTOR pfd;
 
     HBITMAP m_splash;

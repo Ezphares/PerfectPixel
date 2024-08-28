@@ -13,29 +13,29 @@ void SpriteDrawSystem::onRender(
     {
         auto entity = *it;
 
-        renderer::SpriteComponent::Update(*it, static_cast<float>(deltaT));
+        SpriteComponent::Update(*it, static_cast<float>(deltaT));
 
         renderer::RendererInterface::SpriteDrawInfo drawInfo;
 
         bedrock::Vector3 actualPosition
-            = bedrock::Vector3(renderer::SpriteComponent::Offset(entity));
+            = bedrock::Vector3(SpriteComponent::Offset(entity));
         actualPosition
             += bedrock::Vector3(ecs::TransformComponent::Position(entity));
-        bedrock::Vector2 upperBound = bedrock::Vector2(actualPosition)
-                                      + renderer::SpriteComponent::Size(entity);
+        bedrock::Vector2 upperBound
+            = bedrock::Vector2(actualPosition) + SpriteComponent::Size(entity);
 
         drawInfo.m_worldCoord
             = {actualPosition.x, actualPosition.y, upperBound.x, upperBound.y};
 
-        core::Sprite &sprite = renderer::SpriteComponent::SpriteData(entity);
+        core::Sprite &sprite = SpriteComponent::SpriteData(entity);
         if (!sprite.getImage().isValid())
         {
-            sprite = *renderer::SpriteComponent::SpriteResource(entity)
-                          .get<core::Sprite>();
+            sprite
+                = *SpriteComponent::SpriteResource(entity).get<core::Sprite>();
         }
 
-        const bedrock::Vector2 texturePosition = sprite.getTexCoord(
-            renderer::SpriteComponent::CurrentFrame(entity));
+        const bedrock::Vector2 texturePosition
+            = sprite.getTexCoord(SpriteComponent::CurrentFrame(entity));
         const bedrock::Vector2 textureSize = sprite.getSize();
 
         drawInfo.m_texCoord
@@ -45,12 +45,29 @@ void SpriteDrawSystem::onRender(
                texturePosition.y + textureSize.y};
 
         drawInfo.m_hints
-            = (renderer::RenderHints)renderer::SpriteComponent::DrawHint(
-                entity);
-        drawInfo.m_texture = &m_gm->getImageTexture(sprite.getImage());
-        drawInfo.m_depth   = actualPosition.z;
+            = (renderer::RenderHints)SpriteComponent::DrawHint(entity);
+
+        Resource imageResource = sprite.getImage();
+
+        constexpr renderer::ImageResourceBundleID globalBundle = ~0;
+        renderer::ImageResourceBundleID bundleID               = globalBundle;
+        const bedrock::Opaque &userData = imageResource.getUserData();
+        if (userData)
+        {
+            bundleID = userData.get<renderer::ImageResourceUserData>().bundleID;
+        }
+        drawInfo.m_texture = &m_gm->getImageTexture(
+            imageResource.getId(), bundleID, &getImageResource, &imageResource);
+        drawInfo.m_depth = actualPosition.z;
 
         m_gm->enqueueSpriteDraw(drawInfo);
     }
 }
+
+renderer::ImageResource *SpriteDrawSystem::getImageResource(void *resourcePtr)
+{
+    return reinterpret_cast<Resource *>(resourcePtr)
+        ->get<renderer::ImageResource>();
+}
+
 } // namespace perfectpixel::core

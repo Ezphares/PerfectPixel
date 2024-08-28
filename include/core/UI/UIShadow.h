@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <vector>
 
-namespace perfectpixel { namespace renderer { namespace _internal {
+namespace perfectpixel::core::_internal {
 
 class UIShadow
 {
@@ -42,4 +42,4 @@ public:
     void setState(std::int32_t id, UIShadowState state);
 };
 
-}}} // namespace perfectpixel::renderer::_internal
+} // namespace perfectpixel::core::_internal

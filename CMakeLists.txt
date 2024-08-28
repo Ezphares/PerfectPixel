@@ -143,7 +143,6 @@ add_test(
 	COMMAND RunTests
 )
 
-
 add_executable(Pong WIN32 "${CMAKE_CURRENT_SOURCE_DIR}/examples/pong/pong.cpp" )
 
 if (MSVC)

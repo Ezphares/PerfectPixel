@@ -1,9 +1,9 @@
 
-#include "renderer/UISystem.h"
+#include "core/UI/UISystem.h"
 
-#include "renderer/UIUtil.h"
+#include "core/UI/UIUtil.h"
 
-namespace perfectpixel { namespace renderer {
+namespace perfectpixel::core {
 
 void UISystem::onRender(
     const RangeLimit &begin, const RangeLimit &end, float deltaT)
@@ -18,10 +18,10 @@ void UISystem::onRender(
         ecs::Entity entity = *it;
         if (UITextComponent::Has(entity))
         {
-            UITextDrawQueueElement *element
-                = static_cast<UITextDrawQueueElement *>(
-                    DrawQueueElementFactory::getInstance()->allocate(
-                        DQET_UI_TEXT));
+            renderer::UITextDrawQueueElement *element
+                = static_cast<renderer::UITextDrawQueueElement *>(
+                    renderer::DrawQueueElementFactory::getInstance()->allocate(
+                        renderer::DQET_UI_TEXT));
 
             element->m_font     = m_font;
             element->m_position = ecs::TransformComponent::Position(entity);
@@ -45,7 +45,7 @@ void UISystem::onRender(
     }
 }
 
-IFont *UISystem::m_font           = nullptr;
-RendererInterface *UISystem::m_gm = nullptr;
+renderer::IFont *UISystem::m_font           = nullptr;
+renderer::RendererInterface *UISystem::m_gm = nullptr;
 
-}} // namespace perfectpixel::renderer
+} // namespace perfectpixel::core

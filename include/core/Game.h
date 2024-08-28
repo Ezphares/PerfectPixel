@@ -81,7 +81,7 @@ private:
 protected:
     ecs::SystemQueue m_processorQueue;
     input::InputManager m_inputManager;
-    renderer::RendererInterface m_graphicsManager;
+    renderer::RendererInterface m_rendererInterface;
     core::FileResourceLocator m_fileResourceLocator;
 
 private:

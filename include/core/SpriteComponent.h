@@ -10,7 +10,7 @@
 #include "core/Resource.h"
 #include "core/Sprite.h"
 
-namespace perfectpixel { namespace renderer {
+namespace perfectpixel::core {
 
 class SpriteComponent
     : public ecs::Component<SpriteComponent, ecs::DefaultComponentStorage>
@@ -34,4 +34,4 @@ public:
 
     static void Update(ecs::Entity entity, float deltaT);
 };
-}} // namespace perfectpixel::renderer
+} // namespace perfectpixel::core
