@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+#include <cstring>
 #include <utility>
 
 namespace perfectpixel { namespace bedrock {
