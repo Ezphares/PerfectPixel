@@ -63,9 +63,4 @@ private:
     char m_inlineData[opaqueInlineBytes];
 };
 
-template <typename T>
-const T &getOpaque(const Opaque &opaque)
-{
-    return *reinterpret_cast<const T *>(opaque->get());
-}
 }} // namespace perfectpixel::bedrock
