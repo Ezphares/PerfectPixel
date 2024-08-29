@@ -5,17 +5,15 @@
 
 namespace perfectpixel::core {
 
-void UISystem::onRender(
-    const RangeLimit &begin, const RangeLimit &end, float deltaT)
+void UISystem::onRender(std::span<ecs::Entity> entities, float deltaT)
 {
     (void)deltaT;
 
     if (!m_font)
         m_font = m_gm->getDefaultFont();
 
-    for (auto it = begin; it != end; ++it)
+    for (auto entity : entities)
     {
-        ecs::Entity entity = *it;
         if (UITextComponent::Has(entity))
         {
             renderer::UITextDrawQueueElement *element

@@ -9,7 +9,7 @@ class IntegratorSystem : public ecs::QuerySystem
 public:
     IntegratorSystem();
 
-    static void onUpdate(const RangeLimit &begin, const RangeLimit &end, float deltaT);
+    static void onUpdate(std::span<ecs::Entity> entities, float deltaT);
 };
 
 }} // namespace perfectpixel::physics

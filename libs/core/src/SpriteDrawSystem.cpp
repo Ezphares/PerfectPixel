@@ -6,14 +6,11 @@ namespace perfectpixel::core {
 
 renderer::RendererInterface *SpriteDrawSystem::m_gm = nullptr;
 
-void SpriteDrawSystem::onRender(
-    const RangeLimit &begin, const RangeLimit &end, float deltaT)
+void SpriteDrawSystem::onRender(std::span<ecs::Entity> entities, float deltaT)
 {
-    for (auto it = begin; it != end; ++it)
+    for (auto entity : entities)
     {
-        auto entity = *it;
-
-        SpriteComponent::Update(*it, static_cast<float>(deltaT));
+        SpriteComponent::Update(entity, static_cast<float>(deltaT));
 
         renderer::RendererInterface::SpriteDrawInfo drawInfo;
 

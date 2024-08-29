@@ -28,18 +28,17 @@ CollisionSystem::CollisionSystem()
 CollisionSystem::~CollisionSystem()
 {}
 
-void CollisionSystem::onUpdate(
-    const RangeLimit &begin, const RangeLimit &end, float deltaT)
+void CollisionSystem::onUpdate(std::span<ecs::Entity> entities, float deltaT)
 {
     (void)deltaT;
 
     m_collisionCount = 0u;
     std::set<ecs::Entity> collisionCache;
 
-    for (auto it = begin; it != end; ++it)
+    for (auto entity : entities)
     {
-        collisionCache.insert(*it);
-        collideSingle(*it, collisionCache);
+        collisionCache.insert(entity);
+        collideSingle(entity, collisionCache);
     }
 }
 

@@ -1,7 +1,7 @@
+#include "ecs/QuerySystem.h"
 #include "ecs/EntityManager.h"
 #include "ecs/FastUpdate.h"
 #include "ecs/LifecycleComponents.h"
-#include "ecs/QuerySystem.h"
 #include "ecs/TransformComponent.h"
 
 namespace perfectpixel { namespace ecs {
@@ -78,7 +78,7 @@ void QuerySystem::doCreate()
     if (m_onCreate)
     {
         std::vector<Entity> entities = m_queryCreate.finalize();
-        m_onCreate(entities.begin(), entities.end());
+        m_onCreate(entities);
     }
 }
 
@@ -87,7 +87,7 @@ void QuerySystem::doProcess(float deltaT)
     if (m_onUpdate)
     {
         EntityManager::EntityList result = m_query.finalize();
-        m_onUpdate(result.begin(), result.end(), deltaT);
+        m_onUpdate(result, deltaT);
     }
 }
 
@@ -96,7 +96,7 @@ void QuerySystem::doRender(float deltaT)
     if (m_onRender)
     {
         EntityManager::EntityList result = m_queryRender.execute(m_queryState);
-        m_onRender(result.begin(), result.end(), deltaT);
+        m_onRender(result, deltaT);
     }
 }
 
@@ -105,7 +105,7 @@ void QuerySystem::doDestroy()
     if (m_onDestroy)
     {
         EntityManager::EntityList result = m_queryDestroy.finalize();
-        m_onDestroy(result.begin(), result.end());
+        m_onDestroy(result);
     }
 }
 }} // namespace perfectpixel::ecs

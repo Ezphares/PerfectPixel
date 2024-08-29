@@ -90,22 +90,20 @@ public:
         m_onUpdate = &onUpdate;
     }
 
-    static void onCreate(const RangeLimit &begin, const RangeLimit &end)
+    static void onCreate(std::span<Entity> entities)
     {
-        for (auto it = begin; it != end; ++it)
+        for (auto entity : entities)
         {
-            BatComponent::MaxSpeed(*it)         = 35.0f;
-            BatComponent::CurrentDirection(*it) = 0.0f;
+            BatComponent::MaxSpeed(entity)         = 35.0f;
+            BatComponent::CurrentDirection(entity) = 0.0f;
         }
     }
 
-    static void
-    onUpdate(const RangeLimit &begin, const RangeLimit &end, float deltaT)
+    static void onUpdate(std::span<Entity> entities, float deltaT)
     {
         (void)deltaT;
-        for (auto it = begin; it != end; ++it)
+        for (auto entity : entities)
         {
-            Entity entity = *it;
             physics::PhysicsComponent::Velocity(entity)
                 = bedrock::Vector3::UP * BatComponent::MaxSpeed(entity)
                   * BatComponent::CurrentDirection(entity);
@@ -124,14 +122,13 @@ public:
         m_onUpdate = &onUpdate;
     }
 
-    static void
-    onUpdate(const RangeLimit &begin, const RangeLimit &end, float deltaT)
+    static void onUpdate(std::span<Entity> entities, float deltaT)
     {
         (void)deltaT;
-        for (auto it = begin; it != end; ++it)
+        for (auto entity : entities)
         {
-            BatComponent::CurrentDirection(*it)
-                = m_Input->getAxisState(PlayerComponent::InputAxis(*it));
+            BatComponent::CurrentDirection(entity)
+                = m_Input->getAxisState(PlayerComponent::InputAxis(entity));
         }
     }
 
@@ -151,13 +148,11 @@ public:
         m_onUpdate = &onUpdate;
     }
 
-    static void
-    onUpdate(const RangeLimit &begin, const RangeLimit &end, float deltaT)
+    static void onUpdate(std::span<Entity> entities, float deltaT)
     {
         (void)deltaT;
-        for (auto it = begin; it != end; ++it)
+        for (auto entity : entities)
         {
-            Entity entity = *it;
             BatComponent::CurrentDirection(entity)
                 = TransformComponent::Position(entity).y
                           < TransformComponent::Position(
@@ -181,21 +176,19 @@ public:
         m_onUpdate = &onUpdate;
     }
 
-    static void onCreate(const RangeLimit &begin, const RangeLimit &end)
+    static void onCreate(std::span<Entity> entities)
     {
-        for (auto it = begin; it != end; ++it)
+        for (auto entity : entities)
         {
-            BallComponent::Reset(*it);
+            BallComponent::Reset(entity);
         }
     }
 
-    static void
-    onUpdate(const RangeLimit &begin, const RangeLimit &end, float deltaT)
+    static void onUpdate(std::span<Entity> entities, float deltaT)
     {
         (void)deltaT;
-        for (auto it = begin; it != end; ++it)
+        for (auto entity : entities)
         {
-            Entity entity    = *it;
             bool shouldReset = false;
 
             if (TransformComponent::Position(entity).x < -80)
@@ -239,13 +232,11 @@ public:
         m_onUpdate = &onUpdate;
     };
 
-    static void
-    onUpdate(const RangeLimit &begin, const RangeLimit &end, float deltaT)
+    static void onUpdate(std::span<Entity> entities, float deltaT)
     {
         (void)deltaT;
-        for (auto it = begin; it != end; ++it)
+        for (auto entity : entities)
         {
-            Entity entity = *it;
             std::stringstream textStream;
             textStream
                 << ((ScoreUIComponent::PlayerIndex(entity) == 1)

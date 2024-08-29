@@ -42,8 +42,7 @@ public:
     CollisionSystem();
     virtual ~CollisionSystem();
 
-    static void
-    onUpdate(const RangeLimit &begin, const RangeLimit &end, float deltaT);
+    static void onUpdate(std::span<ecs::Entity> entities, float deltaT);
 
     // Resolution utilities
     static void singleAxisReposition(

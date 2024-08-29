@@ -25,30 +25,30 @@ GTEST_TEST(test_CollisionSystem, RectRectCollision)
     ColliderComponent::SetMaskRectangle(a, bedrock::AARectangle({5, 5}));
     ColliderComponent::SetMaskRectangle(b, bedrock::AARectangle({10, 5}));
 
-    CollisionSystem::onUpdate(entities.begin(), entities.end(), 1.0f);
+    CollisionSystem::onUpdate(entities, 1.0f);
     ASSERT_EQ(1u, CollisionSystem::getCollisionsLastUpdate());
     // AssertFloatApprox(overlap->x(), 15);
     // AssertFloatApprox(overlap->y(), 10);
 
     ecs::TransformComponent::Position(b) = {0, 10, 0};
-    CollisionSystem::onUpdate(entities.begin(), entities.end(), 1.0f);
+    CollisionSystem::onUpdate(entities, 1.0f);
     ASSERT_EQ(0u, CollisionSystem::getCollisionsLastUpdate());
 
     // Checking partial collision
     ecs::TransformComponent::Position(b) = {10, 0, 0};
-    CollisionSystem::onUpdate(entities.begin(), entities.end(), 1.0f);
+    CollisionSystem::onUpdate(entities, 1.0f);
     ASSERT_EQ(1u, CollisionSystem::getCollisionsLastUpdate());
     // AssertFloatApprox(overlap->x(), 5);
 
     // Checking that both sides create negative offset
     ecs::TransformComponent::Position(b) = {-10, 0, 0};
-    CollisionSystem::onUpdate(entities.begin(), entities.end(), 1.0f);
+    CollisionSystem::onUpdate(entities, 1.0f);
     ASSERT_EQ(1u, CollisionSystem::getCollisionsLastUpdate());
     // AssertFloatApprox(overlap->x(), 5);
 
     // Check partial on both axes
     ecs::TransformComponent::Position(b) = {14, -9, 0};
-    CollisionSystem::onUpdate(entities.begin(), entities.end(), 1.0f);
+    CollisionSystem::onUpdate(entities, 1.0f);
     ASSERT_EQ(1u, CollisionSystem::getCollisionsLastUpdate());
     // AssertFloatApprox(overlap->x(), 1);
     // AssertFloatApprox(overlap->y(), 1);

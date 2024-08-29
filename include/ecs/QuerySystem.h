@@ -1,20 +1,20 @@
 #pragma once
 
-#include "ecs/QueryHelper.h"
 #include "ecs/ISystem.h"
+#include "ecs/QueryHelper.h"
 
 #include "bedrock/numbers.h"
+
+#include <span>
 
 namespace perfectpixel { namespace ecs {
 
 class QuerySystem : public ISystem
 {
 public:
-    typedef EntityManager::EntityList::iterator RangeLimit;
     typedef void (*SystemFunction)(
-        const RangeLimit &begin, const RangeLimit &end, float deltaT);
-    typedef void (*UntimedSystemFunction)(
-        const RangeLimit &begin, const RangeLimit &end);
+        const std::span<Entity> entities, float deltaT);
+    typedef void (*UntimedSystemFunction)(const std::span<Entity> entities);
 
     enum QueryFlags
     {
@@ -31,10 +31,10 @@ public:
 
 public:
     virtual void earlyAudit() override;
-	virtual void lateAudit() override;
-	virtual void init() override;
-	virtual void update(float deltaT) override;
-	virtual void clean() override;
+    virtual void lateAudit() override;
+    virtual void init() override;
+    virtual void update(float deltaT) override;
+    virtual void clean() override;
     virtual void render(float deltaT) override;
 
 public:

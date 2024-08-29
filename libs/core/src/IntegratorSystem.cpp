@@ -11,7 +11,10 @@ namespace {
 const int32_t EULER_STEPS = 1;
 }
 
-typedef ecs::QueryHelper<ecs::With<ecs::TransformComponent>, ecs::With<physics::PhysicsComponent>> IntegratorQuery;
+typedef ecs::QueryHelper<
+    ecs::With<ecs::TransformComponent>,
+    ecs::With<physics::PhysicsComponent>>
+    IntegratorQuery;
 
 IntegratorSystem::IntegratorSystem()
     : ecs::QuerySystem(IntegratorQuery::build())
@@ -19,13 +22,10 @@ IntegratorSystem::IntegratorSystem()
     m_onUpdate = &onUpdate;
 }
 
-void IntegratorSystem::onUpdate(
-    const RangeLimit &begin, const RangeLimit &end, float deltaT)
+void IntegratorSystem::onUpdate(std::span<ecs::Entity> entities, float deltaT)
 {
-    for (auto it = begin; it != end; ++it)
+    for (auto entity : entities)
     {
-        ecs::Entity entity = *it;
-
         bedrock::Vector3 &velocity    = PhysicsComponent::Velocity(entity);
         bedrock::Vector3 acceleration = bedrock::Vector3();
 

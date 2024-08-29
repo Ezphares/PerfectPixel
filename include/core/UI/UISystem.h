@@ -27,8 +27,7 @@ public:
         m_onRender = &onRender;
     }
 
-    static void
-    onRender(const RangeLimit &begin, const RangeLimit &end, float deltaT);
+    static void onRender(std::span<ecs::Entity> entities, float deltaT);
 
     static renderer::IFont *m_font;
     static renderer::RendererInterface *m_gm;
