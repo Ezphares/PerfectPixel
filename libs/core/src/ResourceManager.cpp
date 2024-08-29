@@ -2,11 +2,10 @@
 
 namespace perfectpixel::core {
 
-void ResourceManager::Take(
-    bedrock::TypeID type, bedrock::ID id, uint32_t *ref_cacheHint)
+void ResourceManager::Take(bedrock::TypeID type, bedrock::ID id)
 {
     ResourceManager *self      = getInstance();
-    ResourceMetadata &metadata = self->getMetadata(type, id, ref_cacheHint);
+    ResourceMetadata &metadata = self->getMetadata(type, id);
     if (metadata.m_refs == 0 && metadata.m_loadingStrategy == RLS_AUTO_REF)
     {
         self->load(metadata);
@@ -14,15 +13,13 @@ void ResourceManager::Take(
     metadata.m_refs++;
 }
 
-void ResourceManager::Release(
-    bedrock::TypeID type, bedrock::ID id, uint32_t *ref_cacheHint)
+void ResourceManager::Release(bedrock::TypeID type, bedrock::ID id)
 {
     ResourceManager *self      = getInstance();
-    ResourceMetadata &metadata = self->getMetadata(type, id, ref_cacheHint);
-    if (metadata.m_refs == 0)
-    {
-        throw "Ref corruption";
-    }
+    ResourceMetadata &metadata = self->getMetadata(type, id);
+
+    // TODO Assert refs > 0
+
     metadata.m_refs--;
 
     if (metadata.m_refs == 0 && metadata.m_loadingStrategy == RLS_AUTO_REF)
@@ -59,14 +56,11 @@ void ResourceManager::RegisterResource(
     }
 }
 
-void *ResourceManager::GetData(
-    bedrock::TypeID type,
-    bedrock::ID id,
-    bool *out_cache,
-    uint32_t *ref_cacheHint)
+void *
+ResourceManager::GetData(bedrock::TypeID type, bedrock::ID id, bool *out_cache)
 {
     ResourceManager *self      = getInstance();
-    ResourceMetadata &metadata = self->getMetadata(type, id, ref_cacheHint);
+    ResourceMetadata &metadata = self->getMetadata(type, id);
 
     if (!metadata.m_data && metadata.m_loadingStrategy == RLS_AUTO_USE)
     {
@@ -86,11 +80,11 @@ void *ResourceManager::GetData(
     return metadata.m_data;
 }
 
-const perfectpixel::bedrock::Opaque &ResourceManager::GetUserData(
-    bedrock::TypeID type, bedrock::ID id, uint32_t *ref_cacheHint)
+const perfectpixel::bedrock::Opaque &
+ResourceManager::GetUserData(bedrock::TypeID type, bedrock::ID id)
 {
     ResourceManager *self      = getInstance();
-    ResourceMetadata &metadata = self->getMetadata(type, id, ref_cacheHint);
+    ResourceMetadata &metadata = self->getMetadata(type, id);
     return metadata.m_userData;
 }
 
@@ -101,78 +95,33 @@ void ResourceManager::Shutdown()
     ResourceManager *self = getInstance();
 
     self->m_metadata.clear();
-    self->m_loaderLUT.clear();
-    self->m_offsets.clear();
+    self->m_loaders.clear();
 }
 
 void ResourceManager::UnloadAll()
 {
     ResourceManager *self = getInstance();
-
-    // Empty queued unloads
-    self->processUnloads();
-
     for (auto it = self->m_metadata.begin(); it != self->m_metadata.end(); ++it)
     {
-        self->unload(*it, true);
+        self->unload(it->second, true);
     }
+    self->m_unloadQueue.clear();
 }
 
 ResourceManager::ResourceMetadata &
 ResourceManager::insert(ResourceMetadata &&metadata)
 {
-    auto it = m_metadata.begin();
-    std::advance(it, offset(metadata.m_type));
+    // TODO: Assert not present
 
-    while (it != m_metadata.end() && it->m_type == metadata.m_type
-           && it->m_id.m_hash < metadata.m_id.m_hash)
-    {
-        ++it;
-    }
-
-    if (it != m_metadata.end() && it->m_id == metadata.m_id)
-    {
-        throw "Error: Resource inserted twice";
-    }
-
-    auto jt = m_metadata.emplace(it, std::move(metadata));
-    pushOffset(jt->m_type);
-
-    return *jt;
+    return m_metadata
+        .emplace(
+            ResourceKey{metadata.m_type, metadata.m_id}, std::move(metadata))
+        .first->second;
 }
 
 void ResourceManager::setResourceLocator(IResourceLocator *locator)
 {
     m_locator = locator;
-}
-
-size_t ResourceManager::offset(bedrock::TypeID type)
-{
-    for (auto it = m_offsets.begin();; ++it)
-    {
-        if (it == m_offsets.end() || it->first > type)
-        {
-
-            return m_offsets
-                .emplace(
-                    it,
-                    type,
-                    (it == m_offsets.end()) ? m_metadata.size() : it->second)
-                ->second;
-        }
-        else if (it->first == type)
-        {
-            return it->second;
-        }
-    }
-}
-
-void ResourceManager::pushOffset(bedrock::TypeID type, size_t count /*= 1*/)
-{
-    for (auto it = m_offsets.rbegin(); it->first != type; ++it)
-    {
-        it->second += count;
-    }
 }
 
 void ResourceManager::load(ResourceMetadata &metadata)
@@ -232,56 +181,24 @@ void ResourceManager::processUnloads()
 }
 
 perfectpixel::core::ResourceManager::ResourceMetadata &
-ResourceManager::getMetadata(
-    bedrock::TypeID type, bedrock::ID id, uint32_t *ref_cacheHint)
+ResourceManager::getMetadata(bedrock::TypeID type, bedrock::ID id)
 {
-    if (ref_cacheHint && *ref_cacheHint < m_metadata.size())
-    {
-        ResourceMetadata &metadata = m_metadata[*ref_cacheHint];
-        if (metadata.m_type == type && metadata.m_id == id)
-        {
-            return metadata;
-        }
-    }
+    auto it = m_metadata.find(ResourceKey{type, id});
 
-    auto it    = m_metadata.begin();
-    size_t idx = offset(type);
-    std::advance(it, idx);
+    // TODO Assert found
 
-    for (; it != m_metadata.end(); ++it, ++idx)
-    {
-        if (it->m_type != type)
-        {
-            break;
-        }
-
-        if (it->m_id == id)
-        {
-            if (ref_cacheHint)
-            {
-                *ref_cacheHint = static_cast<uint32_t>(idx);
-            }
-
-            return *it;
-        }
-    }
-
-    throw "Metadata not found";
+    return it->second;
 }
 
 ResourceManager::ResourceLoader &
 ResourceManager::getLoader(const ResourceMetadata &metadata)
 {
-    for (auto &loader : m_loaderLUT)
-    {
-        if (std::get<0>(loader) == metadata.m_type
-            && std::get<1>(loader) == metadata.m_variant)
-        {
-            return std::get<2>(loader);
-        }
-    }
+    auto it = m_loaders.find(
+        ResourceLoaderKey{metadata.m_type, metadata.m_variant});
 
-    throw "Loader not found";
+    // TODO Assert found
+
+    return it->second;
 }
 
 } // namespace perfectpixel::core

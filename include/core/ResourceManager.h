@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ResourceKeys.h"
+
 #include "core/IResourceLocator.h"
 
 #include "bedrock/Opaque.h"
@@ -7,6 +9,7 @@
 #include "bedrock/TypeReflection.h"
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace perfectpixel::core {
@@ -32,8 +35,6 @@ public:
             };
         }
     };
-    typedef std::tuple<bedrock::TypeID, bedrock::TypeID, ResourceLoader>
-        ResourceLoaderLookup;
 
     enum ResourceLoadingStategy : uint8_t
     {
@@ -62,21 +63,16 @@ public:
         ResourceUnloaderFunction unloader = nullptr,
         void *loaderUserData              = nullptr)
     {
-        ResourceLoaderLookup entry;
-        std::get<0>(entry)        = bedrock::typeID<T>();
-        std::get<1>(entry)        = bedrock::typeID<Variant>();
-        std::get<2>(entry).m_load = loader;
-        std::get<2>(entry).m_unload
-            = unloader ? unloader : ResourceLoader::GetDefaultUnloader<T>();
-        std::get<2>(entry).m_loaderUserData = loaderUserData;
-
-        getInstance()->m_loaderLUT.push_back(entry);
+        getInstance()->m_loaders.emplace(
+            ResourceLoaderKey{bedrock::typeID<T>(), bedrock::typeID<Variant>()},
+            ResourceLoader{
+                loader,
+                unloader ? unloader : ResourceLoader::GetDefaultUnloader<T>(),
+                loaderUserData});
     }
 
-    static void
-    Take(bedrock::TypeID type, bedrock::ID id, uint32_t *ref_cacheHint);
-    static void
-    Release(bedrock::TypeID type, bedrock::ID id, uint32_t *ref_cacheHint);
+    static void Take(bedrock::TypeID type, bedrock::ID id);
+    static void Release(bedrock::TypeID type, bedrock::ID id);
     static void RegisterResource(
         const std::string &locator,
         ResourceLoadingStategy loadingStrategy,
@@ -84,13 +80,9 @@ public:
         bedrock::TypeID type,
         bedrock::TypeID variant    = 0,
         bedrock::Opaque &&userData = bedrock::Opaque());
-    static void *GetData(
-        bedrock::TypeID type,
-        bedrock::ID id,
-        bool *out_cache,
-        uint32_t *ref_cacheHint);
+    static void *GetData(bedrock::TypeID type, bedrock::ID id, bool *out_cache);
     static const bedrock::Opaque &
-    GetUserData(bedrock::TypeID type, bedrock::ID id, uint32_t *ref_cacheHint);
+    GetUserData(bedrock::TypeID type, bedrock::ID id);
 
     static void Shutdown();
     static void UnloadAll();
@@ -100,19 +92,15 @@ public:
 
 private:
     ResourceMetadata &insert(ResourceMetadata &&metadata);
-    size_t offset(bedrock::TypeID type);
-    void pushOffset(bedrock::TypeID type, size_t count = 1);
 
     void load(ResourceMetadata &metadata);
     void unload(ResourceMetadata &metadata, bool now = false);
-    ResourceMetadata &
-    getMetadata(bedrock::TypeID type, bedrock::ID id, uint32_t *ref_cacheHint);
+    ResourceMetadata &getMetadata(bedrock::TypeID type, bedrock::ID id);
     ResourceLoader &getLoader(const ResourceMetadata &metadata);
 
 private:
-    std::vector<std::pair<bedrock::TypeID, size_t>> m_offsets;
-    std::vector<ResourceMetadata> m_metadata;
-    std::vector<ResourceLoaderLookup> m_loaderLUT;
+    std::unordered_map<ResourceKey, ResourceMetadata> m_metadata;
+    std::unordered_map<ResourceLoaderKey, ResourceLoader> m_loaders;
     IResourceLocator *m_locator;
     std::vector<ResourceMetadata *> m_unloadQueue;
 };

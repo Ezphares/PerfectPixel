@@ -87,12 +87,10 @@ perfectpixel::bedrock::ID Resource::getId() const
 
 void Resource::set()
 {
-    m_cache     = nullptr;
-    m_cacheHint = ~0u;
-
+    m_cache = nullptr;
     if (m_valid)
     {
-        ResourceManager::Release(m_type, m_id, &m_cacheHint);
+        ResourceManager::Release(m_type, m_id);
     }
     m_valid = false;
 }
@@ -108,7 +106,7 @@ void Resource::set(bedrock::ID id)
 {
     set();
 
-    ResourceManager::Take(m_type, id, &m_cacheHint);
+    ResourceManager::Take(m_type, id);
     m_valid = true;
     m_id    = id;
 }
@@ -124,8 +122,7 @@ void *Resource::_get()
         return m_cache;
     }
     bool shouldCache;
-    void *result
-        = ResourceManager::GetData(m_type, m_id, &shouldCache, &m_cacheHint);
+    void *result = ResourceManager::GetData(m_type, m_id, &shouldCache);
 
     if (result && shouldCache)
     {
@@ -136,7 +133,7 @@ void *Resource::_get()
 
 const bedrock::Opaque &Resource::getUserData() const
 {
-    return ResourceManager::GetUserData(m_type, m_id, &m_cacheHint);
+    return ResourceManager::GetUserData(m_type, m_id);
 }
 
 } // namespace perfectpixel::core

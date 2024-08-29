@@ -41,7 +41,6 @@ public:
 private:
     const bedrock::TypeID m_type;
     bedrock::ID m_id;
-    mutable uint32_t m_cacheHint;
     void *m_cache;
     bool m_valid;
 };
