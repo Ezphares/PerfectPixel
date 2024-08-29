@@ -347,8 +347,7 @@ void Game::variableUpdate(double variableDeltaT)
     ftBuffer[ftIndex++] = variableDeltaT;
     ftIndex %= 32;
 
-    static bool imOpen   = true;
-    static bool testbool = true;
+    static bool imOpen = true;
     if (ImGui::Begin("Stats", &imOpen))
     {
         double ftAvg = 0.0;
