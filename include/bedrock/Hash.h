@@ -9,6 +9,8 @@
 
 namespace perfectpixel { namespace bedrock {
 
+using Hash = int32_t;
+
 static constexpr uint32_t crc_table[256]
     = {0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f,
        0xe963a535, 0x9e6495a3, 0x0edb8832, 0x79dcb8a4, 0xe0d5e91e, 0x97d2d988,
@@ -84,7 +86,7 @@ constexpr inline static int32_t crc32(const char *str, int size)
     return result ^ 0xffffffff;
 }
 
-inline static int32_t crc32(const std::string &str)
+inline static Hash crc32(const std::string &str)
 {
     return crc32(str.c_str(), (int)str.size());
 }
@@ -97,10 +99,15 @@ inline static int32_t crc32(const std::string &str)
 
 struct ID
 {
-    int32_t m_hash;
+    Hash m_hash;
+
+    inline bool operator==(const ID &rhs) const
+    {
+        return m_hash == rhs.m_hash;
+    }
 };
 
-template <int32_t H>
+template <Hash H>
 struct ConstID
 {
     constexpr inline static ID value()
@@ -115,31 +122,46 @@ struct ConstID
     (::perfectpixel::bedrock::dequalifiedSize(#str, sizeof(#str) - 1))
 #define PP_ID(str)                                                             \
     (::perfectpixel::bedrock::ConstID<::perfectpixel::bedrock::crc32(          \
-         #str, sizeof(#str) - 1)>::value()                                     \
-         .m_hash)
+         #str, sizeof(#str) - 1)>::value())
 #define _PP_ID(str)                                                            \
-    (static_cast<int32_t>(                                                     \
+    (static_cast<::perfectpixel::bedrock::Hash>(                               \
         ::perfectpixel::bedrock::crc32(#str, sizeof(#str) - 1)))
 #define PP_DQID(str)                                                           \
-    (static_cast<int32_t>(::perfectpixel::bedrock::crc32(                      \
-        ::perfectpixel::bedrock::dequalify(#str, sizeof(#str) - 1),            \
-        ::perfectpixel::bedrock::dequalifiedSize(#str, sizeof(#str) - 1))))
+    (static_cast<::perfectpixel::bedrock::Hash>(                               \
+        ::perfectpixel::bedrock::crc32(                                        \
+            ::perfectpixel::bedrock::dequalify(#str, sizeof(#str) - 1),        \
+            ::perfectpixel::bedrock::dequalifiedSize(                          \
+                #str, sizeof(#str) - 1))))
 
 #define PP_UNIQUE PP_ID(__FILE__##__LINE__)
 
 #if PP_FULL_REFLECTION_ENABLED
 #define PP_KEY(str) #str
 #define PP_KEY_EQUAL(key, num)                                                 \
-    (static_cast<int32_t>(::perfectpixel::bedrock::crc32(                      \
-         key, static_cast<uint32_t>(std::strlen(key))))                        \
+    (static_cast<::perfectpixel::bedrock::Hash>(                               \
+         ::perfectpixel::bedrock::crc32(                                       \
+             key,                                                              \
+             static_cast<::perfectpixel::bedrock::Hash>(std::strlen(key))))    \
      == num)
 #else
 #define PP_KEY(str) PP_ID(str)
 #define PP_KEY_EQUAL(key, num) (key == num)
 #endif // PP_FULL_REFLECTION_ENABLED
 
-inline static int32_t PpId(const std::string &str)
+inline static ::perfectpixel::bedrock::Hash PpId(const std::string &str)
 {
-    return static_cast<int32_t>(::perfectpixel::bedrock::crc32(str));
+    return static_cast<::perfectpixel::bedrock::Hash>(
+        ::perfectpixel::bedrock::crc32(str));
 }
 }} // namespace perfectpixel::bedrock
+
+namespace std {
+template <>
+struct hash<perfectpixel::bedrock::ID>
+{
+    size_t operator()(const perfectpixel::bedrock::ID &id) const
+    {
+        return id.m_hash;
+    }
+};
+} // namespace std

@@ -23,7 +23,7 @@
     template <>                                                                \
     inline int32_t perfectpixel::bedrock::typeID<T>()                          \
     {                                                                          \
-        return PP_ID(TSHORT);                                                  \
+        return PP_ID(TSHORT).m_hash;                                           \
     }                                                                          \
     PP_TYPENAME_IMPL(T, TSHORT)
 
