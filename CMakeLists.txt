@@ -128,9 +128,10 @@ list(APPEND STB_IMAGE_FILES
 
 PP_LIBRARY(bedrock)
 PP_LIBRARY(renderer ${IMGUI_BACKEND_FILES})
-PP_LIBRARY(ecs)
 PP_LIBRARY(core ${IMGUI_FILES} ${STB_IMAGE_FILES})
+PP_LIBRARY(ecs)
 PP_LIBRARY(serialization)
+
 
 ##################################################
 # TARGETS
@@ -157,12 +158,12 @@ list(APPEND LIBRARIES_TEST gtest gtest_main)
 
 add_custom_target(perfectpixel_libs DEPENDS ${PP_LIBRARIES})
 
-set(PP_LIBRARIES_RUNTIME ${PP_LIBRARIES} ${LIBRARIES_EXTERNAL} ${LIBRARIES_SYSTEM})
+set(PP_LIBRARIES_RUNTIME ${LIBRARIES_SYSTEM} ${LIBRARIES_EXTERNAL} ${PP_LIBRARIES})
 add_custom_target(perfectpixel_runtime DEPENDS ${PP_LIBRARIES_ALL})
 
 add_dependencies(Pong perfectpixel_runtime)
 target_link_libraries(Pong ${PP_LIBRARIES_RUNTIME})
-target_link_libraries(RunTests ${PP_LIBRARIES} ${LIBRARIES_TEST})
+target_link_libraries(RunTests ${LIBRARIES_TEST} ${PP_LIBRARIES})
 
 add_custom_command(TARGET Pong POST_BUILD
 	COMMAND "${CMAKE_COMMAND}" -E copy_directory
