@@ -10,7 +10,7 @@ void imageLoaderFunc(
     char *data,
     size_t dataSize,
     void **target,
-    const bedrock::Opaque &userData,
+    const bedrock::UniqueVoidPtr &userData,
     void *loaderUserData)
 {
     (void)userData;

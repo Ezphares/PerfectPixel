@@ -6,32 +6,32 @@
 
 namespace perfectpixel { namespace bedrock {
 
-class Opaque
+class UniqueVoidPtr
 {
 private:
     static constexpr size_t opaqueInlineBytes = 16;
 
 public:
-    Opaque();
-    ~Opaque();
-    Opaque(const Opaque &)            = delete;
-    Opaque &operator=(const Opaque &) = delete;
-    Opaque(Opaque &&rhs);
-    Opaque &operator=(Opaque &&rhs);
+    UniqueVoidPtr();
+    ~UniqueVoidPtr();
+    UniqueVoidPtr(const UniqueVoidPtr &)            = delete;
+    UniqueVoidPtr &operator=(const UniqueVoidPtr &) = delete;
+    UniqueVoidPtr(UniqueVoidPtr &&rhs);
+    UniqueVoidPtr &operator=(UniqueVoidPtr &&rhs);
 
     template <typename T, typename... ArgT>
-    static Opaque create(ArgT &&...args)
+    static UniqueVoidPtr create(ArgT &&...args)
     {
         if constexpr (
             sizeof(T) > opaqueInlineBytes || alignof(T) > alignof(void *))
         {
-            return Opaque(new T(std::forward<ArgT>(args)...), [](void *raw) {
-                delete reinterpret_cast<T *>(raw);
-            });
+            return UniqueVoidPtr(
+                new T(std::forward<ArgT>(args)...),
+                [](void *raw) { delete reinterpret_cast<T *>(raw); });
         }
         else
         {
-            Opaque opaque;
+            UniqueVoidPtr opaque;
             opaque.m_data
                 = new (opaque.m_inlineData) T(std::forward<ArgT>(args)...);
             opaque.m_deleter
@@ -54,7 +54,7 @@ public:
     operator bool() const;
 
 private:
-    Opaque(void *data, void (*deleter)(void *));
+    UniqueVoidPtr(void *data, void (*deleter)(void *));
 
     void destroy();
 

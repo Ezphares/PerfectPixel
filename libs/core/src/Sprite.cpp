@@ -19,7 +19,7 @@ Sprite::CreateSpriteLoader()
     return [](char *data,
               size_t dataSize,
               void **target,
-              const bedrock::Opaque &,
+              const bedrock::UniqueVoidPtr &,
               void *loaderUserData) {
         serialization::SerializerFactory factory
             = reinterpret_cast<serialization::SerializerFactory>(

@@ -48,7 +48,7 @@ void SpriteDrawSystem::onRender(std::span<ecs::Entity> entities, float deltaT)
 
         constexpr renderer::ImageResourceBundleID globalBundle = ~0;
         renderer::ImageResourceBundleID bundleID               = globalBundle;
-        const bedrock::Opaque &userData = imageResource.getUserData();
+        const bedrock::UniqueVoidPtr &userData = imageResource.getUserData();
         if (userData)
         {
             bundleID = userData.get<renderer::ImageResourceUserData>().bundleID;

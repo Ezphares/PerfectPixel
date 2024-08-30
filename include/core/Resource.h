@@ -2,8 +2,8 @@
 
 #include "serialization/ISerializer.h"
 
-#include "bedrock/Opaque.h"
 #include "bedrock/TypeReflection.h"
+#include "bedrock/UniqueVoidPtr.h"
 
 #include <string>
 
@@ -36,7 +36,7 @@ public:
         return reinterpret_cast<T *>(_get());
     }
 
-    const bedrock::Opaque &getUserData() const;
+    const bedrock::UniqueVoidPtr &getUserData() const;
 
 private:
     const bedrock::TypeID m_type;

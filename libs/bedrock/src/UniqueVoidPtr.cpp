@@ -1,25 +1,25 @@
-#include "bedrock/Opaque.h"
+#include "bedrock/UniqueVoidPtr.h"
 
 namespace perfectpixel { namespace bedrock {
 
-Opaque::~Opaque()
+UniqueVoidPtr::~UniqueVoidPtr()
 {
     destroy();
 }
 
-Opaque::Opaque()
+UniqueVoidPtr::UniqueVoidPtr()
     : m_data(nullptr)
     , m_deleter(nullptr)
     , m_inlineData{0}
 {}
 
-Opaque::Opaque(void *data, void (*deleter)(void *))
+UniqueVoidPtr::UniqueVoidPtr(void *data, void (*deleter)(void *))
     : m_data(data)
     , m_deleter(deleter)
     , m_inlineData{0}
 {}
 
-Opaque::Opaque(Opaque &&rhs)
+UniqueVoidPtr::UniqueVoidPtr(UniqueVoidPtr &&rhs)
     : m_data(rhs.m_data)
     , m_deleter(rhs.m_deleter)
 {
@@ -32,7 +32,8 @@ Opaque::Opaque(Opaque &&rhs)
     rhs.m_deleter = nullptr;
 }
 
-perfectpixel::bedrock::Opaque &Opaque::operator=(Opaque &&rhs)
+perfectpixel::bedrock::UniqueVoidPtr &
+UniqueVoidPtr::operator=(UniqueVoidPtr &&rhs)
 {
     if (this != &rhs)
     {
@@ -54,12 +55,12 @@ perfectpixel::bedrock::Opaque &Opaque::operator=(Opaque &&rhs)
     return *this;
 }
 
-Opaque::operator bool() const
+UniqueVoidPtr::operator bool() const
 {
     return m_data != nullptr;
 }
 
-void Opaque::destroy()
+void UniqueVoidPtr::destroy()
 {
     if (m_deleter)
     {

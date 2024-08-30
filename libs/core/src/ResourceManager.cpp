@@ -37,7 +37,7 @@ void ResourceManager::RegisterResource(
     bedrock::ID id,
     bedrock::TypeID type,
     bedrock::TypeID variant /*= 0*/,
-    bedrock::Opaque &&userData /*= bedrock::Opaque()*/)
+    bedrock::UniqueVoidPtr &&userData /*= bedrock::Opaque()*/)
 {
     ResourceManager *self = getInstance();
 
@@ -83,7 +83,7 @@ ResourceManager::GetData(bedrock::TypeID type, bedrock::ID id, bool *out_cache)
     return metadata.m_data;
 }
 
-const perfectpixel::bedrock::Opaque &
+const perfectpixel::bedrock::UniqueVoidPtr &
 ResourceManager::GetUserData(bedrock::TypeID type, bedrock::ID id)
 {
     ResourceManager *self      = getInstance();

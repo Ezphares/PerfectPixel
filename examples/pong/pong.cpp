@@ -387,8 +387,6 @@ class Pong : public core::Game
 
     virtual void step()
     {
-        pp::ecs::Context c;
-
         if (m_inputManager.isButtonDown("Info"))
         {
             MessageBoxA(
@@ -405,8 +403,8 @@ class Pong : public core::Game
     virtual void registerResouces()
     {
         auto levelBundle = []() {
-            bedrock::Opaque res
-                = bedrock::Opaque::create<renderer::ImageResourceUserData>();
+            bedrock::UniqueVoidPtr res = bedrock::UniqueVoidPtr::create<
+                renderer::ImageResourceUserData>();
             res.get<renderer::ImageResourceUserData>().bundleID = 2;
             return std::move(res);
         };

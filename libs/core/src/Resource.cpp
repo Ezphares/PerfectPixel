@@ -131,7 +131,7 @@ void *Resource::_get()
     return result;
 }
 
-const bedrock::Opaque &Resource::getUserData() const
+const bedrock::UniqueVoidPtr &Resource::getUserData() const
 {
     return ResourceManager::GetUserData(m_type, m_id);
 }
