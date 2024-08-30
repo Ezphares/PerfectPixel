@@ -48,6 +48,7 @@ public:
     {
         UserdataSerializerFunction serialize;
         UserdataDeserializerFunction deserialize;
+        void *serializerUserData;
     };
 
     enum ResourceLoadingStategy : uint8_t
