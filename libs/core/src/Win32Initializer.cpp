@@ -1,5 +1,7 @@
 #ifdef _WIN32
 
+#include "bedrock/Assert.h"
+
 #include "core/Win32Initializer.h"
 
 #include "renderer/windows/Win32Window.h"
@@ -11,7 +13,9 @@ namespace perfectpixel::core {
 Win32Initializer::Win32Initializer(HINSTANCE hInstance)
     : m_classIndex(0)
     , m_hInstance(hInstance)
-{}
+{
+    bedrock::assertHandler = &assertHandler;
+}
 
 Win32Initializer::~Win32Initializer()
 {}
@@ -38,6 +42,21 @@ void Win32Initializer::handleOsStep()
 void Win32Initializer::exit()
 {
     PostQuitMessage(0);
+}
+
+void Win32Initializer::assertHandler(const char *message)
+{
+    int response = MessageBox(
+        nullptr, message, "ASSERTION FAILED!", MB_ABORTRETRYIGNORE);
+    switch (response)
+    {
+    case IDABORT:
+        ::exit(1);
+        break;
+    case IDRETRY:
+        __debugbreak();
+        break;
+    }
 }
 
 } // namespace perfectpixel::core

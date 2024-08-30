@@ -1,5 +1,7 @@
 #include "core/ResourceManager.h"
 
+#include "bedrock/Assert.h"
+
 namespace perfectpixel::core {
 
 void ResourceManager::Take(bedrock::TypeID type, bedrock::ID id)
@@ -18,7 +20,8 @@ void ResourceManager::Release(bedrock::TypeID type, bedrock::ID id)
     ResourceManager *self      = getInstance();
     ResourceMetadata &metadata = self->getMetadata(type, id);
 
-    // TODO Assert refs > 0
+    PP_ASSERT(
+        metadata.m_refs > 0, "Releasing resource that is already at zero refs");
 
     metadata.m_refs--;
 
@@ -185,7 +188,7 @@ ResourceManager::getMetadata(bedrock::TypeID type, bedrock::ID id)
 {
     auto it = m_metadata.find(ResourceKey{type, id});
 
-    // TODO Assert found
+    PP_ASSERT(it != m_metadata.end(), "Failed to find metadata for resource");
 
     return it->second;
 }
@@ -196,7 +199,7 @@ ResourceManager::getLoader(const ResourceMetadata &metadata)
     auto it = m_loaders.find(
         ResourceLoaderKey{metadata.m_type, metadata.m_variant});
 
-    // TODO Assert found
+    PP_ASSERT(it != m_loaders.end(), "Failed to find loader for resource");
 
     return it->second;
 }

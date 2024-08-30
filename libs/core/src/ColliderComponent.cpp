@@ -3,8 +3,6 @@
 #include "ecs/EntityManager.h"
 #include "ecs/LifecycleComponents.h"
 
-#include "bedrock/PpException.h"
-
 namespace perfectpixel { namespace physics {
 
 void ColliderComponent::ClearMask(ecs::Entity entity)
@@ -37,11 +35,6 @@ void ColliderComponent::SetMaskRectangle(
 
 bedrock::AARectangle ColliderComponent::GetMaskRectangle(ecs::Entity entity)
 {
-    if (ColliderComponent::MaskType(entity) != CMT_AA_RECTANGLE)
-    {
-        bedrock::PpException("Invalid mask type");
-    }
-
     bedrock::AARectangle result;
     result.m_center   = AARectangleColliderMask::Center(entity);
     result.m_halfSize = AARectangleColliderMask::HalfSize(entity);
@@ -64,11 +57,6 @@ void ColliderComponent::SetMaskCircle(
 const perfectpixel::bedrock::Circle
 ColliderComponent::GetMaskCircle(ecs::Entity entity)
 {
-    if (ColliderComponent::MaskType(entity) != CMT_CIRCLE)
-    {
-        bedrock::PpException("Invalid mask type");
-    }
-
     bedrock::Circle result = bedrock::Circle(
         CircleColliderMask::Radius(entity), CircleColliderMask::Center(entity));
     return result;

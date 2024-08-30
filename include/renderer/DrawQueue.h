@@ -2,7 +2,6 @@
 
 #include "renderer/IFont.h"
 
-#include "bedrock/PpException.h"
 #include "bedrock/Singleton.h"
 #include "bedrock/vectors.h"
 
@@ -41,14 +40,12 @@ public:
         switch (type)
         {
         case DQET_SPRITE:
-            // TODO: Not yet implemented
-            throw bedrock::PpException(" Not yet implemented");
-            break;
+            return nullptr; // TODO: Not yet implemented
         case DQET_UI_TEXT:
             result = new UITextDrawQueueElement();
             break;
         default:
-            throw bedrock::PpException("No allocator for selected DQET");
+            return nullptr; // TODO: Assert
         }
 
         result->m_type = type;
@@ -64,7 +61,7 @@ public:
             break;
 
         default:
-            throw bedrock::PpException("No allocator for selected DQET");
+            break;
         }
     }
 };

@@ -9,12 +9,12 @@ namespace perfectpixel { namespace renderer {
 class VAO
 {
 public:
-    enum BufferedElement
+    enum class BufferedElement : uint8_t
     {
-        BE_FLOAT,
-        BE_VEC_2,
-        BE_VEC_3,
-        BE_VEC_4
+        Float,
+        Vector2,
+        Vector3,
+        Vector4,
     };
 
     typedef std::vector<BufferedElement> BufferLayout;

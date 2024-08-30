@@ -4,7 +4,6 @@
 #include <typeinfo>
 
 #include "bedrock/Hash.h"
-#include "bedrock/PpException.h"
 #include "bedrock/defines.h"
 #include "bedrock/numbers.h"
 

@@ -21,6 +21,8 @@ public:
 private:
     HINSTANCE m_hInstance;
     unsigned m_classIndex;
+
+    static void assertHandler(const char *message);
 };
 
 } // namespace perfectpixel::core

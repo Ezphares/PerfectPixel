@@ -1,6 +1,6 @@
 #include "renderer/VAO.h"
 
-#include "bedrock/PpException.h"
+#include "bedrock/Assert.h"
 
 namespace perfectpixel { namespace renderer {
 
@@ -82,34 +82,36 @@ GLsizei VAO::getTotalSize(BufferedElement element)
 {
     switch (element)
     {
-    case BE_FLOAT:
+    case BufferedElement::Float:
         return sizeof(GLfloat);
-    case BE_VEC_2:
+    case BufferedElement::Vector2:
         return sizeof(GLfloat) * 2;
-    case BE_VEC_3:
+    case BufferedElement::Vector3:
         return sizeof(GLfloat) * 3;
-    case BE_VEC_4:
+    case BufferedElement::Vector4:
         return sizeof(GLfloat) * 4;
+    default:
+        PP_ASSERT(false, "Unsupported VAO element");
+        return 0;
     }
-
-    throw bedrock::PpException("Invalid element type");
 }
 
 GLsizei VAO::getNumElements(BufferedElement element)
 {
     switch (element)
     {
-    case BE_FLOAT:
+    case BufferedElement::Float:
         return 1;
-    case BE_VEC_2:
+    case BufferedElement::Vector2:
         return 2;
-    case BE_VEC_3:
+    case BufferedElement::Vector3:
         return 3;
-    case BE_VEC_4:
+    case BufferedElement::Vector4:
         return 4;
+    default:
+        PP_ASSERT(false, "Unsupported VAO element");
+        return 0;
     }
-
-    throw bedrock::PpException("Invalid element type");
 }
 
 }} // namespace perfectpixel::renderer

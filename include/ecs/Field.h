@@ -17,9 +17,9 @@ namespace perfectpixel { namespace ecs {
 
 template <typename T, typename U>
 concept Accessor = requires(T a, U b) {
-                       a = b;
-                       b = a;
-                   };
+    a = b;
+    b = a;
+};
 
 template <typename T, typename Override = void>
 struct FieldUnderlying

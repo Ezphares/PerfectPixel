@@ -1,6 +1,6 @@
 #include "core/InputManager.h"
 
-#include "bedrock/PpException.h"
+#include "bedrock/Assert.h"
 
 namespace perfectpixel { namespace input {
 
@@ -104,7 +104,8 @@ int32_t InputManager::lookupButton(const std::string &name) const
             return i;
         }
     }
-    throw bedrock::PpException("Unrecognized button");
+    PP_ASSERT(false, "Button '" << name << "' not found");
+    return -1; // TODO Assert
 }
 
 int32_t InputManager::lookupAxis(const std::string &name) const
@@ -117,7 +118,8 @@ int32_t InputManager::lookupAxis(const std::string &name) const
         }
     }
 
-    throw bedrock::PpException("Unrecognized axis");
+    PP_ASSERT(false, "Axis '" << name << "' not found");
+    return -1; // TODO Assert
 }
 
 void InputManager::bindButton(const std::string &name, bedrock::KeyCode keyCode)
@@ -133,10 +135,7 @@ void InputManager::bindButton(const std::string &name, bedrock::KeyCode keyCode)
         }
     }
 
-    if (buttonId == 0)
-    {
-        throw bedrock::PpException("Unrecognized button");
-    }
+    // Asset button exists
 
     for (auto it = m_buttonBindings.begin(); it != m_buttonBindings.end(); ++it)
     {
@@ -186,7 +185,8 @@ bool InputManager::isButtonDown(int32_t id)
 {
     if (id >= static_cast<int32_t>(m_buttons.size()))
     {
-        throw bedrock::PpException("Unregistered button ID");
+        PP_ASSERT(false, "Button index '" << id << "' out of bounds");
+        return false;
     }
 
     return m_buttonState[id];
@@ -201,7 +201,8 @@ bool InputManager::wasButtonDownPrevious(int32_t id)
 {
     if (id >= static_cast<int32_t>(m_buttons.size()))
     {
-        throw bedrock::PpException("Unregistered button ID");
+        PP_ASSERT(false, "Button index '" << id << "' out of bounds");
+        return false;
     }
 
     return m_buttonStatePrev[id];

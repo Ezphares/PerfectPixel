@@ -5,6 +5,7 @@
 #include "ecs/EntityManager.h"
 #include "ecs/FieldHelper.h"
 
+#include "bedrock/Assert.h"
 #include "bedrock/BitSet.h"
 #include "bedrock/Singleton.h"
 
@@ -131,7 +132,7 @@ public:
 
     static Reference Register(Entity entity)
     {
-        DEBUG_ASSERT(!Has(entity));
+        PP_ASSERT(!Has(entity), "Entity already has component");
 
         T *self      = getInstance();
         uint32_t idx = self->_register(entity, self->m_lastIndex);
@@ -147,7 +148,7 @@ public:
 
     static Reference GetRef(Entity entity)
     {
-        DEBUG_ASSERT(Has(entity));
+        PP_ASSERT(Has(entity), "Entity missing component");
         return Reference(entity, Index(entity));
     }
 

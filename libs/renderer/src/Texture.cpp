@@ -1,8 +1,7 @@
 #include "renderer/Texture.h"
 
+#include "bedrock/Assert.h"
 #include "renderer/CBFGFont.h"
-
-#include "bedrock/PpException.h"
 
 namespace perfectpixel { namespace renderer {
 
@@ -12,10 +11,7 @@ Texture::Texture(const ImageResource &image, bedrock::ID imageResourceId)
     : m_sourceImageId(imageResourceId)
 {
     glGenTextures(1, &m_textureId);
-    if (m_textureId == 0)
-    {
-        throw bedrock::PpException("Could not generate texture");
-    }
+    PP_ASSERT(m_textureId != 0, "Failed to create texture");
 
     bind();
 
@@ -41,13 +37,10 @@ Texture::Texture(const ImageResource &image, bedrock::ID imageResourceId)
 
 Texture::Texture(const bedrock::Point2 size)
     : m_size(size)
-    , m_sourceImageId(0)
+    , m_sourceImageId{0}
 {
     glGenTextures(1, &m_textureId);
-    if (m_textureId == 0)
-    {
-        throw bedrock::PpException("Could not generate texture");
-    }
+    PP_ASSERT(m_textureId != 0, "Failed to create texture");
 
     bind();
     glTexImage2D(
@@ -77,10 +70,7 @@ Texture::Texture(const CBFGFontHeader &header, const char *raw)
     : m_size(header.m_imageWidth, header.m_imageHeight)
 {
     glGenTextures(1, &m_textureId);
-    if (m_textureId == 0)
-    {
-        throw bedrock::PpException("Could not generate texture");
-    }
+    PP_ASSERT(m_textureId != 0, "Failed to create texture");
 
     bind();
 

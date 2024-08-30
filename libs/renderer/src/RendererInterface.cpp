@@ -5,7 +5,6 @@
 #include "renderer/LocalGL.h"
 
 #include "bedrock/File.h"
-#include "bedrock/PpException.h"
 
 #include <fstream>
 #include <iomanip>
@@ -75,13 +74,13 @@ void RendererInterface::initialize()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     VAO::BufferLayout spriteLayout;
-    spriteLayout.push_back(VAO::BE_VEC_3); // Xyz
-    spriteLayout.push_back(VAO::BE_VEC_2); // Uv
+    spriteLayout.push_back(VAO::BufferedElement::Vector3); // Xyz
+    spriteLayout.push_back(VAO::BufferedElement::Vector2); // Uv
 
     m_vaoDynamicSprites = new VAO(spriteLayout);
 
     VAO::BufferLayout ppLayout;
-    ppLayout.push_back(VAO::BE_VEC_3);
+    ppLayout.push_back(VAO::BufferedElement::Vector3);
     m_vaoPostProcess = new VAO(ppLayout);
 
     std::string vertex_shader

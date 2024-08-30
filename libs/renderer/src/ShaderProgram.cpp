@@ -1,7 +1,5 @@
 #include "renderer/ShaderProgram.h"
 
-#include "bedrock/PpException.h"
-
 #include <vector>
 
 namespace perfectpixel { namespace renderer {
@@ -42,7 +40,7 @@ void ShaderProgram::link()
             std::vector<GLchar> log(length);
             glGetProgramInfoLog(m_id, length, &length, &log[0]);
 
-            throw bedrock::PpException("Failed to link program");
+            // TODO Assert
         }
 
         m_linked = true;

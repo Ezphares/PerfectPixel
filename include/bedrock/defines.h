@@ -13,5 +13,3 @@
 #endif
 
 #define PP_TICK_WRAP_PROTECTION_ENABLED 1
-
-#define DEBUG_ASSERT(stmt)

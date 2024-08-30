@@ -2,8 +2,6 @@
 
 #include "renderer/windows/Win32Window.h"
 
-#include "bedrock/PpException.h"
-
 // clang-format off
 #include "imgui.h"
 #include "backends/imgui_impl_win32.h"

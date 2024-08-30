@@ -1,6 +1,6 @@
 #include "renderer/FrameBuffer.h"
 
-#include "bedrock/PpException.h"
+#include "bedrock/Assert.h"
 
 namespace perfectpixel { namespace renderer {
 
@@ -56,21 +56,18 @@ void FrameBuffer::resize(bedrock::Point2 size)
     glDrawBuffers(1, buffers);
 
     GLenum result = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    if (result != GL_FRAMEBUFFER_COMPLETE)
-    {
-        throw bedrock::PpException("Could not resize frame buffer");
-    }
+
+    PP_ASSERT(
+        result == GL_FRAMEBUFFER_COMPLETE, "Failed to create framebuffer");
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void FrameBuffer::bind()
 {
-    if (m_size.m_x == 0 || m_size.m_y == 0)
-    {
-        throw bedrock::PpException(
-            "Cannot bind buffer with 0 component in size");
-    }
+    PP_ASSERT(
+        m_size.m_x > 0 && m_size.m_y > 0,
+        "Tried to bind zero-size framebuffer");
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_id);
     glViewport(0, 0, m_size.m_x, m_size.m_y);

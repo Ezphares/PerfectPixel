@@ -3,6 +3,7 @@
 #include "core/Resource.h"
 #include "core/ResourceManager.h"
 
+#include "Bedrock/TypeReflection.h"
 #include "bedrock/vectors.h"
 
 namespace perfectpixel::core {
