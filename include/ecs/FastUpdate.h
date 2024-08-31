@@ -1,23 +1,18 @@
 #pragma once
 
-#include "bedrock/TypeReflection.h"
+#include "bedrock/Reflect.h"
 
 namespace perfectpixel { namespace ecs {
 
-	struct FastUpdate
-	{
-        int32_t m_id;
+struct FastUpdate
+{
+    int32_t m_id;
 
-		template <typename T>
-		static FastUpdate Build()
-		{
-            return FastUpdate{bedrock::typeID<T>()};
-		}
+    template <typename T>
+    static FastUpdate Build()
+    {
+        return FastUpdate{bedrock::Reflect<T>::id()};
+    }
+};
 
-		static FastUpdate Null()
-		{
-            return FastUpdate{bedrock::typeID<std::nullptr_t>()};
-		}
-	};
-
-}}
+}} // namespace perfectpixel::ecs

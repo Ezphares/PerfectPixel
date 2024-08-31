@@ -1,6 +1,6 @@
 #pragma once
 
-#include "bedrock/TypeReflection.h"
+#include "bedrock/Reflect.h"
 
 #include <cstdint>
 #include <ostream>
@@ -47,7 +47,7 @@ static const Entity NO_ENTITY = entityCreate(~0u, ~0u);
 } // namespace ecs
 } // namespace perfectpixel
 
-PP_TYPE_REFLECTION(::perfectpixel::ecs::Entity, Entity);
+PP_REFLECT(::perfectpixel::ecs::Entity);
 
 std::ostream &
 operator<<(std::ostream &stream, const perfectpixel::ecs::Entity &entity);

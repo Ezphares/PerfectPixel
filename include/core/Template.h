@@ -35,4 +35,4 @@ private:
 
 } // namespace perfectpixel::core
 
-PP_TYPE_REFLECTION(::perfectpixel::core::Template, Template);
+PP_REFLECT(::perfectpixel::core::Template);

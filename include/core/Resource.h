@@ -2,7 +2,7 @@
 
 #include "serialization/ISerializer.h"
 
-#include "bedrock/TypeReflection.h"
+#include "bedrock/Reflect.h"
 #include "bedrock/UniqueVoidPtr.h"
 
 #include <string>
@@ -46,7 +46,7 @@ private:
 };
 } // namespace perfectpixel::core
 
-PP_TYPE_REFLECTION(::perfectpixel::core::Resource, Resource);
+PP_REFLECT(::perfectpixel::core::Resource);
 
 namespace perfectpixel { namespace serialization {
 ISerializer &operator<<(

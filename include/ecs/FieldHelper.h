@@ -16,8 +16,8 @@
         PP_DQID(Owner),                                                        \
         #Name,                                                                 \
         PP_ID(Name).m_hash,                                                    \
-        bedrock::typeName<T>(),                                                \
-        bedrock::typeID<T>(),                                                  \
+        ::perfectpixel::bedrock::Reflect<T>::name(),                           \
+        ::perfectpixel::bedrock::Reflect<T>::id(),                             \
         Default,                                                               \
         Owner::AddField,                                                       \
         Owner::FillLUTEntry,                                                   \
@@ -30,8 +30,8 @@
             PP_DQID(Owner),                                                    \
             #Name,                                                             \
             PP_ID(Name).m_hash,                                                \
-            bedrock::typeName<T>(),                                            \
-            bedrock::typeID<T>(),                                              \
+            ::perfectpixel::bedrock::Reflect<T>::name(),                       \
+            ::perfectpixel::bedrock::Reflect<T>::id(),                         \
             Owner::AddField,                                                   \
             Owner::FillLUTEntry,                                               \
             Owner::Index)
@@ -42,7 +42,7 @@
     inline static PPFIELDTYPE(Owner, T) Name = PPFIELDTYPE(Owner, T)(          \
         PP_DQID(Owner),                                                        \
         PP_ID(Name).m_hash,                                                    \
-        bedrock::typeID<T>(),                                                  \
+        ::perfectpixel::bedrock::Reflect<T>::id(),                             \
         Default,                                                               \
         Owner::AddField,                                                       \
         Owner::FillLUTEntry,                                                   \
@@ -52,7 +52,7 @@
     inline static PPFIELDTYPE(Owner, T, Capacity) Name                         \
         = PPFIELDTYPE(Owner, T, Capacity)(                                     \
             PP_DQID(Owner),                                                    \
-            bedrock::typeID<T>(),                                              \
+            ::perfectpixel::bedrock::Reflect<T>::id(),                         \
             PP_DQID(T),                                                        \
             Owner::AddField,                                                   \
             Owner::FillLUTEntry,                                               \

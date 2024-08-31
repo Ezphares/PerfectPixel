@@ -2,7 +2,7 @@
 
 #include "ecs/Manager.h"
 
-#include "bedrock/TypeReflection.h"
+#include "bedrock/Reflect.h"
 
 #include <memory>
 #include <unordered_map>
@@ -19,7 +19,7 @@ public:
     Manager<Component> &getManager()
     {
         ManagerContainer::iterator itr
-            = managers.find(perfectpixel::bedrock::typeID<Component>());
+            = managers.find(perfectpixel::bedrock::Reflect<Component>::id());
 
         if (itr == managers.end())
         {
@@ -39,7 +39,8 @@ private:
 
         return managers
             .emplace(
-                perfectpixel::bedrock::typeID<Component>(), std::move(manager))
+                perfectpixel::bedrock::Reflect<Component>::id(),
+                std::move(manager))
             .first;
     }
 

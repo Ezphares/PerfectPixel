@@ -3,7 +3,7 @@
 #include <type_traits>
 
 #include "bedrock/Hash.h"
-#include "bedrock/TypeReflection.h"
+#include "bedrock/Reflect.h"
 
 namespace perfectpixel::core {
 

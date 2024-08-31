@@ -3,7 +3,7 @@
 #include "core/Resource.h"
 #include "core/ResourceManager.h"
 
-#include "bedrock/TypeReflection.h"
+#include "bedrock/Reflect.h"
 #include "bedrock/vectors.h"
 
 namespace perfectpixel::core {
@@ -48,7 +48,7 @@ private:
 
 } // namespace perfectpixel::core
 
-PP_TYPE_REFLECTION(::perfectpixel::core::Sprite, Sprite);
+PP_REFLECT(::perfectpixel::core::Sprite);
 namespace perfectpixel { namespace serialization {
 ISerializer &
 operator<<(ISerializer &serializer, const perfectpixel::core::Sprite &sprite);

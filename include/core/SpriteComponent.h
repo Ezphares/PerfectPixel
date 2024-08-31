@@ -18,7 +18,7 @@ class SpriteComponent
 private:
 public:
     PPResourceField(
-        SpriteComponent, bedrock::typeID<core::Sprite>(), SpriteResource);
+        SpriteComponent, bedrock::Reflect<core::Sprite>::id(), SpriteResource);
     PPField(SpriteComponent, core::Sprite, SpriteData);
     PPField(SpriteComponent, bedrock::Vector2, Size);
     PPField(SpriteComponent, bedrock::Vector2, Offset);

@@ -20,25 +20,27 @@ struct Force
     /// Second^2
     inline static Force gravity(float magnitude = 1)
     {
-        return Force{FORCE_ID_GRAVITY,
-                     bedrock::Vector3::DOWN * magnitude,
-                     false,
-                     false,
-                     true};
+        return Force{
+            FORCE_ID_GRAVITY,
+            bedrock::Vector3::DOWN * magnitude,
+            false,
+            false,
+            true};
     }
 
     /// Create a constant force representing drag. Magnitude is in Units /
     /// Second^2. Progressive drag gets stronger the faster an object moves
     inline static Force drag(float magnitude = 1, bool progressive = true)
     {
-        return Force{FORCE_ID_DRAG,
-                     bedrock::Vector3::FORWARD * magnitude,
-                     true,
-                     progressive,
-                     true};
+        return Force{
+            FORCE_ID_DRAG,
+            bedrock::Vector3::FORWARD * magnitude,
+            true,
+            progressive,
+            true};
     }
 };
 
 }} // namespace perfectpixel::physics
 
-PP_TYPE_REFLECTION(::perfectpixel::physics::Force, Force);
+PP_REFLECT(::perfectpixel::physics::Force);

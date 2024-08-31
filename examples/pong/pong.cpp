@@ -14,7 +14,7 @@
 #include "core/SpriteComponent.h"
 #include "core/UI/UITextComponent.h"
 
-#include "bedrock/TypeReflection.h"
+#include "bedrock/Reflect.h"
 #include "bedrock/vectors.h"
 
 #include "serialization/YAMLSerializer.h"
@@ -341,12 +341,12 @@ class Pong : public core::Game
     virtual void gameStart()
     {
         core::Resource ballTpl = core::Resource(
-            bedrock::typeID<core::Template>(), PP_ID(ball.tpl));
+            bedrock::Reflect<core::Template>::id(), PP_ID(ball.tpl));
 
         m_ball = ballTpl.get<core::Template>()->spawn();
 
         core::Resource wallTpl = core::Resource(
-            bedrock::typeID<core::Template>(), PP_ID(wall.tpl));
+            bedrock::Reflect<core::Template>::id(), PP_ID(wall.tpl));
         ecs::Entity eTopWall{wallTpl.get<core::Template>()->spawn()},
             eBottomWall{wallTpl.get<core::Template>()->spawn()};
 
@@ -355,7 +355,8 @@ class Pong : public core::Game
             = bedrock::Vector3::DOWN * 58.0f;
 
         core::Resource img = core::Resource(
-            bedrock::typeID<renderer::ImageResource>(), PP_ID(pong_all.png));
+            bedrock::Reflect<renderer::ImageResource>::id(),
+            PP_ID(pong_all.png));
 
         core::Sprite *sprPlayer1
             = new core::Sprite(img, {0, .5f}, {.125f, .5f});
@@ -414,7 +415,7 @@ class Pong : public core::Game
             "pong_all.png",
             core::ResourceManager::RLS_AUTO_USE,
             PP_ID(pong_all.png),
-            bedrock::typeID<renderer::ImageResource>(),
+            bedrock::Reflect<renderer::ImageResource>::id(),
             0,
             levelBundle());
 
@@ -423,26 +424,26 @@ class Pong : public core::Game
             "ball.spr",
             core::ResourceManager::RLS_AUTO_REF,
             PP_ID(ball.spr),
-            bedrock::typeID<core::Sprite>());
+            bedrock::Reflect<core::Sprite>::id());
 
         core::ResourceManager::RegisterResource(
             "wall.spr",
             core::ResourceManager::RLS_AUTO_REF,
             PP_ID(wall.spr),
-            bedrock::typeID<core::Sprite>());
+            bedrock::Reflect<core::Sprite>::id());
 
         // TEMPLATES
         core::ResourceManager::RegisterResource(
             "ball.tpl",
             core::ResourceManager::RLS_AUTO_USE,
             PP_ID(ball.tpl),
-            bedrock::typeID<core::Template>());
+            bedrock::Reflect<core::Template>::id());
 
         core::ResourceManager::RegisterResource(
             "wall.tpl",
             core::ResourceManager::RLS_AUTO_USE,
             PP_ID(wall.tpl),
-            bedrock::typeID<core::Template>());
+            bedrock::Reflect<core::Template>::id());
     }
 };
 

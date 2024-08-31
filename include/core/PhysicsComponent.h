@@ -17,8 +17,7 @@ enum PhysicsSimulationType : uint32_t
 };
 }} // namespace perfectpixel::physics
 
-PP_TYPE_REFLECTION(
-    ::perfectpixel::physics::PhysicsSimulationType, PhysicsSimulationType);
+PP_REFLECT(::perfectpixel::physics::PhysicsSimulationType);
 
 namespace perfectpixel { namespace physics {
 

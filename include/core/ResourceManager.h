@@ -4,8 +4,8 @@
 
 #include "core/IResourceLocator.h"
 
+#include "bedrock/Reflect.h"
 #include "bedrock/Singleton.h"
-#include "bedrock/TypeReflection.h"
 #include "bedrock/UniqueVoidPtr.h"
 
 #include <string>
@@ -72,28 +72,30 @@ private:
     };
 
 public:
-    template <typename T, typename Variant = std::nullptr_t>
+    template <typename T, typename Variant = void>
     static void AddLoader(
         ResourceLoaderFunction loader,
         ResourceUnloaderFunction unloader = nullptr,
         void *loaderUserData              = nullptr)
     {
         getInstance()->m_loaders.emplace(
-            ResourceLoaderKey{bedrock::typeID<T>(), bedrock::typeID<Variant>()},
+            ResourceLoaderKey{
+                bedrock::Reflect<T>::id(), bedrock::Reflect<Variant>::id()},
             ResourceLoader{
                 loader,
                 unloader ? unloader : ResourceLoader::GetDefaultUnloader<T>(),
                 loaderUserData});
     }
 
-    template <typename T, typename Variant = std::nullptr_t>
+    template <typename T, typename Variant = void>
     static void addUserDataSerizlizer(
         UserdataSerializerFunction serializer,
         UserdataDeserializerFunction deserializer,
         void *serializerUserData = nullptr)
     {
         getInstance()->m_userdataSerializers.emplace(
-            ResourceLoaderKey{bedrock::typeID<T>(), bedrock::typeID<Variant>()},
+            ResourceLoaderKey{
+                bedrock::Reflect<T>::id(), bedrock::Reflect<Variant>::id()},
             UserdataSerializer{serializer, deserializer, serializerUserData});
     }
 

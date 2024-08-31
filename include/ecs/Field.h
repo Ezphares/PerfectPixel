@@ -171,8 +171,8 @@ public:
             m_typeInfo.ownerId,
             name,
             m_typeInfo.selfId,
-            bedrock::typeName<T>(),
-            bedrock::typeID<T>());
+            bedrock::Reflect<T>::name(),
+            bedrock::Reflect<T>::id());
     }
 
 #endif

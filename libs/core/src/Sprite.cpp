@@ -35,7 +35,7 @@ Sprite::CreateSpriteLoader()
 }
 
 Sprite::Sprite()
-    : m_image(bedrock::typeID<renderer::ImageResource>())
+    : m_image(bedrock::Reflect<renderer::ImageResource>::id())
 {}
 
 Sprite::Sprite(
@@ -50,7 +50,7 @@ Sprite::Sprite(
     , m_frames(frames)
     , m_framesPerRow(framesPerRow)
     , m_frameSpacing(frameSpacing)
-    , m_image(bedrock::typeID<renderer::ImageResource>())
+    , m_image(bedrock::Reflect<renderer::ImageResource>::id())
 {
     m_image = image;
     if (m_framesPerRow <= 0)

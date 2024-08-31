@@ -92,7 +92,7 @@ Template::CreateTemplateLoader()
                     int32_t tplId;
                     serializer->readIdentifier(&tplId);
                     tpl->m_subTemplates.emplace_back(
-                        bedrock::typeID<Template>(), bedrock::ID{tplId});
+                        bedrock::Reflect<Template>::id(), bedrock::ID{tplId});
                 }
             }
         }

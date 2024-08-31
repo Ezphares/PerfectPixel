@@ -4,7 +4,7 @@
 
 #include <map>
 
-#include "bedrock/TypeReflection.h"
+#include "bedrock/Reflect.h"
 
 namespace perfectpixel::core {
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "bedrock/TypeReflection.h"
+#include "bedrock/Reflect.h"
 #include "bedrock/vectors.h"
 
 namespace perfectpixel { namespace renderer {
@@ -20,4 +20,4 @@ struct ImageResourceUserData
 
 }} // namespace perfectpixel::renderer
 
-PP_TYPE_REFLECTION(::perfectpixel::renderer::ImageResource, ImageResource);
+PP_REFLECT(::perfectpixel::renderer::ImageResource);

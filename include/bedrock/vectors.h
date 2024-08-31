@@ -1,6 +1,6 @@
 #pragma once
 
-#include "bedrock/TypeReflection.h"
+#include "bedrock/Reflect.h"
 #include "bedrock/numbers.h"
 
 #include "serialization/ISerializer.h"
@@ -451,6 +451,6 @@ operator>>(ISerializer &istream, perfectpixel::bedrock::Vector<D> &vec)
 
 }} // namespace perfectpixel::serialization
 
-PP_TYPE_REFLECTION(::perfectpixel::bedrock::Vector2, Vector2);
-PP_TYPE_REFLECTION(::perfectpixel::bedrock::Vector3, Vector3);
-PP_TYPE_REFLECTION(::perfectpixel::bedrock::Vector4, Vector4);
+PP_REFLECT(::perfectpixel::bedrock::Vector2);
+PP_REFLECT(::perfectpixel::bedrock::Vector3);
+PP_REFLECT(::perfectpixel::bedrock::Vector4);

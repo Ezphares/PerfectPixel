@@ -2,7 +2,7 @@
 
 #include "bedrock/AARectangle.h"
 #include "bedrock/Circle.h"
-#include "bedrock/TypeReflection.h"
+#include "bedrock/Reflect.h"
 
 #include "ecs/Component.h"
 #include "ecs/CoreComponentStorage.h"
@@ -27,7 +27,7 @@ enum ColliderMaskType : uint32_t
 };
 }
 } // namespace perfectpixel
-PP_TYPE_REFLECTION(::perfectpixel::physics::ColliderMaskType, ColliderMaskType);
+PP_REFLECT(::perfectpixel::physics::ColliderMaskType);
 namespace perfectpixel { namespace physics {
 
 class AARectangleColliderMask
