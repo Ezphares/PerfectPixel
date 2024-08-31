@@ -36,10 +36,10 @@ GTEST_TEST(test_TypeReflection, Uniqueness)
 GTEST_TEST(test_TypeReflection, Names)
 {
     ASSERT_EQ(
-        std::string("TestDummy"),
+        std::string("some_namespace::TestDummy"),
         std::string(Reflect<some_namespace::TestDummy>::name()));
     ASSERT_EQ(
-        std::string("TestDummy2"),
+        std::string("some_namespace::TestDummy2"),
         std::string(Reflect<some_namespace::TestDummy2>::name()));
 }
 #endif
