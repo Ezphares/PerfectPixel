@@ -160,7 +160,7 @@ if(WIN32)
 	list(APPEND LIBRARIES_SYSTEM opengl32)
 endif()
 if(LINUX)
-	list(APPEND LIBRARIES_SYSTEM GL)
+	list(APPEND LIBRARIES_SYSTEM GL X11)
 endif()
 
 list(APPEND LIBRARIES_TEST gtest gtest_main)

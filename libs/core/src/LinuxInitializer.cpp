@@ -15,11 +15,13 @@ LinuxInitializer::~LinuxInitializer()
 
 renderer::IWindow *LinuxInitializer::createWindow()
 {
-    return new renderer::X11Window();
+    return new renderer::X11Window(m_display);
 }
 
 void LinuxInitializer::handleOsStep()
-{}
+{
+    XFlush(m_display);
+}
 
 void LinuxInitializer::exit()
 {

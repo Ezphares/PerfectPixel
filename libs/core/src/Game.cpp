@@ -212,7 +212,7 @@ ecs::Entity Game::spawnTemplate(const std::string &data)
 
 void Game::splashScreenUpdate(bool &closeSplash)
 {
-    //	std::this_thread::sleep_for(std::chrono::seconds(1));
+    // std::this_thread::sleep_for(std::chrono::seconds(1));
     closeSplash = true;
 }
 
