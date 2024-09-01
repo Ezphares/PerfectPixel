@@ -10,11 +10,11 @@ const static int32_t FORCE_ID_DRAG           = FORCE_ID_INTERNAL_START + 2;
 
 struct Force
 {
-    int32_t m_identifier;
+    int32_t m_identifier = -1;
     bedrock::Vector3 m_vector;
     bool m_relativeDirection; // Relative direction is compared to FORWARD
     bool m_relativeMagnitude;
-    bool m_ignoreMass;
+    bool m_ignoreMass = false;
 
     /// Create a constant force representing gravity. Magnitude is in Units /
     /// Second^2

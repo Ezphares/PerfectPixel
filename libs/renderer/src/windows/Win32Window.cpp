@@ -7,12 +7,14 @@
 #include "backends/imgui_impl_win32.h"
 // clang-format on
 
+#include <unordered_map>
+
 extern IMGUI_IMPL_API
     LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
 
 static HGLRC g_ImguiRC = NULL;
 
-namespace perfectpixel { namespace renderer {
+namespace perfectpixel::renderer {
 
 PIXELFORMATDESCRIPTOR Win32Window::pfd{0};
 
@@ -270,7 +272,7 @@ bool Win32Window::wndProcImpl(
         {
             m_keyCallback.m_func(
                 m_keyCallback.m_instance,
-                static_cast<bedrock::KeyCode>(wParam),
+                mapVirtualKey(wParam),
                 bedrock::PP_KEYDOWN);
             return true;
         }
@@ -281,7 +283,7 @@ bool Win32Window::wndProcImpl(
         {
             m_keyCallback.m_func(
                 m_keyCallback.m_instance,
-                static_cast<bedrock::KeyCode>(wParam),
+                mapVirtualKey(wParam),
                 bedrock::PP_KEYUP);
             return true;
         }
@@ -414,6 +416,105 @@ void Win32Window::imGuiHook_SwapBuffers(ImGuiViewport *viewport, void *)
         ::SwapBuffers(data->hDC);
 }
 
-}} // namespace perfectpixel::renderer
+bedrock::KeyboardButton Win32Window::mapVirtualKey(WPARAM virtualKey)
+{
+    const static std::unordered_map<WPARAM, bedrock::KeyboardButton> mapping{
+        {VK_BACK, bedrock::KeyboardButton::Backspace},
+        {VK_TAB, bedrock::KeyboardButton::Tab},
+        {VK_RETURN, bedrock::KeyboardButton::Enter},
+        {VK_PAUSE, bedrock::KeyboardButton::Pause},
+        {VK_CAPITAL, bedrock::KeyboardButton::CapsLock},
+        {VK_ESCAPE, bedrock::KeyboardButton::Escape},
+        {VK_SPACE, bedrock::KeyboardButton::Space},
+        {VK_PRIOR, bedrock::KeyboardButton::PageUp},
+        {VK_NEXT, bedrock::KeyboardButton::PageDown},
+        {VK_END, bedrock::KeyboardButton::End},
+        {VK_HOME, bedrock::KeyboardButton::Home},
+        {VK_LEFT, bedrock::KeyboardButton::Left},
+        {VK_UP, bedrock::KeyboardButton::Up},
+        {VK_RIGHT, bedrock::KeyboardButton::Right},
+        {VK_DOWN, bedrock::KeyboardButton::Down},
+        {VK_SNAPSHOT, bedrock::KeyboardButton::PrintScreen},
+        {VK_INSERT, bedrock::KeyboardButton::Insert},
+        {VK_DELETE, bedrock::KeyboardButton::Delete},
+        {0x30, bedrock::KeyboardButton::Digit0},
+        {0x31, bedrock::KeyboardButton::Digit1},
+        {0x32, bedrock::KeyboardButton::Digit2},
+        {0x33, bedrock::KeyboardButton::Digit3},
+        {0x34, bedrock::KeyboardButton::Digit4},
+        {0x35, bedrock::KeyboardButton::Digit5},
+        {0x36, bedrock::KeyboardButton::Digit6},
+        {0x37, bedrock::KeyboardButton::Digit7},
+        {0x38, bedrock::KeyboardButton::Digit8},
+        {0x39, bedrock::KeyboardButton::Digit9},
+        {0x41, bedrock::KeyboardButton::LetterA},
+        {0x42, bedrock::KeyboardButton::LetterB},
+        {0x43, bedrock::KeyboardButton::LetterC},
+        {0x44, bedrock::KeyboardButton::LetterD},
+        {0x45, bedrock::KeyboardButton::LetterE},
+        {0x46, bedrock::KeyboardButton::LetterF},
+        {0x47, bedrock::KeyboardButton::LetterG},
+        {0x48, bedrock::KeyboardButton::LetterH},
+        {0x49, bedrock::KeyboardButton::LetterI},
+        {0x4a, bedrock::KeyboardButton::LetterJ},
+        {0x4b, bedrock::KeyboardButton::LetterK},
+        {0x4c, bedrock::KeyboardButton::LetterL},
+        {0x4d, bedrock::KeyboardButton::LetterM},
+        {0x4e, bedrock::KeyboardButton::LetterN},
+        {0x4f, bedrock::KeyboardButton::LetterO},
+        {0x50, bedrock::KeyboardButton::LetterP},
+        {0x51, bedrock::KeyboardButton::LetterQ},
+        {0x52, bedrock::KeyboardButton::LetterR},
+        {0x53, bedrock::KeyboardButton::LetterS},
+        {0x54, bedrock::KeyboardButton::LetterT},
+        {0x55, bedrock::KeyboardButton::LetterU},
+        {0x56, bedrock::KeyboardButton::LetterV},
+        {0x57, bedrock::KeyboardButton::LetterW},
+        {0x58, bedrock::KeyboardButton::LetterX},
+        {0x59, bedrock::KeyboardButton::LetterY},
+        {0x5a, bedrock::KeyboardButton::LetterZ},
+        {VK_NUMPAD0, bedrock::KeyboardButton::Numpad0},
+        {VK_NUMPAD1, bedrock::KeyboardButton::Numpad1},
+        {VK_NUMPAD2, bedrock::KeyboardButton::Numpad2},
+        {VK_NUMPAD3, bedrock::KeyboardButton::Numpad3},
+        {VK_NUMPAD4, bedrock::KeyboardButton::Numpad4},
+        {VK_NUMPAD5, bedrock::KeyboardButton::Numpad5},
+        {VK_NUMPAD6, bedrock::KeyboardButton::Numpad6},
+        {VK_NUMPAD7, bedrock::KeyboardButton::Numpad7},
+        {VK_NUMPAD8, bedrock::KeyboardButton::Numpad8},
+        {VK_NUMPAD9, bedrock::KeyboardButton::Numpad9},
+        {VK_MULTIPLY, bedrock::KeyboardButton::NumpadMul},
+        {VK_ADD, bedrock::KeyboardButton::NumpadAdd},
+        {VK_SEPARATOR, bedrock::KeyboardButton::NumpadComma},
+        {VK_SUBTRACT, bedrock::KeyboardButton::NumpadSub},
+        {VK_DIVIDE, bedrock::KeyboardButton::NumpadDiv},
+        {VK_F1, bedrock::KeyboardButton::F1},
+        {VK_F2, bedrock::KeyboardButton::F2},
+        {VK_F3, bedrock::KeyboardButton::F3},
+        {VK_F4, bedrock::KeyboardButton::F4},
+        {VK_F5, bedrock::KeyboardButton::F5},
+        {VK_F6, bedrock::KeyboardButton::F6},
+        {VK_F7, bedrock::KeyboardButton::F7},
+        {VK_F8, bedrock::KeyboardButton::F8},
+        {VK_F9, bedrock::KeyboardButton::F9},
+        {VK_F10, bedrock::KeyboardButton::F10},
+        {VK_F11, bedrock::KeyboardButton::F11},
+        {VK_F12, bedrock::KeyboardButton::F12},
+        {VK_NUMLOCK, bedrock::KeyboardButton::Numlock},
+        {VK_SCROLL, bedrock::KeyboardButton::ScrollLock},
+        {VK_LSHIFT, bedrock::KeyboardButton::LeftShift},
+        {VK_RSHIFT, bedrock::KeyboardButton::RightShift},
+        {VK_RCONTROL, bedrock::KeyboardButton::RightControl},
+        {VK_LCONTROL, bedrock::KeyboardButton::LeftControl},
+        {VK_RMENU, bedrock::KeyboardButton::RightAlt},
+        {VK_LMENU, bedrock::KeyboardButton::LeftAlt},
+    };
+
+    auto it = mapping.find(virtualKey);
+
+    return (it != mapping.end()) ? it->second
+                                 : bedrock::KeyboardButton::Unsupported;
+}
+} // namespace perfectpixel::renderer
 
 #endif

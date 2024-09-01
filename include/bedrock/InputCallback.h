@@ -2,9 +2,9 @@
 
 #include <cstdint>
 
-namespace perfectpixel { namespace bedrock {
+#include "InputEnums.h"
 
-typedef std::uint32_t KeyCode;
+namespace perfectpixel { namespace bedrock {
 
 enum KeyEvent
 {
@@ -12,7 +12,7 @@ enum KeyEvent
     PP_KEYDOWN
 };
 
-typedef void (*KeyCallbackFunc)(void *, KeyCode, KeyEvent);
+typedef void (*KeyCallbackFunc)(void *, KeyboardButton, KeyEvent);
 struct KeyCallback
 {
     KeyCallback()

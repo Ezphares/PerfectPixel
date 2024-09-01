@@ -210,7 +210,8 @@ public:
             bedrock::Vector3 &velocity
                 = physics::PhysicsComponent::Velocity(entity);
             // Speed up after batting
-            if (BallComponent::DeltaXPrev(entity) > 0.0f != velocity.x > 0.0f)
+            if ((BallComponent::DeltaXPrev(entity) > 0.0f)
+                != (velocity.x > 0.0f))
             {
                 velocity *= 1.05f;
             }
@@ -252,7 +253,7 @@ public:
 
 class Pong : public core::Game
 {
-    ecs::Entity m_ball;
+    ecs::Entity m_ball = ecs::NO_ENTITY;
 
     virtual void preInit()
     {}
@@ -322,12 +323,12 @@ class Pong : public core::Game
         m_inputManager.bindAxisToButtons("Horizontal", "Left", "Right");
         m_inputManager.bindAxisToButtons("Vertical", "Down", "Up");
 
-        m_inputManager.bindButton("Left", VK_LEFT);
-        m_inputManager.bindButton("Right", VK_RIGHT);
-        m_inputManager.bindButton("Up", VK_UP);
-        m_inputManager.bindButton("Down", VK_DOWN);
-        m_inputManager.bindButton("Jump", 0x5A); // Z
-        m_inputManager.bindButton("Info", VK_F1);
+        m_inputManager.bindButton("Left", bedrock::KeyboardButton::Left);
+        m_inputManager.bindButton("Right", bedrock::KeyboardButton::Right);
+        m_inputManager.bindButton("Up", bedrock::KeyboardButton::Up);
+        m_inputManager.bindButton("Down", bedrock::KeyboardButton::Down);
+        m_inputManager.bindButton("Jump", bedrock::KeyboardButton::LetterZ);
+        m_inputManager.bindButton("Info", bedrock::KeyboardButton::F1);
 
         queue.registerSystem(new PlayerSystem(), 10, true);
         queue.registerSystem(new AISystem(), 10, true);
@@ -390,8 +391,10 @@ class Pong : public core::Game
     {
         if (m_inputManager.isButtonDown("Info"))
         {
+#if defined(_WIN32)
             MessageBoxA(
                 0, (char *)glGetString(GL_VERSION), "OPENGL VERSION", 0);
+#endif
         }
     }
 
@@ -407,7 +410,7 @@ class Pong : public core::Game
             bedrock::UniqueVoidPtr res = bedrock::UniqueVoidPtr::create<
                 renderer::ImageResourceUserData>();
             res.get<renderer::ImageResourceUserData>().bundleID = 2;
-            return std::move(res);
+            return res;
         };
 
         // TEXTURES

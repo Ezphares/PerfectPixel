@@ -115,9 +115,11 @@ list(APPEND IMGUI_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/depends/imgui-docking/imgui_widgets.cpp"
 )
 
-if(MSVC)
+list(APPEND IMGUI_BACKEND_FILES 
+	"${CMAKE_CURRENT_SOURCE_DIR}/depends/imgui-docking/backends/imgui_impl_opengl3.cpp"
+)
+if(WIN32)
 	list(APPEND IMGUI_BACKEND_FILES
-		"${CMAKE_CURRENT_SOURCE_DIR}/depends/imgui-docking/backends/imgui_impl_opengl3.cpp"
 		"${CMAKE_CURRENT_SOURCE_DIR}/depends/imgui-docking/backends/imgui_impl_win32.cpp"
 	)
 endif()
@@ -153,7 +155,14 @@ else()
 endif()
 
 list(APPEND LIBRARIES_EXTERNAL libglew_shared yaml-cpp)
-list(APPEND LIBRARIES_SYSTEM opengl32)
+
+if(WIN32)
+	list(APPEND LIBRARIES_SYSTEM opengl32)
+endif()
+if(LINUX)
+	list(APPEND LIBRARIES_SYSTEM GL)
+endif()
+
 list(APPEND LIBRARIES_TEST gtest gtest_main)
 
 add_custom_target(perfectpixel_libs DEPENDS ${PP_LIBRARIES})
@@ -176,10 +185,5 @@ add_custom_command(TARGET Pong POST_BUILD
 		"$<TARGET_FILE_DIR:libglew_shared>"
 		"$<TARGET_FILE_DIR:Pong>"
 )
-
-# if (NOT SKIP_INSTALL_LIB AND NOT SKIP_INSTALL_ALL)
-# install(EXPORT zlib
-	# DESTINATION "${CMAKE_INSTALL_LIBDIR}")
-# endif()
 	
 set_property(TARGET Pong PROPERTY VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR})

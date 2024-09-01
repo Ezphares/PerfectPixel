@@ -32,13 +32,13 @@ perfectpixel::bedrock::KeyCallback InputManager::getKeyCallback()
 }
 
 void InputManager::handleInputWrapper(
-    void *instance, bedrock::KeyCode keyCode, bedrock::KeyEvent keyEvent)
+    void *instance, bedrock::KeyboardButton keyCode, bedrock::KeyEvent keyEvent)
 {
     reinterpret_cast<InputManager *>(instance)->handleInput(keyCode, keyEvent);
 }
 
 void InputManager::handleInput(
-    bedrock::KeyCode keyCode, bedrock::KeyEvent keyEvent)
+    bedrock::KeyboardButton keyCode, bedrock::KeyEvent keyEvent)
 {
     auto binding = m_buttonBindings.find(keyCode);
     if (binding != m_buttonBindings.end())
@@ -122,7 +122,8 @@ int32_t InputManager::lookupAxis(const std::string &name) const
     return -1; // TODO Assert
 }
 
-void InputManager::bindButton(const std::string &name, bedrock::KeyCode keyCode)
+void InputManager::bindButton(
+    const std::string &name, bedrock::KeyboardButton keyCode)
 {
     int32_t buttonId = lookupButton(name);
 

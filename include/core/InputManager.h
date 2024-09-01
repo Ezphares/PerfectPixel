@@ -1,6 +1,7 @@
 #pragma once
 
 #include "bedrock/InputCallback.h"
+#include "bedrock/InputEnums.h"
 #include "bedrock/numbers.h"
 
 #include <map>
@@ -21,15 +22,18 @@ public:
 
     bedrock::KeyCallback getKeyCallback();
     static void handleInputWrapper(
-        void *instance, bedrock::KeyCode keyCode, bedrock::KeyEvent keyEvent);
-    void handleInput(bedrock::KeyCode keyCode, bedrock::KeyEvent keyEvent);
+        void *instance,
+        bedrock::KeyboardButton keyCode,
+        bedrock::KeyEvent keyEvent);
+    void
+    handleInput(bedrock::KeyboardButton keyCode, bedrock::KeyEvent keyEvent);
 
     int32_t registerButton(const std::string &name);
     int32_t registerAxis(const std::string &name);
     int32_t lookupButton(const std::string &name) const;
     int32_t lookupAxis(const std::string &name) const;
 
-    void bindButton(const std::string &name, bedrock::KeyCode keyCode);
+    void bindButton(const std::string &name, bedrock::KeyboardButton keyCode);
 
     void bindAxisToButtons(
         const std::string &axisName,
@@ -54,7 +58,7 @@ private:
     std::vector<std::string> m_buttons;
     std::vector<std::string> m_axes;
 
-    std::map<bedrock::KeyCode, int32_t> m_buttonBindings;
+    std::map<bedrock::KeyboardButton, int32_t> m_buttonBindings;
 
     std::map<int32_t, bool> m_buttonState;
     std::map<int32_t, bool> m_buttonStatePrev;

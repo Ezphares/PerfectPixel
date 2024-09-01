@@ -2,10 +2,10 @@
 
 #ifdef _WIN32
 
-#include <map>
-
 #include "renderer/IWindow.h"
 #include "renderer/LocalGL.h"
+
+#include "bedrock/InputEnums.h"
 
 struct ImGuiViewport;
 
@@ -50,6 +50,8 @@ private:
     static void imGuiHook_DestroyWindow(ImGuiViewport *viewport);
     static void imGuiHook_RenderWindow(ImGuiViewport *viewport, void *);
     static void imGuiHook_SwapBuffers(ImGuiViewport *viewport, void *);
+
+    static bedrock::KeyboardButton mapVirtualKey(WPARAM virtualKey);
 
 private:
     static PIXELFORMATDESCRIPTOR pfd;
